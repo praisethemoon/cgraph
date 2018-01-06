@@ -29,6 +29,25 @@ CGResultNode* mulDD(CGDouble* M, CGDouble* V){
 }
 
 /*
+ * d.V
+ */
+CGResultNode* multDV(CGDouble* a, CGVector* V){
+	double* y = dmt_calloc(V->len, sizeof(double));
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->len = V->len;
+	Y->data = y;
+	
+	cblas_dcopy(V->len, V->data, 1, y, 1);
+	cblas_dscal(V->len, a->value, y, 1);
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
  * M.v
  */
 CGResultNode* mulMV(CGMatrix* M, CGVector* V){
