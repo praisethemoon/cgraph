@@ -93,8 +93,46 @@ void runMult_dd(){
 	printf("result: %d value: %f\n", result->type, Y->value);
 }
 
+void runMult_MvM(){
+	printf("Running M.(M.v) example\n");
+	double value1[] = {
+		3, 1, 3,
+		1, 5, 9, 
+		2, 6, 5,
+		1, 1, 1
+	};
+	
+	double value2[]= {
+		-1.0, -1.0, 1.0,
+	};
+	double value3[] = {
+		1, 2, 3,
+		4, 5, 6
+	};
+	
+	
+	CGNode* lhsNode1 = makeMatrixConstantNode(4, 3, value1);
+	CGNode* rhsNode1 = makeVectorConstantNode(3, value2);
+
+	CGNode* rhsNode2 = makeBinaryOpNode(CGBOT_MULT, lhsNode1, rhsNode1);
+	CGNode* lhsNode2 = makeMatrixConstantNode(2, 3, value3);
+	
+	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode2, rhsNode2);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %d shape: %d\n", result->type, Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
 int main(int argc, char *argv[]) {;
 	runMult_dd();
 	runMult_MV();
 	runMult_MM();
+	runMult_MvM();
 }
