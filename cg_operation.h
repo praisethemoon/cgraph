@@ -7,6 +7,7 @@ typedef enum CGBinaryOperationType {
 	CGBOT_ADD=0,
 	CGBOT_SUB,
 	CGBOT_MULT,
+	CGBOT_TMULT, // A^t*b
 	CGBOT_DIV,
 	CGBOT_DOT,
 	CGBOT_INV,

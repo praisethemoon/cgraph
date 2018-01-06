@@ -16,6 +16,21 @@
 
 #include "memory.h"
 
+/*
+ * d.d 
+ */
+CGResultNode* mulDD(CGDouble* M, CGDouble* V){
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = M->value * V->value;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+}
+
+/*
+ * M.v
+ */
 CGResultNode* mulMV(CGMatrix* M, CGVector* V){
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
@@ -24,6 +39,49 @@ CGResultNode* mulMV(CGMatrix* M, CGVector* V){
 	
 	cblas_dgemv(M->shape == CGMS_ROW_MAJOR?CblasRowMajor:CblasColMajor,
 		    CblasNoTrans, M->rows, M->cols, 1.0, M->data,
+		    V->len, V->data, 1, 0.0, Y->data, 1);
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * M.N
+ */
+CGResultNode* mulMM(CGMatrix* M, CGMatrix* N){
+	double* z = dmt_calloc(M->rows*N->cols, sizeof(double));
+	
+	CGMatrix* Z = dmt_calloc(1, sizeof(CGMatrix));
+	Z->rows = M->rows;
+	Z->cols = N->cols;
+	
+	cblas_dgemm(M->shape == CGMS_ROW_MAJOR?CblasRowMajor:CblasColMajor,
+		    CblasNoTrans, CblasNoTrans, M->rows, N->cols, M->cols,
+		    1.0, M->data, M->cols, N->data, N->cols, 0, z, Z->cols);
+	
+	Z->data = z;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Z;
+	
+	return result;
+}
+
+/*
+ * M^T.v
+ */
+CGResultNode* mulTMV(CGMatrix* M, CGVector* V){
+	double* y = dmt_calloc(V->len, sizeof(double));
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->len = V->len;
+	Y->data = y;
+	
+	cblas_dgemv(M->shape == CGMS_ROW_MAJOR?CblasRowMajor:CblasColMajor,
+		    CblasTrans, M->rows, M->cols, 1.0, M->data,
 		    V->len, V->data, 1, 0.0, Y->data, 1);
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
@@ -81,10 +139,15 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 				((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX))
 			);
 			
+			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
+				return mulMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
+			}
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
 				return mulMV((CGMatrix*)lhsValue, (CGVector*)rhsValue);
 			}
-			printf("%d, %d\n", lhsType, rhsType);
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
+				return mulDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+			};
 		}
 	}
 }

@@ -10,55 +10,27 @@
 #include "cg_operation.h"
 #include "cg_types.h"
 #include "cg_variables.h"
+#include "cg_factory.h"
 
 #include "memory.h"
 
-int main(int argc, char *argv[]) {
-	// Vector X
-	CGPConstant* X = dmt_calloc(1, sizeof(CGPConstant));
-	X->type = CGVT_VECTOR;
-	double value []= {-1.0, -1.0, 1.0};
-
-	CGVector* x = dmt_calloc(1, sizeof(CGVector));
-	x->data = value;
-	x->len = 3;
-
-	X->value = x;
-	
-	// Matrix M
-	
-	CGPConstant* M = dmt_calloc(1, sizeof(CGPConstant));
-	M->type = CGVT_MATRIX;
-	double value2[] = {
+void runMult_MV(){
+	printf("Running M.v example\n");
+	double value1[] = {
 		3, 1, 3,
-		1, 5, 9,
-		2, 6, 5
+		1, 5, 9, 
+		2, 6, 5,
+		1, 1, 1
 	};
 	
-
-	CGMatrix* m = dmt_calloc(1, sizeof(CGMatrix));
-	m->data = value2;
-	m->cols = 3;
-	m->rows = 3;
-	m->shape = CGMS_ROW_MAJOR;
+	double value2 []= {
+		-1.0, -1.0, 1.0,
+	};
 	
-	M->value = m;
+	CGNode* lhsNode = makeMatrixConstantNode(4, 3, value1);
+	CGNode* rhsNode = makeVectorConstantNode(3, value2);
 
-	CGNode* node1 = dmt_calloc(1, sizeof(CGNode));
-	node1->type = CGNT_CONSTANT;
-	node1->constant = M;
-	
-	CGNode* node2 = dmt_calloc(1, sizeof(CGNode));
-	node2->type = CGNT_CONSTANT;
-	node2->constant = X;
-
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
-	node->type = CGNT_BINARY_OPERATION;
-	
-	node->bop = dmt_calloc(1, sizeof(CGBinaryOperation));
-	node->bop->type = CGBOT_MULT;
-	node->bop->lhs = node1;
-	node->bop->rhs = node2;
+	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
 	
 	CGResultNode* result = computeCGNode(node);
 	CGVector* Y = (CGVector*)result->value;
@@ -69,4 +41,60 @@ int main(int argc, char *argv[]) {
 	for(;i<Y->len;i++){
 		printf("\t%f\n", Y->data[i]);
 	}
+}
+
+void runMult_MM(){
+	printf("Running M.M example\n");
+	double value1[] = {
+		1, 2, 3,
+		4, 5, 6
+	};
+	
+	double value2 []= {
+		7, 8,
+		9, 10,
+		11, 12
+	};
+	
+	CGNode* lhsNode = makeMatrixConstantNode(2, 3, value1);
+	CGNode* rhsNode = makeMatrixConstantNode(3, 2, value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %d shape: (%d, %d)\n", result->type, Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->rows;j++){
+			printf("\t%f", Y->data[i*Y->rows +j]);
+		}
+		printf("\n");
+	}
+}
+
+void runMult_dd(){
+	printf("Running d.d example\n");
+	double value1 = 3.14;
+	
+	double value2 = 0.5;
+	
+	CGNode* lhsNode = makeDoubleConstantNode(value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGDouble* Y = (CGDouble*)result->value;
+
+	printf("result: %d value: %f\n", result->type, Y->value);
+}
+
+int main(int argc, char *argv[]) {;
+	runMult_dd();
+	runMult_MV();
+	runMult_MM();
 }

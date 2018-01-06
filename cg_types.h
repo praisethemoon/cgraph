@@ -4,10 +4,14 @@
 #include <stdint.h>
 
 typedef enum CGVarType {
-	CGVT_DOUBLE=1,
+	CGVT_DOUBLE=0,
 	CGVT_VECTOR,
 	CGVT_MATRIX,
 }CGVarType;
+
+typedef struct CGDouble {
+	double value;
+}CGDouble;
 
 typedef struct CGVector {
 	double* data;
