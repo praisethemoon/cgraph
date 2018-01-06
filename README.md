@@ -15,5 +15,7 @@ CCGraph
 - Double numbers only.
 
 ## Future work
+- Graph variables
+- Lua graph construction
 - derivative
 - GPU BLAS Implentations (cuBLAS probably)

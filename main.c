@@ -14,6 +14,9 @@
 
 #include "memory.h"
 
+#define PROFILER_DEFINE
+#include "profiler.h"
+
 void runMult_MV(){
 	printf("Running M.v example\n");
 	double value1[] = {
@@ -130,9 +133,29 @@ void runMult_MvM(){
 	}
 }
 
-int main(int argc, char *argv[]) {;
-	runMult_dd();
+int main(int argc, char *argv[]) {
+	profiler_initialize();
+	
+	PROFILER_START(init_func);
+	printf("Initializing\n");
+	PROFILER_STOP(init_func);
+	
+	
+	PROFILER_START(runMult_MV_func);
 	runMult_MV();
+	PROFILER_STOP(runMult_MV_func);
+	
+	PROFILER_START(runMult_MM_func);
 	runMult_MM();
+	PROFILER_STOP(runMult_MM_func);
+	
+	PROFILER_START(runMult_MvM_func);
 	runMult_MvM();
+	PROFILER_STOP(runMult_MvM_func);
+	
+	PROFILER_START(runMult_dd_func);
+	runMult_dd();
+	PROFILER_STOP(runMult_dd_func);
+		
+	profiler_dump_file("stats.txt");
 }

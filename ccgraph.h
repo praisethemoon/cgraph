@@ -1,6 +1,7 @@
 #ifndef CCGRAPH_H
 #define CCGRAPH_H
 
+#include "map.h"
 #include "cg_operation.h"
 #include "cg_types.h"
 #include "cg_variables.h"
@@ -21,6 +22,11 @@ typedef struct CGNode {
 		CGUnaryOperation* uop;
 	};
 }CGNode;
+
+typedef struct CGraph {
+	CGNode* node;
+	map_t(CGNode*) vars;
+}CGraph;
 
 
 typedef struct  {
