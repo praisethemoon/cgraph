@@ -72,12 +72,42 @@ void runMult_MM(){
 	uint64_t j = 0;
 	
 	for(;i<Y->rows;i++){
-		for(j = 0;j<Y->rows;j++){
-			printf("\t%f", Y->data[i*Y->rows +j]);
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
 }
+
+void runMult_Md(){
+	printf("Running M.d example\n");
+	double value1[] = {
+		1, 2, 3,
+		4, 5, 6
+	};
+	
+	double value2 = -0.5;
+	
+	CGNode* lhsNode = makeMatrixConstantNode(2, 3, value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %d shape: (%d, %d)\n", result->type, Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
 
 void runMult_dd(){
 	printf("Running d.d example\n");
@@ -187,6 +217,9 @@ int main(int argc, char *argv[]) {
 	runMult_MvM();
 	PROFILER_STOP(runMult_MvM_func);
 	
-		
+	PROFILER_START(runMult_Md_func);
+	runMult_Md();
+	PROFILER_STOP(runMult_Md_func);
+	
 	profiler_dump_file("stats.txt");
 }

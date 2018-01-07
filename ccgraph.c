@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <cblas.h>
+#include <string.h> // memcpy
 
 #include "ccgraph.h"
 #include "cg_operation.h"
@@ -29,7 +30,7 @@ CGResultNode* mulDD(CGDouble* M, CGDouble* V){
 }
 
 /*
- * d.V
+ * d.V == V.d
  */
 CGResultNode* multDV(CGDouble* a, CGVector* V){
 	double* y = dmt_calloc(V->len, sizeof(double));
@@ -42,6 +43,35 @@ CGResultNode* multDV(CGDouble* a, CGVector* V){
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+
+/*
+ * d.M == M.d
+ */
+CGResultNode* mulMD(CGDouble* a, CGMatrix* M){
+	uint64_t size = M->cols*M->rows;
+	double value = a->value;
+	
+	double* y = dmt_calloc(size, sizeof(double));
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = y;
+	
+	memcpy(y, M->data, size*sizeof(double));
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		y[i] *= value;
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
 	result->value = Y;
 	
 	return result;
@@ -146,17 +176,31 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 		CGResultNode* rhsResult = computeCGNode(rhs);
 		rhsType = rhsResult->type;
 		rhsValue = rhsResult->value;
-	} 
+	}
 	
 	switch(type){
+		
+		case CGBOT_DIV:{
+			/*
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
+				return divDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+			}
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
+				return divVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+			}
+			
+			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
+				return divMD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+			}
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
+				return divVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+			}
+			*/
+		}
+		
 		case CGBOT_MULT:{
-			assert(
-				((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)) ||
-				((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)) ||
-				((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)) ||
-				((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)) ||
-				((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX))
-			);
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				return mulMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
@@ -168,15 +212,23 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
 				return mulDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
-			};
+			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
 				return multDV((CGDouble*)lhsValue, (CGVector*)rhsValue);
-			};
+			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
 				return multDV((CGDouble*)rhsValue, (CGVector*)lhsValue);
-			};
+			}
+			
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
+				return mulMD((CGDouble*)lhsValue, (CGMatrix*)rhsValue);
+			}
+			
+			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
+				return mulMD((CGDouble*)rhsValue, (CGMatrix*)lhsValue);
+			}
 		}
 	}
 }
