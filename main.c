@@ -96,6 +96,31 @@ void runMult_dd(){
 	printf("result: %d value: %f\n", result->type, Y->value);
 }
 
+
+void runMult_dV(){
+	printf("Running d.v example\n");
+	double value1 = 3.14;
+	
+	double value2 []= {
+		-1.0, -1.0, 1.0,
+	};
+	
+	CGNode* lhsNode = makeDoubleConstantNode(value1);
+	CGNode* rhsNode = makeVectorConstantNode(3, value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %d shape: %d\n", result->type, Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
 void runMult_MvM(){
 	printf("Running M.(M.v) example\n");
 	double value1[] = {
@@ -141,6 +166,15 @@ int main(int argc, char *argv[]) {
 	PROFILER_STOP(init_func);
 	
 	
+	PROFILER_START(runMult_dd_func);
+	runMult_dd();
+	PROFILER_STOP(runMult_dd_func);
+	
+	
+	PROFILER_START(runMult_dv_func);
+	runMult_dV();
+	PROFILER_STOP(runMult_dv_func);
+	
 	PROFILER_START(runMult_MV_func);
 	runMult_MV();
 	PROFILER_STOP(runMult_MV_func);
@@ -153,9 +187,6 @@ int main(int argc, char *argv[]) {
 	runMult_MvM();
 	PROFILER_STOP(runMult_MvM_func);
 	
-	PROFILER_START(runMult_dd_func);
-	runMult_dd();
-	PROFILER_STOP(runMult_dd_func);
 		
 	profiler_dump_file("stats.txt");
 }

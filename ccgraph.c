@@ -146,7 +146,7 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 		CGResultNode* rhsResult = computeCGNode(rhs);
 		rhsType = rhsResult->type;
 		rhsValue = rhsResult->value;
-	}
+	} 
 	
 	switch(type){
 		case CGBOT_MULT:{
@@ -161,11 +161,21 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				return mulMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
 			}
+			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
 				return mulMV((CGMatrix*)lhsValue, (CGVector*)rhsValue);
 			}
+			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
 				return mulDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+			};
+			
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
+				return multDV((CGDouble*)lhsValue, (CGVector*)rhsValue);
+			};
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
+				return multDV((CGDouble*)rhsValue, (CGVector*)lhsValue);
 			};
 		}
 	}
