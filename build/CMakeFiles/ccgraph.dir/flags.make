@@ -6,5 +6,5 @@ C_FLAGS = -g
 
 C_DEFINES = 
 
-C_INCLUDES = -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread 
+C_INCLUDES = -I/usr/local/include -I/home/praisethemoon/projects/ccgraph/source/include -I/home/praisethemoon/projects/ccgraph/source/vendor/memory -I/home/praisethemoon/projects/ccgraph/source/vendor/profiler -I/home/praisethemoon/projects/ccgraph/source/vendor/lua -I/home/praisethemoon/projects/ccgraph/source/vendor/container -I/home/praisethemoon/projects/ccgraph/source/vendor/thread 
 

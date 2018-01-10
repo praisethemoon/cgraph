@@ -9,6 +9,13 @@ CMakeFiles/ccgraph.dir/source/ccgraph.c.o: ../source/cg_operation.h
 CMakeFiles/ccgraph.dir/source/ccgraph.c.o: ../source/cg_types.h
 CMakeFiles/ccgraph.dir/source/ccgraph.c.o: ../source/cg_variables.h
 
+CMakeFiles/ccgraph.dir/source/cg_constants.c.o: ../source/vendor/container/map.h
+CMakeFiles/ccgraph.dir/source/cg_constants.c.o: ../source/ccgraph.h
+CMakeFiles/ccgraph.dir/source/cg_constants.c.o: ../source/cg_constants.c
+CMakeFiles/ccgraph.dir/source/cg_constants.c.o: ../source/cg_operation.h
+CMakeFiles/ccgraph.dir/source/cg_constants.c.o: ../source/cg_types.h
+CMakeFiles/ccgraph.dir/source/cg_constants.c.o: ../source/cg_variables.h
+
 CMakeFiles/ccgraph.dir/source/cg_factory.c.o: ../source/vendor/container/map.h
 CMakeFiles/ccgraph.dir/source/cg_factory.c.o: ../source/vendor/memory/memory.h
 CMakeFiles/ccgraph.dir/source/cg_factory.c.o: ../source/ccgraph.h

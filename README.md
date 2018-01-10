@@ -16,6 +16,7 @@ CCGraph
 
 ## Future work
 - Graph variables
+- Graph as nodes
 - Lua graph construction
 - derivative
 - GPU BLAS Implentations (cuBLAS probably)

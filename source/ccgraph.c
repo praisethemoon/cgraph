@@ -17,6 +17,31 @@
 
 #include "memory.h"
 
+extern const char* BinaryOperationTypeString[];
+extern const char* NodeTypeString[];
+extern const char* VariableTypeString[];
+
+void dumpNode(CGNode* node){
+	fprintf(stderr, "\t\t+Node: '%s'\n", NodeTypeString[node->type]);
+	if(node->type == CGNT_CONSTANT){
+		fprintf(stderr, "\t\t+Type: '%s'\n", VariableTypeString[node->var->type]);
+	}
+}
+
+void throwUnsupportedBinaryOperationException(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
+	fprintf(stderr, "Unsupported operation %s\n", BinaryOperationTypeString[type]);
+	fprintf(stderr, "\tLeft node:\n");
+	dumpNode(lhs);
+	fprintf(stderr, "\tRight node:\n");
+	dumpNode(rhs);
+}
+
+/*
+ * *********************
+ * Multiplication
+ * *********************
+ */
+
 /*
  * d.d 
  */
@@ -120,6 +145,35 @@ CGResultNode* mulMM(CGMatrix* M, CGMatrix* N){
 	return result;
 }
 
+
+/*
+ * *********************
+ * Division 
+ * *********************
+ */
+
+/*
+ *  d/d
+ */
+CGResultNode* divDD(CGDouble* D1, CGDouble* D2){
+	double res = D1->value / D2->value;
+	
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = res;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * *********************
+ * Transpose Multiplication
+ * *********************
+ */
+
 /*
  * M^T.v
  */
@@ -181,11 +235,11 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 	switch(type){
 		
 		case CGBOT_DIV:{
-			/*
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
 				return divDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
 			}
 			
+			/*
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
 				return divVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
 			}
@@ -201,6 +255,8 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 		}
 		
 		case CGBOT_MULT:{
+			if(1)
+				throwUnsupportedBinaryOperationException(type, lhs, rhs);
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				return mulMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);

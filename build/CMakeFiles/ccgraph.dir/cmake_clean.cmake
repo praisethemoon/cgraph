@@ -39,6 +39,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/ccgraph.dir/source/main.c.o"
   "CMakeFiles/ccgraph.dir/source/ccgraph.c.o"
   "CMakeFiles/ccgraph.dir/source/cg_factory.c.o"
+  "CMakeFiles/ccgraph.dir/source/cg_constants.c.o"
   "ccgraph.pdb"
   "ccgraph"
 )

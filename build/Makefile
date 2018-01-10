@@ -48,35 +48,13 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/iptech/Desktop/undefined/ccgraph
+CMAKE_SOURCE_DIR = /home/praisethemoon/projects/ccgraph
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/iptech/Desktop/undefined/ccgraph/build
+CMAKE_BINARY_DIR = /home/praisethemoon/projects/ccgraph/build
 
 #=============================================================================
 # Targets provided globally by CMake.
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-
-.PHONY : list_install_components/fast
 
 # Special rule for the target rebuild_cache
 rebuild_cache:
@@ -88,17 +66,6 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
-
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
 
 # Special rule for the target install/strip
 install/strip: preinstall
@@ -122,11 +89,44 @@ install/local/fast: install/local
 
 .PHONY : install/local/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
+
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles /home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/praisethemoon/projects/ccgraph/build/CMakeFiles /home/praisethemoon/projects/ccgraph/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/praisethemoon/projects/ccgraph/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -193,6 +193,33 @@ source/ccgraph.s: source/ccgraph.c.s
 source/ccgraph.c.s:
 	$(MAKE) -f CMakeFiles/ccgraph.dir/build.make CMakeFiles/ccgraph.dir/source/ccgraph.c.s
 .PHONY : source/ccgraph.c.s
+
+source/cg_constants.o: source/cg_constants.c.o
+
+.PHONY : source/cg_constants.o
+
+# target to build an object file
+source/cg_constants.c.o:
+	$(MAKE) -f CMakeFiles/ccgraph.dir/build.make CMakeFiles/ccgraph.dir/source/cg_constants.c.o
+.PHONY : source/cg_constants.c.o
+
+source/cg_constants.i: source/cg_constants.c.i
+
+.PHONY : source/cg_constants.i
+
+# target to preprocess a source file
+source/cg_constants.c.i:
+	$(MAKE) -f CMakeFiles/ccgraph.dir/build.make CMakeFiles/ccgraph.dir/source/cg_constants.c.i
+.PHONY : source/cg_constants.c.i
+
+source/cg_constants.s: source/cg_constants.c.s
+
+.PHONY : source/cg_constants.s
+
+# target to generate assembly for a file
+source/cg_constants.c.s:
+	$(MAKE) -f CMakeFiles/ccgraph.dir/build.make CMakeFiles/ccgraph.dir/source/cg_constants.c.s
+.PHONY : source/cg_constants.c.s
 
 source/cg_factory.o: source/cg_factory.c.o
 
@@ -1253,16 +1280,19 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... install"
-	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... ccgraph"
-	@echo "... edit_cache"
 	@echo "... install/strip"
+	@echo "... ccgraph"
 	@echo "... install/local"
+	@echo "... list_install_components"
+	@echo "... install"
+	@echo "... edit_cache"
 	@echo "... source/ccgraph.o"
 	@echo "... source/ccgraph.i"
 	@echo "... source/ccgraph.s"
+	@echo "... source/cg_constants.o"
+	@echo "... source/cg_constants.i"
+	@echo "... source/cg_constants.s"
 	@echo "... source/cg_factory.o"
 	@echo "... source/cg_factory.i"
 	@echo "... source/cg_factory.s"
