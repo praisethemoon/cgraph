@@ -1,0 +1,7 @@
+/home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles/install.dir
+/home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles/list_install_components.dir
+/home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles/rebuild_cache.dir
+/home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles/ccgraph.dir
+/home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles/edit_cache.dir
+/home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles/install/strip.dir
+/home/iptech/Desktop/undefined/ccgraph/build/CMakeFiles/install/local.dir

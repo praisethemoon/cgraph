@@ -1,0 +1,202 @@
+[
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/memory/memory.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/memory/memory.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory/memory.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/thread/tinycthread.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/thread/tinycthread.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread/tinycthread.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/container/vec.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/container/vec.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/container/vec.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/container/map.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/container/map.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/container/map.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lzio.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lzio.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lzio.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lvm.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lvm.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lvm.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lutf8lib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lutf8lib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lutf8lib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lundump.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lundump.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lundump.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/ltablib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ltablib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ltablib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/ltm.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ltm.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ltm.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lstrlib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lstrlib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lstrlib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/ltable.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ltable.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ltable.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lstring.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lstring.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lstring.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lstate.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lstate.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lstate.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lparser.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lparser.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lparser.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/loslib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/loslib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/loslib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lopcodes.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lopcodes.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lopcodes.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/loadlib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/loadlib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/loadlib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lobject.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lobject.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lobject.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lmem.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lmem.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lmem.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lmathlib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lmathlib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lmathlib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/llex.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/llex.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/llex.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/linit.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/linit.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/linit.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/liolib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/liolib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/liolib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lgc.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lgc.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lgc.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lfunc.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lfunc.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lfunc.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/ldump.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ldump.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ldump.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/ldo.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ldo.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ldo.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/ldblib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ldblib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ldblib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/ldebug.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ldebug.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/ldebug.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lctype.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lctype.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lctype.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lcorolib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lcorolib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lcorolib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lbitlib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lbitlib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lbitlib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lcode.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lcode.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lcode.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lbaselib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lbaselib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lbaselib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lauxlib.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lauxlib.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lauxlib.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/vendor/lua/lapi.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lapi.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua/lapi.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/main.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/main.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/main.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/ccgraph.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/ccgraph.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/ccgraph.c"
+},
+{
+  "directory": "/home/iptech/Desktop/undefined/ccgraph/build",
+  "command": "/usr/bin/cc   -I/usr/local/include -I/home/iptech/Desktop/undefined/ccgraph/source/include -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/memory -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/profiler -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/lua -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/container -I/home/iptech/Desktop/undefined/ccgraph/source/vendor/thread  -g   -o CMakeFiles/ccgraph.dir/source/cg_factory.c.o   -c /home/iptech/Desktop/undefined/ccgraph/source/cg_factory.c",
+  "file": "/home/iptech/Desktop/undefined/ccgraph/source/cg_factory.c"
+}
+]
