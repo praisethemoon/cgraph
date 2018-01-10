@@ -1,7 +1,0 @@
-/home/praisethemoon/projects/ccgraph/build/CMakeFiles/rebuild_cache.dir
-/home/praisethemoon/projects/ccgraph/build/CMakeFiles/install/strip.dir
-/home/praisethemoon/projects/ccgraph/build/CMakeFiles/ccgraph.dir
-/home/praisethemoon/projects/ccgraph/build/CMakeFiles/install/local.dir
-/home/praisethemoon/projects/ccgraph/build/CMakeFiles/list_install_components.dir
-/home/praisethemoon/projects/ccgraph/build/CMakeFiles/install.dir
-/home/praisethemoon/projects/ccgraph/build/CMakeFiles/edit_cache.dir
