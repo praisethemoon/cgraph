@@ -32,14 +32,28 @@ Once everything is well tested, hard optimizations such as switch statements and
 
 |operator|type|lhs|rhs|uhs|implemented|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-|`*`|binary|`double`|`double`||- [x]|
+|`*`|binary|`double`|`double`||[x]|
 |`*`|binary|`double`|`vector`||[x]|
 |`*`|binary|`double`|`matrix`||[x]|
 |`*`|binary|`vector`|`double`||[x]|
 |`*`|binary|`matrix`|`double`||[x]|
-|`*`|binary|`vector`|`vector`||[]|
+|`*`|binary|`vector`|`vector`||[x]|
 |`*`|binary|`matrix`|`vector`||[x]|
 |`*`|binary|`matrix`|`matrix`||[x]|
+|`+`|binary|`double`|`double`||[x]|
+|`+`|binary|`double`|`vector`||[x]|
+|`+`|binary|`double`|`matrix`||[x]|
+|`+`|binary|`vector`|`vector`||[x]|
+|`+`|binary|`vector`|`double`||[x]|
+|`+`|binary|`matrix`|`double`||[x]|
+|`+`|binary|`matrix`|`matrix`||[x]|
+|`+`|binary|`matrix`|`vector`||[]|
+|`-`|binary|`double`|`double`||[x]|
+|`-`|binary|`vector`|`vector`||[x]|
+|`-`|binary|`vector`|`double`||[x]|
+|`-`|binary|`matrix`|`double`||[x]|
+|`-`|binary|`matrix`|`matrix`||[x]|
+|`-`|binary|`matrix`|`vector`||[]|
 
 ### Future work
 - Graph variables (no idea how to do it yet `:(`)
@@ -50,6 +64,7 @@ Once everything is well tested, hard optimizations such as switch statements and
 - Analyze graph to optimize calculations i.e `A^T.xB` is three operations that can be reduced to one in BLAS.
 - Graph plotting and visualization
 - Switch to LuaJIT
+- Travis CI
 
 ### Dependencies included within the source code:
 - Lua programming language [https://github.com/lua/lua](https://github.com/lua/lua)

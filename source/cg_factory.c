@@ -73,3 +73,14 @@ CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
 	
 	return node;
 }
+
+CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
+	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	node->type = CGNT_UNARY_OPERATION;
+	
+	node->uop = dmt_calloc(1, sizeof(CGUnaryOperation));
+	node->uop->type = type;
+	node->uop->uhs = uhs;
+	
+	return node;
+}

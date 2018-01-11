@@ -189,6 +189,37 @@ void runMult_MvM(){
 	}
 }
 
+
+void runDot_VV(){
+	printf("Running V.V example\n");
+	double value1[] = {
+		3,
+		1, 
+		5
+	};
+	
+	double value2[] = {
+		-3,
+		-1, 
+		0.5
+	};
+	
+	
+	CGNode* lhsNode = makeVectorConstantNode(3, value1);
+	CGNode* rhsNode = makeVectorConstantNode(3, value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
 /*
  * the following function will fail on purpose
  */
@@ -589,6 +620,75 @@ void runSub_MM(){
 	}
 }
 
+
+void runExp_M(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running e^M example\n");
+	double value1[] = {
+		3, 1, 3, 1,
+		1, 0, 9, 1,
+		2, 6, 5, 1,
+		1, 1, 1, 0,
+	};
+	
+	
+	CGNode* uhsNode = makeMatrixConstantNode(4, 4, value1);
+
+	CGNode* node = makeUnaryOpNode(CGUOT_EXP, uhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
+
+void runExpLog_M(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running e^(log M) example\n");
+	double value1[] = {
+		3, 1, 3, 1,
+		1, 0, 9, 1,
+		2, 6, 5, 1,
+		1, 1, 1, 0,
+	};
+	
+	
+	CGNode* uhsNode = makeMatrixConstantNode(4, 4, value1);
+
+	CGNode* node1 = makeUnaryOpNode(CGUOT_EXP, uhsNode);
+	CGNode* node2 = makeUnaryOpNode(CGUOT_LOG, node1);
+	
+	CGResultNode* result = computeCGNode(node2);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
 /*
  * Main program
  */
@@ -603,6 +703,7 @@ int main(int argc, char *argv[]) {
 	runMult_MM();
 	runMult_MvM();
 	runMult_Md();
+	runDot_VV();
 	
 	// This will fail on purpose.
 	// runDiv_MM();
@@ -622,6 +723,9 @@ int main(int argc, char *argv[]) {
 	runSub_Md();
 	runSub_VV();
 	runSub_MM();
+	
+	runExp_M();
+	runExpLog_M();
 	
 	//profiler_dump_file("stats.txt");
 }

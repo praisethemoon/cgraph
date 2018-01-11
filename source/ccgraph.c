@@ -60,7 +60,7 @@ CGResultNode* mulDD(CGDouble* M, CGDouble* V){
 /*
  * d.V == V.d
  */
-CGResultNode* multDV(CGDouble* a, CGVector* V){
+CGResultNode* mulDV(CGDouble* a, CGVector* V){
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->len = V->len;
@@ -150,6 +150,35 @@ CGResultNode* mulMM(CGMatrix* M, CGMatrix* N){
 
 
 /*
+ * V.V
+ */
+CGResultNode* crossVV(CGVector* V1, CGVector* V2){
+	if(V1->len != V2->len){
+		// TODO: throw error
+	}
+	
+	uint64_t size = V1->len;
+	double* res = dmt_calloc(size, sizeof(double));
+	
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->len = V1->len;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = V1->data[i] * V2->data[i];
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+
+/*
  * *********************
  * Division 
  * *********************
@@ -173,6 +202,7 @@ CGResultNode* divDD(CGDouble* D1, CGDouble* D2){
 
 /*
  *  V/d
+ * TODO: optimize as Multiplication of inverse of `d`
  */
 CGResultNode* divVD(CGVector* V, CGDouble* D){
 	double* res = dmt_calloc(V->len, sizeof(double));
@@ -315,6 +345,37 @@ CGResultNode* addVV(CGVector* V1, CGVector* V2){
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+
+
+/*
+ * M+V
+ */
+CGResultNode* addMV(CGMatrix* M, CGVector* V){
+	if(M->rows != V->len){
+		// TODO: throw error
+	}
+	
+	uint64_t size = M->cols*M->rows;
+	double* res = dmt_calloc(size, sizeof(double));
+	
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = M->data[i] + M->data[i];
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
 	result->value = Y;
 	
 	return result;
@@ -632,7 +693,7 @@ CGResultNode* logM(CGMatrix* M){
 
 
 
-CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs){
+CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs, CGNode* parentNode){
 	CGVarType uhsType = CGVT_DOUBLE;
 	void* uhsValue = NULL;
 	
@@ -652,7 +713,7 @@ CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs){
 	}
 	
 	switch(type){
-		case CGBOT_EXP:{
+		case CGUOT_EXP:{
 			if(uhsType == CGVT_DOUBLE){
 				return expD((CGDouble*)uhsValue);
 			}
@@ -667,7 +728,7 @@ CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs){
 		}
 		
 		
-		case CGBOT_LOG:{
+		case CGUOT_LOG:{
 			if(uhsType == CGVT_DOUBLE){
 				return logD((CGDouble*)uhsValue);
 			}
@@ -681,8 +742,9 @@ CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs){
 			}
 		}
 	
-		case CGBOT_INV:
-		case CGBOT_TRANSPOSE:
+		case CGUOT_MINUS:
+		case CGUOT_INV:
+		case CGUOT_TRANSPOSE:
 			return NULL;
 	}
 }
@@ -752,6 +814,10 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 				return addVV((CGVector*)lhsValue, (CGVector*)rhsValue);
 			}
 			
+			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
+				return addMV((CGMatrix*)lhsValue, (CGVector*)rhsValue);
+			}
+			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				return addMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
 			}
@@ -818,11 +884,11 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
-				return multDV((CGDouble*)lhsValue, (CGVector*)rhsValue);
+				return mulDV((CGDouble*)lhsValue, (CGVector*)rhsValue);
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
-				return multDV((CGDouble*)rhsValue, (CGVector*)lhsValue);
+				return mulDV((CGDouble*)rhsValue, (CGVector*)lhsValue);
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
@@ -831,6 +897,10 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				return mulMD((CGDouble*)rhsValue, (CGMatrix*)lhsValue);
+			}
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
+				return crossVV((CGVector*)rhsValue, (CGVector*)lhsValue);
 			}
 		}
 	}
