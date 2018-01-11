@@ -436,7 +436,162 @@ void runAdd_MM(){
 	}
 }
 
+void runSub_dd(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running d-d example\n");
+	double value1 = 3;
+	
+	double value2 = 2;
+	
+	
+	CGNode* lhsNode = makeDoubleConstantNode(value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGDouble* Y = (CGDouble*)result->value;
 
+	printf("result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
+}
+
+void runSub_Vd(){
+	printf("Running V-d example\n");
+	double value1[] = {
+		3,
+		1, 
+		5
+	};
+	
+	double value2 = 2;
+	
+	
+	CGNode* lhsNode = makeVectorConstantNode(3, value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
+void runSub_Md(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running M-d example\n");
+	double value1[] = {
+		3, 1, 3,
+		1, 5, 9, 
+		2, 6, 5,
+		1, 1, 1
+	};
+	
+	double value2 = 0.5;
+	
+	CGNode* lhsNode = makeMatrixConstantNode(4, 3, value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %s shape: %d.%d\n", getVariableTypeString(result->type), Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
+
+void runSub_VV(){
+	printf("Running V-V example\n");
+	double value1[] = {
+		3,
+		1, 
+		5
+	};
+	
+	double value2[] = {
+		-3,
+		-1, 
+		1
+	};
+	
+	
+	CGNode* lhsNode = makeVectorConstantNode(3, value1);
+	CGNode* rhsNode = makeVectorConstantNode(3, value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
+void runSub_MM(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running M-M example\n");
+	double value1[] = {
+		3, 1, 3, 1,
+		1, 5, 9, 1,
+		2, 6, 5, 1,
+		1, 1, 1, 0,
+	};
+	
+	double value2[] = {
+		3, 1, 3, 1,
+		1, 5, 9, 1,
+		2, 6, 5, 1,
+		1, 1, 1, 0,
+	};
+	
+	
+	CGNode* lhsNode = makeMatrixConstantNode(4, 4, value1);
+	CGNode* rhsNode = makeMatrixConstantNode(4, 4, value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %s shape: %d.%d\n", getVariableTypeString(result->type), Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
+/*
+ * Main program
+ */
 int main(int argc, char *argv[]) {
 	//profiler_initialize();
 	
@@ -460,6 +615,13 @@ int main(int argc, char *argv[]) {
 	runAdd_Md();
 	runAdd_VV();
 	runAdd_MM();
+	
+	
+	runSub_dd();
+	runSub_Vd();
+	runSub_Md();
+	runSub_VV();
+	runSub_MM();
 	
 	//profiler_dump_file("stats.txt");
 }

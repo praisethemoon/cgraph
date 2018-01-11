@@ -8,17 +8,16 @@ typedef enum CGBinaryOperationType {
 	CGBOT_SUB,
 	CGBOT_MULT,
 	CGBOT_DIV,
-	CGBOT_DOT,
-	CGBOT_INV,
-	CGBOT_TRANSPOSE,
-	CGBOT_EXP,
-	CGBOT_LOG,
 } CGBinaryOperationType;
 
 
 typedef enum CGUnaryOperationType {
 	CGUOT_MINUS=0,
-	CGUOT_PLUS
+	CGUOT_PLUS,
+	CGBOT_INV,
+	CGBOT_TRANSPOSE,
+	CGBOT_EXP,
+	CGBOT_LOG,
 } CGUnaryOperationType;
 
 typedef struct CGBinaryOperation {
