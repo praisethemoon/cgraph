@@ -10,6 +10,8 @@ CCGraph
 CCGraph, short for C Computation Graph is a C library for building Tensor graphs.
 It will support a Lua API in the future.
 
+> You see the logo? Illuminaty confirmed
+
 ### Optimizations
 Uses BLAS for complex operations.
 
@@ -94,9 +96,9 @@ optimizations will come once the library becomes stable.
 - Derivative calculations
 - GPU BLAS Implentations (cuBLAS probably)
 - Multithreaded implentation
-- Analyze graph to optimize calculations i.e `A^T.xB` is three operations that can be reduced to one in BLAS.
+- Analyze graph to optimize calculations i.e `A^T.xB` is 3 three operations expression that can be reduced to one operation in BLAS.
 - Graph plotting and visualization
-- Switch to LuaJIT
+- Switch to LuaJIT instead of Lua API
 - Travis CI
 
 ### Dependencies included within the source code:
