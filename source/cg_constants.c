@@ -9,6 +9,7 @@ const char* BinaryOperationTypeString[] = {
 	"-",
 	"*",
 	"/",
+	"^",
 	"dot",
 	"^T*"
 };

@@ -650,6 +650,79 @@ CGResultNode* subVM(CGVector* V, CGMatrix* M){
 	return result;
 }
 
+
+/*
+ * *********************
+ * Power
+ * *********************
+ */
+
+/*
+ * d^d
+ */
+CGResultNode* powDD(CGDouble* D1, CGDouble* D2){
+	double res = pow(D1->value, D2->value);
+	
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = res;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * V^d
+ */
+CGResultNode* powVD(CGVector* V, CGDouble* D){
+	double* res = dmt_calloc(V->len, sizeof(double));
+	double value = D->value;
+	
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = res;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		res[i] = pow(V->data[i], value);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * M^d
+ */
+CGResultNode* powMD(CGMatrix* M, CGDouble* D){
+	uint64_t size = M->rows*M->cols;
+	double* res = dmt_calloc(size, sizeof(double));
+	double value = D->value;
+	
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = pow(M->data[i], value);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
 /*
  * *********************
  * Transpose Multiplication
@@ -1060,6 +1133,22 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
 				return crossVV((CGVector*)rhsValue, (CGVector*)lhsValue);
 			}
+		}
+		
+		case CGBOT_POW:{
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
+				return powDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+			}
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
+				return powVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+			}
+			
+			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
+				return powMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
+			}
+			
+			throwUnsupportedBinaryOperationException(type, lhs, rhs);
 		}
 	}
 }

@@ -8,6 +8,7 @@ typedef enum CGBinaryOperationType {
 	CGBOT_SUB,
 	CGBOT_MULT,
 	CGBOT_DIV,
+	CGBOT_POW,
 	CGBOT_DOT,
 	CGBOT_TMULT, // transpose + mult
 } CGBinaryOperationType;
