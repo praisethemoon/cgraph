@@ -20,7 +20,7 @@ CCGraph
 - Lua graph construction
 - Derivative calculations
 - GPU BLAS Implentations (cuBLAS probably)
-- Analyze graph to optimize calculations i.e `A^T.B` is three operations that can be reduced to one in BLAS.
+- Analyze graph to optimize calculations i.e `A^T.xB` is three operations that can be reduced to one in BLAS.
 - Graph plotting and visualization
 
 ## Dependencies included within the source code:
