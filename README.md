@@ -88,6 +88,7 @@ optimizations will come once the library becomes stable.
 - Lua API for graph construction
 - Derivative calculations
 - GPU BLAS Implentations (cuBLAS probably)
+- Multithreaded implentation
 - Analyze graph to optimize calculations i.e `A^T.xB` is three operations that can be reduced to one in BLAS.
 - Graph plotting and visualization
 - Switch to LuaJIT
