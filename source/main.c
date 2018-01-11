@@ -188,6 +188,98 @@ void runMult_MvM(){
 	}
 }
 
+/*
+ * the following function will fail on purpose
+ */
+void runDiv_MM(){
+	printf("Running M/M example which WILL FAIL on purpose\n");
+	double value1[] = {
+		3, 1, 3,
+		1, 5, 9, 
+		2, 6, 5,
+		1, 1, 1
+	};
+	
+	double value2[]= {
+		-1.0, -1.0, 1.0,
+	};
+	
+	CGNode* lhsNode = makeMatrixConstantNode(4, 3, value1);
+	CGNode* rhsNode = makeVectorConstantNode(3, value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_DIV, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %d shape: %d\n", result->type, Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
+
+void runDiv_Vd(){
+	printf("Running V/d example\n");
+	double value1[] = {
+		3,
+		1, 
+		5
+	};
+	
+	double value2 = 2;
+	
+	
+	CGNode* lhsNode = makeMatrixConstantNode(4, 3, value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_DIV, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %d shape: %d\n", result->type, Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
+
+void runDiv_Md(){
+	printf("Running M/d example\n");
+	double value1[] = {
+		3, 1, 3,
+		1, 5, 9, 
+		2, 6, 5,
+		1, 1, 1
+	};
+	
+	double value2 = 0.5;
+	
+	CGNode* lhsNode = makeMatrixConstantNode(4, 3, value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_DIV, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %d shape: %d.%d\n", result->type, Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
 int main(int argc, char *argv[]) {
 	profiler_initialize();
 	
@@ -220,6 +312,12 @@ int main(int argc, char *argv[]) {
 	PROFILER_START(runMult_Md_func);
 	runMult_Md();
 	PROFILER_STOP(runMult_Md_func);
+	
+	// This will fail on purpose.
+	// runDiv_MM();
+	
+	runDiv_Md();
+	runDiv_Vd();
 	
 	profiler_dump_file("stats.txt");
 }

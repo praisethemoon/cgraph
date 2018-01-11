@@ -34,6 +34,8 @@ void throwUnsupportedBinaryOperationException(CGBinaryOperationType type, CGNode
 	dumpNode(lhs);
 	fprintf(stderr, "\tRight node:\n");
 	dumpNode(rhs);
+	
+	exit(EXIT_FAILURE);
 }
 
 /*
@@ -169,15 +171,160 @@ CGResultNode* divDD(CGDouble* D1, CGDouble* D2){
 }
 
 /*
+ *  V/d
+ */
+CGResultNode* divVD(CGVector* V, CGDouble* D){
+	double* res = dmt_calloc(V->len, sizeof(double));
+	double value = D->value;
+	
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		res[i] = V->data[i] / value;
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ *  M/d
+ */
+CGResultNode* divMD(CGMatrix* M, CGDouble* D){
+	uint64_t size = M->rows*M->cols;
+	double* res = dmt_calloc(size, sizeof(double));
+	double value = D->value;
+	
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = M->data[i] / value;
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
  * *********************
- * Transpose Multiplication
+ * Addition
  * *********************
  */
 
 /*
+ * d+d
+ */
+CGResultNode* addDD(CGDouble* D1, CGDouble* D2){
+	double res = D1->value + D2->value;
+	
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = res;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * V+d
+ */
+CGResultNode* addVD(CGVector* D1, CGDouble* D2){
+	double* res = dmt_calloc(V->len, sizeof(double));
+	double value = D->value;
+	
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		res[i] = V->data[i] + value;
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * M+d
+ */
+CGResultNode* addMD(CGMatrix* M, CGDouble* D){
+	uint64_t size = M->rows*M->cols;
+	double* res = dmt_calloc(size, sizeof(double));
+	double value = D->value;
+	
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = M->data[i] + value;
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * M+d
+ */
+CGResultNode* addVV(CGMatrix* M, CGDouble* D){
+	uint64_t size = M->rows*M->cols;
+	double* res = dmt_calloc(size, sizeof(double));
+	double value = D->value;
+	
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = M->data[i] + value;
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * *********************
+ * Transpose Multiplication
+ * *********************
+ */
+/*
  * M^T.v
  */
-CGResultNode* mulTMV(CGMatrix* M, CGVector* V){
+CGResultNode* mulMtV(CGMatrix* M, CGVector* V){
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->len = V->len;
@@ -239,25 +386,18 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 				return divDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
 			}
 			
-			/*
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
 				return divVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
-				return divMD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+				return divMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
 			}
 			
-			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
-				return divVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
-			}
-			*/
+			throwUnsupportedBinaryOperationException(type, lhs, rhs);
 		}
 		
 		case CGBOT_MULT:{
-			if(1)
-				throwUnsupportedBinaryOperationException(type, lhs, rhs);
-			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				return mulMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
 			}
