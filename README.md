@@ -1,6 +1,8 @@
 CCGraph
 ===
 
+![resources/logo.png](resources/logo.png)
+
 > C Computation Graph Library
 
 ### About
