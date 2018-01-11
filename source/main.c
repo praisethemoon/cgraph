@@ -396,6 +396,40 @@ void runAdd_Md(){
 }
 
 
+void runAdd_MV(){
+	printf("Running M+v example\n");
+	double value1[] = {
+		3, 1, 3,
+		1, 5, 9, 
+		2, 6, 5,
+		1, 1, 1
+	};
+	
+	double value2 []= {
+		-1.0, 0.0, 1.0, 0.5
+	};
+	
+	CGNode* lhsNode = makeMatrixConstantNode(4, 3, value1);
+	CGNode* rhsNode = makeVectorConstantNode(4, value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
 void runAdd_VV(){
 	printf("Running V+V example\n");
 	double value1[] = {
@@ -716,6 +750,7 @@ int main(int argc, char *argv[]) {
 	runAdd_Md();
 	runAdd_VV();
 	runAdd_MM();
+	runAdd_MV();
 	
 	
 	runSub_dd();

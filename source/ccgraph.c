@@ -371,7 +371,7 @@ CGResultNode* addMV(CGMatrix* M, CGVector* V){
 	uint64_t i = 0;
 	
 	for(;i<size;i++){
-		res[i] = M->data[i] + M->data[i];
+		res[i] = M->data[i] + V->data[(i)/M->cols];
 	}
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
@@ -458,6 +458,31 @@ CGResultNode* subVD(CGVector* V, CGDouble* D){
 }
 
 /*
+ * d-V
+ */
+CGResultNode* subDV(CGDouble* D, CGVector* V){
+	double* res = dmt_calloc(V->len, sizeof(double));
+	double value = D->value;
+	
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = res;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		res[i] = value - V->data[i];
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+
+/*
  * M-d
  */
 CGResultNode* subMD(CGMatrix* M, CGDouble* D){
@@ -482,6 +507,33 @@ CGResultNode* subMD(CGMatrix* M, CGDouble* D){
 	
 	return result;
 }
+
+/*
+ * D-M
+ */
+CGResultNode* subDM(CGDouble* D, CGMatrix* M){
+	uint64_t size = M->rows*M->cols;
+	double* res = dmt_calloc(size, sizeof(double));
+	double value = D->value;
+	
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = value - M->data[i];
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
 
 /*
  * V-V
@@ -531,6 +583,64 @@ CGResultNode* subMM(CGMatrix* M1, CGMatrix* M2){
 	
 	for(;i<size;i++){
 		res[i] = M1->data[i] - M2->data[i];
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * M-V
+ */
+CGResultNode* subMV(CGMatrix* M, CGVector* V){
+	if(M->rows != V->len){
+		// TODO: throw error
+	}
+	
+	uint64_t size = M->cols*M->rows;
+	double* res = dmt_calloc(size, sizeof(double));
+	
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = M->data[i] - V->data[(i)/M->cols];
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * V-M
+ */
+CGResultNode* subVM(CGVector* V, CGMatrix* M){
+	if(M->rows != V->len){
+		// TODO: throw error
+	}
+	
+	uint64_t size = M->cols*M->rows;
+	double* res = dmt_calloc(size, sizeof(double));
+	
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = V->data[(i)/M->cols] - M->data[i];
 	}
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
@@ -818,6 +928,10 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 				return addMV((CGMatrix*)lhsValue, (CGVector*)rhsValue);
 			}
 			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
+				return addMV((CGMatrix*)rhsValue, (CGVector*)lhsValue);
+			}
+			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				return addMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
 			}
@@ -839,8 +953,16 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 				return subVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
 			}
 			
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
+				return subDV((CGDouble*)lhsValue, (CGVector*)rhsValue);
+			}
+			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				return subMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
+			}
+			
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
+				return subDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue);
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
@@ -850,6 +972,16 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				return subMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
 			}
+			
+			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
+				return subMV((CGMatrix*)lhsValue, (CGVector*)rhsValue);
+			}
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
+				return subVM((CGVector*)lhsValue, (CGMatrix*)rhsValue);
+			}
+			
+			
 			
 			throwUnsupportedBinaryOperationException(type, lhs, rhs);
 		}

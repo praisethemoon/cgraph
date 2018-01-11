@@ -13,6 +13,8 @@ Uses BLAS for complex operations.
 
 The current version focuses on clear code rather than highly performant.
 Once everything is well tested, hard optimizations such as switch statements and others will be improved.
+Also not all operations are written in blas, some uses classic for-loop, as I am still learning BLAS,
+optimizations will come once the library becomes stable.
 
 ### Dependencies:
 
@@ -23,7 +25,7 @@ Once everything is well tested, hard optimizations such as switch statements and
 ###### Notes
 
 - Currently tested only on ubuntu 16.04
-- Matrices are by default Row major.
+- Matrices are by default Row major (can be changed manually).
 
 ### Limitations:
 - Double numbers only.
@@ -32,28 +34,53 @@ Once everything is well tested, hard optimizations such as switch statements and
 
 |operator|type|lhs|rhs|uhs|implemented|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-|`*`|binary|`double`|`double`||[x]|
-|`*`|binary|`double`|`vector`||[x]|
-|`*`|binary|`double`|`matrix`||[x]|
-|`*`|binary|`vector`|`double`||[x]|
-|`*`|binary|`matrix`|`double`||[x]|
-|`*`|binary|`vector`|`vector`||[x]|
-|`*`|binary|`matrix`|`vector`||[x]|
-|`*`|binary|`matrix`|`matrix`||[x]|
-|`+`|binary|`double`|`double`||[x]|
-|`+`|binary|`double`|`vector`||[x]|
-|`+`|binary|`double`|`matrix`||[x]|
-|`+`|binary|`vector`|`vector`||[x]|
-|`+`|binary|`vector`|`double`||[x]|
-|`+`|binary|`matrix`|`double`||[x]|
-|`+`|binary|`matrix`|`matrix`||[x]|
-|`+`|binary|`matrix`|`vector`||[]|
-|`-`|binary|`double`|`double`||[x]|
-|`-`|binary|`vector`|`vector`||[x]|
-|`-`|binary|`vector`|`double`||[x]|
-|`-`|binary|`matrix`|`double`||[x]|
-|`-`|binary|`matrix`|`matrix`||[x]|
-|`-`|binary|`matrix`|`vector`||[]|
+|`*`|binary|`double`|`double`||:heavy_check_mark:|
+|`*`|binary|`double`|`vector`||:heavy_check_mark:|
+|`*`|binary|`double`|`matrix`||:heavy_check_mark:|
+|`*`|binary|`vector`|`double`||:heavy_check_mark:|
+|`*`|binary|`matrix`|`double`||:heavy_check_mark:|
+|`*`|binary|`vector`|`vector`||:heavy_check_mark:|
+|`*`|binary|`matrix`|`vector`||:heavy_check_mark:|
+|`*`|binary|`matrix`|`matrix`||:heavy_check_mark:|
+|`+`|binary|`double`|`double`||:heavy_check_mark:|
+|`+`|binary|`double`|`vector`||:heavy_check_mark:|
+|`+`|binary|`double`|`matrix`||:heavy_check_mark:|
+|`+`|binary|`vector`|`vector`||:heavy_check_mark:|
+|`+`|binary|`vector`|`double`||:heavy_check_mark:|
+|`+`|binary|`matrix`|`double`||:heavy_check_mark:|
+|`+`|binary|`matrix`|`matrix`||:heavy_check_mark:|
+|`+`|binary|`matrix`|`vector`||:heavy_check_mark:|
+|`-`|binary|`double`|`double`||:heavy_check_mark:|
+|`-`|binary|`double`|`vector`||:heavy_check_mark:|
+|`-`|binary|`double`|`matrix`||:heavy_check_mark:|
+|`-`|binary|`vector`|`double`||:heavy_check_mark:|
+|`-`|binary|`vector`|`vector`||:heavy_check_mark:|
+|`-`|binary|`vector`|`matrix`||:heavy_check_mark:|
+|`-`|binary|`matrix`|`double`||:heavy_check_mark:|
+|`-`|binary|`matrix`|`vector`||:heavy_check_mark:|
+|`-`|binary|`matrix`|`matrix`||:heavy_check_mark:|
+|`/`|binary|`double`|`double`||:heavy_check_mark:|
+|`/`|binary|`vector`|`double`||:heavy_check_mark:|
+|`/`|binary|`matrix`|`double`||:heavy_check_mark:|
+|`^T*`|binary|`vector`|`double`||:heavy_multiplication_x:|
+|`^T*`|binary|`vector`|`vector`||:heavy_multiplication_x:|
+|`^T*`|binary|`matrix`|`double`||:heavy_multiplication_x:|
+|`^T*`|binary|`matrix`|`vector`||:heavy_multiplication_x:|
+|`^T*`|binary|`matrix`|`matrix`||:heavy_multiplication_x:|
+|`-`|unary|||`double`|:heavy_multiplication_x:|
+|`-`|unary|||`vector`|:heavy_multiplication_x:|
+|`-`|unary|||`matrix`|:heavy_multiplication_x:|
+|`inv`|unary|||`double`|:heavy_multiplication_x:|
+|`inv`|unary|||`vector`|:heavy_multiplication_x:|
+|`inv`|unary|||`matrix`|:heavy_multiplication_x:|
+|`T`|unary|||`vector`|:heavy_multiplication_x:|
+|`T`|unary|||`matrix`|:heavy_multiplication_x:|
+|`exp`|unary|||`double`|:heavy_check_mark:|
+|`exp`|unary|||`vector`|:heavy_check_mark:|
+|`exp`|unary|||`matrix`|:heavy_check_mark:|
+|`log`|unary|||`double`|:heavy_check_mark:|
+|`log`|unary|||`vector`|:heavy_check_mark:|
+|`log`|unary|||`matrix`|:heavy_check_mark:|
 
 ### Future work
 - Graph variables (no idea how to do it yet `:(`)
@@ -73,3 +100,7 @@ Once everything is well tested, hard optimizations such as switch statements and
 - map  [https://github.com/rxi/map](https://github.com/rxi/map)
 - vec [https://github.com/rxi/dmt](https://github.com/rxi/dmt)
 - smallprofiler [https://github.com/realbogart/smallprofiler](https://github.com/realbogart/smallprofiler)
+
+### Help Requested
+If you would like to contribute, feel free to fork this stuff.
+A wonderful start would be to include a unit test file to check all the functionalities.

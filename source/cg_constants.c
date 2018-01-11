@@ -10,10 +10,15 @@ const char* BinaryOperationTypeString[] = {
 	"*",
 	"/",
 	"dot",
+	"^T*"
+};
+
+const char* UnaryOperationTypeString[] = {
+	"-",
 	"inv",
 	"T",
 	"exp",
-	"log"
+	"log",
 };
 
 const char* NodeTypeString[] = {
