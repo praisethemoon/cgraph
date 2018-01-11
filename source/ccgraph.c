@@ -80,7 +80,7 @@ CGResultNode* mulDV(CGDouble* a, CGVector* V){
 /*
  * d.M == M.d
  */
-CGResultNode* mulMD(CGDouble* a, CGMatrix* M){
+CGResultNode* mulDM(CGDouble* a, CGMatrix* M){
 	uint64_t size = M->cols*M->rows;
 	double value = a->value;
 	
@@ -852,7 +852,33 @@ CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs, CGNo
 			}
 		}
 	
-		case CGUOT_MINUS:
+		case CGUOT_MINUS:{
+			if(uhsType == CGVT_DOUBLE){
+				CGDouble* rhs = dmt_calloc(1, sizeof(CGDouble));
+				rhs->value = -1;
+				
+				CGResultNode* res = mulDD((CGDouble*)uhsValue, rhs);
+				dmt_free(rhs);
+				return res;
+			}
+			
+			if(uhsType == CGVT_VECTOR){
+				CGDouble* lhs = dmt_calloc(1, sizeof(CGDouble));
+				lhs->value = -1;
+				
+				CGResultNode* res = mulDV(lhs, (CGVector*)uhsValue);
+				dmt_free(lhs);
+				return res;
+			}
+			
+			if(uhsType == CGVT_MATRIX){
+				CGDouble* lhs = dmt_calloc(1, sizeof(CGDouble));
+				lhs->value = -1;
+				CGResultNode* res = mulDM(lhs, (CGMatrix*)uhsValue);
+				dmt_free(lhs);
+				return res;
+			}
+		}
 		case CGUOT_INV:
 		case CGUOT_TRANSPOSE:
 			return NULL;
@@ -1024,11 +1050,11 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
-				return mulMD((CGDouble*)lhsValue, (CGMatrix*)rhsValue);
+				return mulDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue);
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
-				return mulMD((CGDouble*)rhsValue, (CGMatrix*)lhsValue);
+				return mulDM((CGDouble*)rhsValue, (CGMatrix*)lhsValue);
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){

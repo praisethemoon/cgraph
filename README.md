@@ -69,9 +69,9 @@ optimizations will come once the library becomes stable.
 |`^T*`|binary|`matrix`|`double`||:heavy_multiplication_x:|
 |`^T*`|binary|`matrix`|`vector`||:heavy_multiplication_x:|
 |`^T*`|binary|`matrix`|`matrix`||:heavy_multiplication_x:|
-|`-`|unary|||`double`|:heavy_multiplication_x:|
-|`-`|unary|||`vector`|:heavy_multiplication_x:|
-|`-`|unary|||`matrix`|:heavy_multiplication_x:|
+|`-`|unary|||`double`|:heavy_check_mark:|
+|`-`|unary|||`vector`|:heavy_check_mark:|
+|`-`|unary|||`matrix`|:heavy_check_mark:|
 |`inv`|unary|||`double`|:heavy_multiplication_x:|
 |`inv`|unary|||`vector`|:heavy_multiplication_x:|
 |`inv`|unary|||`matrix`|:heavy_multiplication_x:|
