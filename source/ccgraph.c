@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <cblas.h>
 #include <string.h> // memcpy
+#include <math.h>
 
 #include "ccgraph.h"
 #include "cg_operation.h"
@@ -503,6 +504,189 @@ CGResultNode* mulMtV(CGMatrix* M, CGVector* V){
 	return result;
 }
 
+
+/*
+ * exp(d)
+ */
+CGResultNode* expD(CGDouble* D){
+	double y = exp(D->value);
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = y;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * exp(v)
+ */
+CGResultNode* expV(CGVector* V){
+	double* y = dmt_calloc(V->len, sizeof(double));
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = y;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		y[i] = exp(V->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * exp(M)
+ */
+CGResultNode* expM(CGMatrix* M){
+	uint64_t size = M->rows*M->cols;
+	
+	double* y = dmt_calloc(size, sizeof(double));
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->data = y;
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		y[i] = exp(M->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+
+/*
+ * log(d)
+ */
+CGResultNode* logD(CGDouble* D){
+	double y = log(D->value);
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = y;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * log(V)
+ */
+CGResultNode* logV(CGVector* V){
+	double* y = dmt_calloc(V->len, sizeof(double));
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = y;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		y[i] = log(V->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * exp(M)
+ */
+CGResultNode* logM(CGMatrix* M){
+	uint64_t size = M->rows*M->cols;
+	
+	double* y = dmt_calloc(size, sizeof(double));
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->data = y;
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		y[i] = log(M->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+
+
+CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs){
+	CGVarType uhsType = CGVT_DOUBLE;
+	void* uhsValue = NULL;
+	
+	if(uhs->type == CGNT_CONSTANT){
+		uhsType = uhs->constant->type;
+		uhsValue = uhs->constant->value;
+	}
+	else if (uhs->type ==  CGNT_VARIABLE) {
+		uhsType = uhs->var->type;
+		uhsValue= uhs->var->value;
+	}
+	else
+	{
+		CGResultNode* lhsResult = computeCGNode(uhs);
+		uhsType = lhsResult->type;
+		uhsValue = lhsResult->value;
+	}
+	
+	switch(type){
+		case CGBOT_EXP:{
+			if(uhsType == CGVT_DOUBLE){
+				return expD((CGDouble*)uhsValue);
+			}
+			
+			if(uhsType == CGVT_VECTOR){
+				return expV((CGVector*)uhsValue);
+			}
+			
+			if(uhsType == CGVT_MATRIX){
+				return expM((CGMatrix*)uhsValue);
+			}
+		}
+		
+		
+		case CGBOT_LOG:{
+			if(uhsType == CGVT_DOUBLE){
+				return logD((CGDouble*)uhsValue);
+			}
+			
+			if(uhsType == CGVT_VECTOR){
+				return logV((CGVector*)uhsValue);
+			}
+			
+			if(uhsType == CGVT_MATRIX){
+				return logM((CGMatrix*)uhsValue);
+			}
+		}
+	
+		case CGBOT_INV:
+		case CGBOT_TRANSPOSE:
+			return NULL;
+	}
+}
+
 CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
 	CGVarType lhsType = CGVT_DOUBLE;
 	CGVarType rhsType = CGVT_DOUBLE;
@@ -647,11 +831,6 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 	}
 }
 
-/* N1 => A + N2
- * N2 => B * C 
- * A+B*C
- * 
- */
 CGResultNode* computeCGNode(CGNode* node){
 	CGResultNode* result = NULL;
 	
@@ -669,6 +848,8 @@ CGResultNode* computeCGNode(CGNode* node){
 		case CGNT_BINARY_OPERATION:
 			result = processBinaryOperation(node->bop->type, node->bop->lhs, node->bop->rhs);
 			break;
+		case CGNT_UNARY_OPERATION:
+			result = processUnaryOperation(node->uop->type, node->uop->uhs);
 	}
 	
 	return result;

@@ -4,6 +4,7 @@
 #include "cg_types.h"
 
 typedef struct CGPVariable {
+	char* name;
 	CGVarType type;
 	void* value;
 } CGPVariable;
