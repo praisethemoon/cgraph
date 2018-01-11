@@ -42,7 +42,7 @@ typedef enum CGErrorType {
 	/*
 	 * arguments' types are fine, yet their dimentions are not compatible.
 	 */
-	CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION
+	CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION,
 	
 	/*
 	 * double overflow exception

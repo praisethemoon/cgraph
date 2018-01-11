@@ -232,7 +232,7 @@ void runDiv_Vd(){
 	double value2 = 2;
 	
 	
-	CGNode* lhsNode = makeMatrixConstantNode(4, 3, value1);
+	CGNode* lhsNode = makeVectorConstantNode(3, value1);
 	CGNode* rhsNode = makeDoubleConstantNode(value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_DIV, lhsNode, rhsNode);
 	
@@ -247,8 +247,10 @@ void runDiv_Vd(){
 	}
 }
 
-
 void runDiv_Md(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
 	printf("Running M/d example\n");
 	double value1[] = {
 		3, 1, 3,
@@ -280,38 +282,171 @@ void runDiv_Md(){
 	}
 }
 
+void runAdd_dd(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running d+d example\n");
+	double value1 = 3;
+	
+	double value2 = 2;
+	
+	
+	CGNode* lhsNode = makeDoubleConstantNode(value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGDouble* Y = (CGDouble*)result->value;
+
+	printf("result: %d value: %f\n", result->type, Y->value);
+}
+
+void runAdd_Vd(){
+	printf("Running V+d example\n");
+	double value1[] = {
+		3,
+		1, 
+		5
+	};
+	
+	double value2 = 2;
+	
+	
+	CGNode* lhsNode = makeVectorConstantNode(3, value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %d shape: %d\n", result->type, Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
+void runAdd_Md(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running M+d example\n");
+	double value1[] = {
+		3, 1, 3,
+		1, 5, 9, 
+		2, 6, 5,
+		1, 1, 1
+	};
+	
+	double value2 = 0.5;
+	
+	CGNode* lhsNode = makeMatrixConstantNode(4, 3, value1);
+	CGNode* rhsNode = makeDoubleConstantNode(value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %d shape: %d.%d\n", result->type, Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
+
+void runAdd_VV(){
+	printf("Running V+V example\n");
+	double value1[] = {
+		3,
+		1, 
+		5
+	};
+	
+	double value2[] = {
+		-3,
+		-1, 
+		1
+	};
+	
+	
+	CGNode* lhsNode = makeVectorConstantNode(3, value1);
+	CGNode* rhsNode = makeVectorConstantNode(3, value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGVector* Y = (CGVector*)result->value;
+
+	printf("result: %d shape: %d\n", result->type, Y->len);
+	uint64_t i = 0;
+	
+	for(;i<Y->len;i++){
+		printf("\t%f\n", Y->data[i]);
+	}
+}
+
+void runAdd_MM(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running M+M example\n");
+	double value1[] = {
+		3, 1, 3, 1,
+		1, 5, 9, 1,
+		2, 6, 5, 1,
+		1, 1, 1, 0,
+	};
+	
+	double value2[] = {
+		-2, -1, -3, -1,
+		-1, -4, -9, -1,
+		-2, -6, -4, -1,
+		-1, -1, -1, 1,
+	};
+	
+	
+	CGNode* lhsNode = makeMatrixConstantNode(4, 4, value1);
+	CGNode* rhsNode = makeMatrixConstantNode(4, 4, value2);
+
+	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeCGNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %d shape: %d.%d\n", result->type, Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
+
 int main(int argc, char *argv[]) {
-	profiler_initialize();
+	//profiler_initialize();
 	
-	PROFILER_START(init_func);
 	printf("Initializing\n");
-	PROFILER_STOP(init_func);
 	
-	
-	PROFILER_START(runMult_dd_func);
 	runMult_dd();
-	PROFILER_STOP(runMult_dd_func);
-	
-	
-	PROFILER_START(runMult_dv_func);
 	runMult_dV();
-	PROFILER_STOP(runMult_dv_func);
-	
-	PROFILER_START(runMult_MV_func);
 	runMult_MV();
-	PROFILER_STOP(runMult_MV_func);
-	
-	PROFILER_START(runMult_MM_func);
 	runMult_MM();
-	PROFILER_STOP(runMult_MM_func);
-	
-	PROFILER_START(runMult_MvM_func);
 	runMult_MvM();
-	PROFILER_STOP(runMult_MvM_func);
-	
-	PROFILER_START(runMult_Md_func);
 	runMult_Md();
-	PROFILER_STOP(runMult_Md_func);
 	
 	// This will fail on purpose.
 	// runDiv_MM();
@@ -319,5 +454,11 @@ int main(int argc, char *argv[]) {
 	runDiv_Md();
 	runDiv_Vd();
 	
-	profiler_dump_file("stats.txt");
+	runAdd_dd();
+	runAdd_Vd();
+	runAdd_Md();
+	runAdd_VV();
+	runAdd_MM();
+	
+	//profiler_dump_file("stats.txt");
 }

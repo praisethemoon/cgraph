@@ -15,11 +15,13 @@ CCGraph
 - Double numbers only.
 
 ## Future work
-- Graph variables
+- Graph variables (no idea how to do it yet `:(`)
 - Graph as nodes
 - Lua graph construction
-- derivative
+- Derivative calculations
 - GPU BLAS Implentations (cuBLAS probably)
+- Analyze graph to optimize calculations i.e `A^T.B` is three operations that can be reduced to one in BLAS.
+- Graph plotting and visualization
 
 ## Dependencies included within the source code:
 - Lua programming language [https://github.com/lua/lua](https://github.com/lua/lua)
