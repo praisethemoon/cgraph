@@ -687,7 +687,7 @@ CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs){
 	}
 }
 
-CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
+CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs, CGNode* parentNode){
 	CGVarType lhsType = CGVT_DOUBLE;
 	CGVarType rhsType = CGVT_DOUBLE;
 	
@@ -756,7 +756,12 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 				return addMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
 			}
 			
+			// TODO: Handle error in a better way
 			throwUnsupportedBinaryOperationException(type, lhs, rhs);
+			CGResultNode* rhsResult = dmt_calloc(1, sizeof(CGResultNode));
+			rhsResult->error = dmt_calloc(1, sizeof(CGError));
+			rhsResult->error->errorType = CGET_INCOMPATIBLE_ARGS_EXCEPTION;
+			rhsResult->error->faultyNode = parentNode;
 		}
 		
 		case CGBOT_SUB:{
@@ -846,10 +851,10 @@ CGResultNode* computeCGNode(CGNode* node){
 			result->value = node->var->value;
 			break;
 		case CGNT_BINARY_OPERATION:
-			result = processBinaryOperation(node->bop->type, node->bop->lhs, node->bop->rhs);
+			result = processBinaryOperation(node->bop->type, node->bop->lhs, node->bop->rhs, node);
 			break;
 		case CGNT_UNARY_OPERATION:
-			result = processUnaryOperation(node->uop->type, node->uop->uhs);
+			result = processUnaryOperation(node->uop->type, node->uop->uhs, node);
 	}
 	
 	return result;

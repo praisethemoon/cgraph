@@ -28,6 +28,19 @@ Once everything is well tested, hard optimizations such as switch statements and
 ### Limitations:
 - Double numbers only.
 
+### Supported Operations:
+
+|operator|type|lhs|rhs|uhs|implemented|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|`*`|binary|`double`|`double`||[x]|
+|`*`|binary|`double`|`vector`||[x]|
+|`*`|binary|`double`|`matrix`||[x]|
+|`*`|binary|`vector`|`double`||[x]|
+|`*`|binary|`matrix`|`double`||[x]|
+|`*`|binary|`vector`|`vector`||[]|
+|`*`|binary|`matrix`|`vector`||[x]|
+|`*`|binary|`matrix`|`matrix`||[x]|
+
 ### Future work
 - Graph variables (no idea how to do it yet `:(`)
 - Graph as nodes
