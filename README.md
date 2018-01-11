@@ -32,7 +32,7 @@ Once everything is well tested, hard optimizations such as switch statements and
 
 |operator|type|lhs|rhs|uhs|implemented|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-|`*`|binary|`double`|`double`||[x]|
+|`*`|binary|`double`|`double`||- [x]|
 |`*`|binary|`double`|`vector`||[x]|
 |`*`|binary|`double`|`matrix`||[x]|
 |`*`|binary|`vector`|`double`||[x]|
