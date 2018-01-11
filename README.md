@@ -17,7 +17,7 @@ CCGraph
 ## Future work
 - Graph variables (no idea how to do it yet `:(`)
 - Graph as nodes
-- Lua graph construction
+- Lua API for graph construction
 - Derivative calculations
 - GPU BLAS Implentations (cuBLAS probably)
 - Analyze graph to optimize calculations i.e `A^T.xB` is three operations that can be reduced to one in BLAS.

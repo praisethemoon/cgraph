@@ -29,3 +29,9 @@ const char* VariableTypeString[] = {
 	"VECTOR",
 	"MATRIX"
 };
+
+
+
+const char* getVariableTypeString(CGVarType type){
+	return VariableTypeString[type];
+}

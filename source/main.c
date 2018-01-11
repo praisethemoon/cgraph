@@ -11,6 +11,7 @@
 #include "cg_types.h"
 #include "cg_variables.h"
 #include "cg_factory.h"
+#include "cg_constants.h"
 
 #include "memory.h"
 
@@ -38,7 +39,7 @@ void runMult_MV(){
 	CGResultNode* result = computeCGNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
-	printf("result: %d shape: %d\n", result->type, Y->len);
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
@@ -67,7 +68,7 @@ void runMult_MM(){
 	CGResultNode* result = computeCGNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
-	printf("result: %d shape: (%d, %d)\n", result->type, Y->rows, Y->cols);
+	printf("result: %s shape: (%d, %d)\n", getVariableTypeString(result->type), Y->rows, Y->cols);
 	uint64_t i = 0;
 	uint64_t j = 0;
 	
@@ -96,7 +97,7 @@ void runMult_Md(){
 	CGResultNode* result = computeCGNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
-	printf("result: %d shape: (%d, %d)\n", result->type, Y->rows, Y->cols);
+	printf("result: %s shape: (%d, %d)\n", getVariableTypeString(result->type), Y->rows, Y->cols);
 	uint64_t i = 0;
 	uint64_t j = 0;
 	
@@ -123,7 +124,7 @@ void runMult_dd(){
 	CGResultNode* result = computeCGNode(node);
 	CGDouble* Y = (CGDouble*)result->value;
 
-	printf("result: %d value: %f\n", result->type, Y->value);
+	fprintf(stdout, "result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
 }
 
 
@@ -143,7 +144,7 @@ void runMult_dV(){
 	CGResultNode* result = computeCGNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
-	printf("result: %d shape: %d\n", result->type, Y->len);
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
@@ -180,7 +181,7 @@ void runMult_MvM(){
 	CGResultNode* result = computeCGNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
-	printf("result: %d shape: %d\n", result->type, Y->len);
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
@@ -212,7 +213,7 @@ void runDiv_MM(){
 	CGResultNode* result = computeCGNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
-	printf("result: %d shape: %d\n", result->type, Y->len);
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
@@ -239,7 +240,7 @@ void runDiv_Vd(){
 	CGResultNode* result = computeCGNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
-	printf("result: %d shape: %d\n", result->type, Y->len);
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
@@ -269,7 +270,7 @@ void runDiv_Md(){
 	CGResultNode* result = computeCGNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
-	printf("result: %d shape: %d.%d\n", result->type, Y->rows, Y->cols);
+	printf("result: %s shape: %d.%d\n", getVariableTypeString(result->type), Y->rows, Y->cols);
 	uint64_t i = 0;
 	uint64_t j = 0;
 	
@@ -299,7 +300,7 @@ void runAdd_dd(){
 	CGResultNode* result = computeCGNode(node);
 	CGDouble* Y = (CGDouble*)result->value;
 
-	printf("result: %d value: %f\n", result->type, Y->value);
+	printf("result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
 }
 
 void runAdd_Vd(){
@@ -320,7 +321,7 @@ void runAdd_Vd(){
 	CGResultNode* result = computeCGNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
-	printf("result: %d shape: %d\n", result->type, Y->len);
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
@@ -350,7 +351,7 @@ void runAdd_Md(){
 	CGResultNode* result = computeCGNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
-	printf("result: %d shape: %d.%d\n", result->type, Y->rows, Y->cols);
+	printf("result: %s shape: %d.%d\n", getVariableTypeString(result->type), Y->rows, Y->cols);
 	uint64_t i = 0;
 	uint64_t j = 0;
 	
@@ -386,7 +387,7 @@ void runAdd_VV(){
 	CGResultNode* result = computeCGNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
-	printf("result: %d shape: %d\n", result->type, Y->len);
+	printf("result: %s shape: %d\n", getVariableTypeString(result->type), Y->len);
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
@@ -422,7 +423,7 @@ void runAdd_MM(){
 	CGResultNode* result = computeCGNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
-	printf("result: %d shape: %d.%d\n", result->type, Y->rows, Y->cols);
+	printf("result: %s shape: %d.%d\n", getVariableTypeString(result->type), Y->rows, Y->cols);
 	uint64_t i = 0;
 	uint64_t j = 0;
 	
