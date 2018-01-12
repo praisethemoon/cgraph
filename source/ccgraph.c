@@ -35,6 +35,8 @@ CGResultNode* mulDD(CGDouble* M, CGDouble* V){
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_DOUBLE;
 	result->value = Y;
+	
+	return result;
 }
 
 /*
