@@ -100,6 +100,7 @@ optimizations will come once the library becomes stable.
 - Graph plotting and visualization
 - Switch to LuaJIT instead of Lua API
 - Travis CI
+- Valgrind to check memory
 
 ### Dependencies included within the source code:
 - Lua programming language [https://github.com/lua/lua](https://github.com/lua/lua)

@@ -9,7 +9,7 @@
 typedef enum CGNodeType {
 	CGNT_VARIABLE = 0,
 	CGNT_CONSTANT,
-	CHNT_GRAPH,
+	CGNT_GRAPH,
 	CGNT_BINARY_OPERATION,
 	CGNT_UNARY_OPERATION
 }CGNodeType;
@@ -66,5 +66,8 @@ typedef struct  {
 CGResultNode* computeRawNode(CGNode* node);
 CGResultNode* computeCGNode(CGraph* graph, CGNode* node);
 CGResultNode* computeGraph(CGraph* graph);
+
+void freeNode(CGNode* node);
+void freeGraph(CGraph* graph);
 
 #endif

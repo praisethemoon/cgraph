@@ -36,8 +36,28 @@ const char* VariableTypeString[] = {
 	"MATRIX"
 };
 
+const char* ErrorTypeString[] = {
+	"CGET_INCOMPATIBLE_ARGS_EXCEPTION",
+	"CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION",
+	"CGET_OVERFLOW_EXCEPTION",
+};
 
+const char* getBinaryOperationTypeString(CGBinaryOperationType type){
+	return BinaryOperationTypeString[type];
+}
+
+const char* getUnaryOperationTypeString(CGUnaryOperationType type){
+	return UnaryOperationTypeString[type];
+}
+
+const char* getNodeTypeString(CGNodeType type){
+	return NodeTypeString[type];
+}
 
 const char* getVariableTypeString(CGVarType type){
 	return VariableTypeString[type];
+}
+
+const char* getErrorTypeString(CGErrorType type){
+	return ErrorTypeString[type];
 }

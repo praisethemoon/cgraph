@@ -242,14 +242,6 @@ void runDiv_MM(){
 	CGNode* node = makeBinaryOpNode(CGBOT_DIV, lhsNode, rhsNode);
 	
 	CGResultNode* result = computeRawNode(node);
-	CGVector* Y = (CGVector*)result->value;
-
-	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
-	uint64_t i = 0;
-	
-	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
-	}
 }
 
 
@@ -774,7 +766,7 @@ int main(int argc, char *argv[]) {
 	runDot_VV();
 	
 	// This will fail on purpose.
-	// runDiv_MM();
+	 runDiv_MM();
 	
 	runDiv_Md();
 	runDiv_Vd();

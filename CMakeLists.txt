@@ -59,6 +59,7 @@ set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/source/ccgraph.c
 	${PROJECT_SOURCE_DIR}/source/cg_factory.c
 	${PROJECT_SOURCE_DIR}/source/cg_constants.c
+	${PROJECT_SOURCE_DIR}/source/cg_errors.c
 	${PROJECT_SOURCE_DIR}/source/main.c
 )
 

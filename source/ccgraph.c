@@ -15,29 +15,9 @@
 #include "cg_operation.h"
 #include "cg_types.h"
 #include "cg_variables.h"
+#include "cg_errors.h"
 
 #include "memory.h"
-
-extern const char* BinaryOperationTypeString[];
-extern const char* NodeTypeString[];
-extern const char* VariableTypeString[];
-
-void dumpNode(CGNode* node){
-	fprintf(stderr, "\t\t+Node: '%s'\n", NodeTypeString[node->type]);
-	if(node->type == CGNT_CONSTANT){
-		fprintf(stderr, "\t\t+Type: '%s'\n", VariableTypeString[node->constant->type]);
-	}
-}
-
-void throwUnsupportedBinaryOperationException(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
-	fprintf(stderr, "Unsupported operation %s\n", BinaryOperationTypeString[type]);
-	fprintf(stderr, "\tLeft node:\n");
-	dumpNode(lhs);
-	fprintf(stderr, "\tRight node:\n");
-	dumpNode(rhs);
-	
-	exit(EXIT_FAILURE);
-}
 
 /*
  * *********************
@@ -904,6 +884,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			if(uhsType == CGVT_MATRIX){
 				return expM((CGMatrix*)uhsValue);
 			}
+			break;
 		}
 		
 		
@@ -919,6 +900,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			if(uhsType == CGVT_MATRIX){
 				return logM((CGMatrix*)uhsValue);
 			}
+			break;
 		}
 	
 		case CGUOT_MINUS:{
@@ -947,11 +929,14 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				dmt_free(lhs);
 				return res;
 			}
+			break;
 		}
 		case CGUOT_INV:
 		case CGUOT_TRANSPOSE:
 			return NULL;
 	}
+	
+	return returnResultError(CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
 }
 
 CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, CGNode* lhs, CGNode* rhs, CGNode* parentNode){
@@ -1022,13 +1007,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				return addMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
 			}
-			
-			// TODO: Handle error in a better way
-			throwUnsupportedBinaryOperationException(type, lhs, rhs);
-			CGResultNode* rhsResult = dmt_calloc(1, sizeof(CGResultNode));
-			rhsResult->error = dmt_calloc(1, sizeof(CGError));
-			rhsResult->error->errorType = CGET_INCOMPATIBLE_ARGS_EXCEPTION;
-			rhsResult->error->faultyNode = parentNode;
+			break;
 		}
 		
 		case CGBOT_SUB:{
@@ -1067,10 +1046,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
 				return subVM((CGVector*)lhsValue, (CGMatrix*)rhsValue);
 			}
-			
-			
-			
-			throwUnsupportedBinaryOperationException(type, lhs, rhs);
+			break;
 		}
 		
 		case CGBOT_DIV:{
@@ -1085,8 +1061,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				return divMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
 			}
-			
-			throwUnsupportedBinaryOperationException(type, lhs, rhs);
+			break;
 		}
 		
 		case CGBOT_MULT:{
@@ -1121,6 +1096,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
 				return crossVV((CGVector*)rhsValue, (CGVector*)lhsValue);
 			}
+			break;
 		}
 		
 		case CGBOT_POW:{
@@ -1135,10 +1111,11 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				return powMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
 			}
-			
-			throwUnsupportedBinaryOperationException(type, lhs, rhs);
+			break;
 		}
 	}
+	
+	return returnResultError(CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
 }
 
 CGResultNode* computeRawNode(CGNode* node){
@@ -1168,6 +1145,10 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			break;
 		case CGNT_UNARY_OPERATION:
 			result = processUnaryOperation(graph, node->uop->type, node->uop->uhs, node);
+			break;
+			
+		case CGNT_GRAPH:
+			return NULL;
 	}
 	
 	return result;
@@ -1175,4 +1156,11 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 
 CGResultNode* computeGraph(CGraph* graph){
 	return computeCGNode(graph, graph->root);
+}
+
+void freeNode(CGNode* node){
+}
+
+void freeGraph(CGraph* graph){
+	
 }
