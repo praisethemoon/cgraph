@@ -28,8 +28,12 @@ void throwUnsupportedBinaryOperationException(CGBinaryOperationType type, CGNode
 	exit(EXIT_FAILURE);
 }
 
-CGResultNode* returnResultError(CGErrorType errorType, CGNode* faultyNode){
-	fprintf(stderr, "Exception in graph: %s\n", getErrorTypeString(errorType));
+CGResultNode* returnResultError(CGraph* graph, CGErrorType errorType, CGNode* faultyNode){
+	if(graph)
+		fprintf(stderr, "Exception in graph: `%s`: %s\n", graph->name, getErrorTypeString(errorType));
+	else
+		fprintf(stderr, "Exception in graph (anonymous): %s\n", getErrorTypeString(errorType));
+	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->error = dmt_calloc(1, sizeof(CGError));
 	result->error->errorType = errorType;

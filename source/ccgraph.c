@@ -966,7 +966,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			return NULL;
 	}
 	
-	return returnResultError(CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
+	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
 }
 
 CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, CGNode* lhs, CGNode* rhs, CGNode* parentNode){
@@ -1153,10 +1153,10 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		}
 		
 		case CGBOT_TMULT:
-			return returnResultError(CGET_OPERATION_NOT_IMPLEMENTED, parentNode);
+			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode);
 	}
 	
-	return returnResultError(CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
+	return returnResultError(graph,CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
 }
 
 CGResultNode* computeRawNode(CGNode* node){

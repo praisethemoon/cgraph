@@ -6,6 +6,6 @@
 #include "cg_types.h"
 #include "cg_variables.h"
 
-CGResultNode* returnResultError(CGErrorType errorType, CGNode* faultyNode);
+CGResultNode* returnResultError(CGraph* graph, CGErrorType errorType, CGNode* faultyNode);
 
 #endif

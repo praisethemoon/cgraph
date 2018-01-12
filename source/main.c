@@ -742,6 +742,7 @@ void runExpLog_M(){
 }
 
 void runGraphExample(){
+	printf("Running graph example");
 	CGraph* graph = makeGraph("preprocess");
 	
 	
@@ -793,7 +794,7 @@ int main(int argc, char *argv[]) {
 	runCross_VV();
 	
 	// This will fail on purpose.
-	 runDiv_MM();
+	runDiv_MM();
 	
 	runDiv_Md();
 	runDiv_Vd();
