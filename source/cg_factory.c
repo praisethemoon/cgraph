@@ -99,6 +99,8 @@ CGraph* makeGraph(char* name){
 	CGraph* graph = dmt_calloc(1, sizeof(CGraph));
 	graph->name = name;
 	map_init(&graph->vars);
+	
+	return graph;
 }
 
 void graphSetVar(CGraph* graph, char* name, CGNode* value){
