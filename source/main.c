@@ -737,7 +737,7 @@ void runGraphExample(){
 	
 	CGNode* uhsNode = makeMatrixConstantNode(4, 4, value1);
 	
-	graphSetVar(graph, "A", uhsNode->constant);
+	graphSetVar(graph, "A", uhsNode);
 	
 	graph->root = makeVarNode("A");
 	

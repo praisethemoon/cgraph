@@ -876,7 +876,7 @@ CGResultNode* logM(CGMatrix* M){
 
 
 
-CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs, CGNode* parentNode){
+CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CGNode* uhs, CGNode* parentNode){
 	CGVarType uhsType = CGVT_DOUBLE;
 	void* uhsValue = NULL;
 	
@@ -884,13 +884,9 @@ CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs, CGNo
 		uhsType = uhs->constant->type;
 		uhsValue = uhs->constant->value;
 	}
-	else if (uhs->type ==  CGNT_VARIABLE) {
-		uhsType = uhs->var->type;
-		uhsValue= uhs->var->value;
-	}
 	else
 	{
-		CGResultNode* lhsResult = computeCGNode(uhs);
+		CGResultNode* lhsResult = computeCGNode(graph, uhs);
 		uhsType = lhsResult->type;
 		uhsValue = lhsResult->value;
 	}
@@ -958,7 +954,7 @@ CGResultNode* processUnaryOperation(CGUnaryOperationType type, CGNode* uhs, CGNo
 	}
 }
 
-CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs, CGNode* parentNode){
+CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, CGNode* lhs, CGNode* rhs, CGNode* parentNode){
 	CGVarType lhsType = CGVT_DOUBLE;
 	CGVarType rhsType = CGVT_DOUBLE;
 	
@@ -970,13 +966,9 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 		lhsType = lhs->constant->type;
 		lhsValue = lhs->constant->value;
 	}
-	else if (lhs->type ==  CGNT_VARIABLE) {
-		lhsType = lhs->var->type;
-		lhsValue= lhs->var->value;
-	}
 	else
 	{
-		CGResultNode* lhsResult = computeCGNode(lhs);
+		CGResultNode* lhsResult = computeCGNode(graph, lhs);
 		lhsType = lhsResult->type;
 		lhsValue = lhsResult->value;
 	}
@@ -985,13 +977,9 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 		rhsType = rhs->constant->type;
 		rhsValue = rhs->constant->value;
 	}
-	else if (rhs->type ==  CGNT_VARIABLE) {
-		rhsType = rhs->var->type;
-		rhsValue= rhs->var->value;
-	}
 	else
 	{
-		CGResultNode* rhsResult = computeCGNode(rhs);
+		CGResultNode* rhsResult = computeCGNode(graph, rhs);
 		rhsType = rhsResult->type;
 		rhsValue = rhsResult->value;
 	}
@@ -1169,16 +1157,16 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			break;
 
 		case CGNT_VARIABLE:{
-			CGPConstant* constant = map_get(&graph->vars, node->var->name);
-			result->type = constant->type;
-			result->value = constant->value;
+			CGNode* constant = map_get(&graph->vars, node->var->name);
+			result->type = constant->constant->type;
+			result->value = constant->constant->value;
 			break;
 		}
 		case CGNT_BINARY_OPERATION:
-			result = processBinaryOperation(node->bop->type, node->bop->lhs, node->bop->rhs, node);
+			result = processBinaryOperation(graph, node->bop->type, node->bop->lhs, node->bop->rhs, node);
 			break;
 		case CGNT_UNARY_OPERATION:
-			result = processUnaryOperation(node->uop->type, node->uop->uhs, node);
+			result = processUnaryOperation(graph, node->uop->type, node->uop->uhs, node);
 	}
 	
 	return result;

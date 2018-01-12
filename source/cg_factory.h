@@ -16,6 +16,6 @@ CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs);
 CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
 
 CGraph* makeGraph(char* name);
-void graphSetVar(CGraph* graph, char* name, CGPConstant* value);
+void graphSetVar(CGraph* graph, char* name, CGNode* value);
 
 #endif

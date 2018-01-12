@@ -98,8 +98,9 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 CGraph* makeGraph(char* name){
 	CGraph* graph = dmt_calloc(1, sizeof(CGraph));
 	graph->name = name;
+	map_init(&graph->vars);
 }
 
-void graphSetVar(CGraph* graph, char* name, CGPConstant* value){
+void graphSetVar(CGraph* graph, char* name, CGNode* value){
 	map_set(&graph->vars, name, value);
 }
