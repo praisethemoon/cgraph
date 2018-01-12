@@ -90,10 +90,11 @@ optimizations will come once the library becomes stable.
 |`log`|unary|||`matrix`|:heavy_check_mark:|
 
 ### Future work
-- Graph variables (no idea how to do it yet `:(`)
+- Graph variables (done)
 - Graph as nodes
 - Lua API for graph construction
 - Derivative calculations
+- Usage of BLAS in all operations
 - GPU BLAS Implentations (cuBLAS probably)
 - Multithreaded implentation
 - Analyze graph to optimize calculations i.e `A^T.xB` is 3 three operations expression that can be reduced to one operation in BLAS.

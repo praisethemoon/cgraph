@@ -50,6 +50,11 @@ typedef enum CGErrorType {
 	 */
 	CGET_OVERFLOW_EXCEPTION,
 	
+	/*
+	 * Variable not present in the current graph
+	 */
+	CGET_VARIABLE_DOES_NOT_EXIST
+	
 }CGErrorType;
 
 typedef struct CGError {
