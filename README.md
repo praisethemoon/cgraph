@@ -43,7 +43,7 @@ optimizations will come once the library becomes stable.
 |`*`|binary|`double`|`matrix`||:heavy_check_mark:|
 |`*`|binary|`vector`|`double`||:heavy_check_mark:|
 |`*`|binary|`matrix`|`double`||:heavy_check_mark:|
-|`*`|binary|`vector`|`vector`||:heavy_check_mark:|
+|`*` (cross)|binary|`vector`|`vector`||:heavy_check_mark:|
 |`*`|binary|`matrix`|`vector`||:heavy_check_mark:|
 |`*`|binary|`matrix`|`matrix`||:heavy_check_mark:|
 |`+`|binary|`double`|`double`||:heavy_check_mark:|
@@ -69,6 +69,7 @@ optimizations will come once the library becomes stable.
 |`^`|binary|`double`|`double`||:heavy_check_mark:|
 |`^`|binary|`vector`|`double`||:heavy_check_mark:|
 |`^`|binary|`matrix`|`double`||:heavy_check_mark:|
+|`dot`|binary|`vector`|`vector`||:heavy_check_mark:|
 |`^T*`|binary|`vector`|`double`||:heavy_multiplication_x:|
 |`^T*`|binary|`vector`|`vector`||:heavy_multiplication_x:|
 |`^T*`|binary|`matrix`|`double`||:heavy_multiplication_x:|

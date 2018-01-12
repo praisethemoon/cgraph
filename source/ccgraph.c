@@ -160,6 +160,34 @@ CGResultNode* crossVV(CGVector* V1, CGVector* V2){
 
 /*
  * *********************
+ * Dot Product
+ * *********************
+ */
+
+/*
+ * V.V
+ */
+CGResultNode* dotVV(CGVector* V1, CGVector* V2){
+	if(V1->len != V2->len){
+		// TODO: throw error
+	}
+	
+	uint64_t size = V1->len;
+	double res = 0;
+	
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	
+	Y->value = cblas_ddot(V1->len, V1->data, 1, V2->data, 1);
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * *********************
  * Division 
  * *********************
  */
@@ -1113,6 +1141,17 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			}
 			break;
 		}
+		
+		case CGBOT_DOT: {
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
+				return dotVV((CGVector*)lhsValue, (CGVector*)rhsValue);
+			}
+			break;
+		}
+		
+		case CGBOT_TMULT:
+			return returnResultError(CGET_OPERATION_NOT_IMPLEMENTED, parentNode);
 	}
 	
 	return returnResultError(CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);

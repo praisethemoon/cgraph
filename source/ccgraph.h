@@ -53,7 +53,12 @@ typedef enum CGErrorType {
 	/*
 	 * Variable not present in the current graph
 	 */
-	CGET_VARIABLE_DOES_NOT_EXIST
+	CGET_VARIABLE_DOES_NOT_EXIST,
+	
+	/*
+	 * Operation is not yet supported.
+	 */
+	CGET_OPERATION_NOT_IMPLEMENTED
 	
 }CGErrorType;
 

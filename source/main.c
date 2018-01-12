@@ -43,7 +43,7 @@ void runMult_MV(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
@@ -74,7 +74,7 @@ void runMult_MM(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -103,7 +103,7 @@ void runMult_Md(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -124,7 +124,7 @@ void runMult_dd(){
 	CGResultNode* result = computeRawNode(node);
 	CGDouble* Y = (CGDouble*)result->value;
 
-	fprintf(stdout, "result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
+	fprintf(stdout, "result: %s value: %lf\n", getVariableTypeString(result->type), Y->value);
 }
 
 
@@ -148,7 +148,7 @@ void runMult_dV(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
@@ -185,13 +185,39 @@ void runMult_MvM(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
 
 void runDot_VV(){
 	printf("Running V.V example\n");
+	double value1[] = {
+		3,
+		1, 
+		5
+	};
+	
+	double value2[] = {
+		-3,
+		-1, 
+		0.5
+	};
+	
+	
+	CGNode* lhsNode = makeVectorConstantNode(3, value1);
+	CGNode* rhsNode = makeVectorConstantNode(3, value2);
+	CGNode* node = makeBinaryOpNode(CGBOT_DOT, lhsNode, rhsNode);
+	
+	CGResultNode* result = computeRawNode(node);
+	CGDouble* Y = (CGDouble*)result->value;
+
+	printf("result: %lf\n", Y->value);
+	uint64_t i = 0;
+}
+
+void runCross_VV(){
+	printf("Running V*V example\n");
 	double value1[] = {
 		3,
 		1, 
@@ -216,7 +242,7 @@ void runDot_VV(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
@@ -267,7 +293,7 @@ void runDiv_Vd(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
@@ -300,7 +326,7 @@ void runDiv_Md(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -323,7 +349,7 @@ void runAdd_dd(){
 	CGResultNode* result = computeRawNode(node);
 	CGDouble* Y = (CGDouble*)result->value;
 
-	printf("result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
+	printf("result: %s value: %lf\n", getVariableTypeString(result->type), Y->value);
 }
 
 void runAdd_Vd(){
@@ -348,7 +374,7 @@ void runAdd_Vd(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
@@ -381,7 +407,7 @@ void runAdd_Md(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -416,7 +442,7 @@ void runAdd_MV(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -448,7 +474,7 @@ void runAdd_VV(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
@@ -487,7 +513,7 @@ void runAdd_MM(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -510,7 +536,7 @@ void runSub_dd(){
 	CGResultNode* result = computeRawNode(node);
 	CGDouble* Y = (CGDouble*)result->value;
 
-	printf("result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
+	printf("result: %s value: %lf\n", getVariableTypeString(result->type), Y->value);
 }
 
 void runSub_Vd(){
@@ -535,7 +561,7 @@ void runSub_Vd(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
@@ -568,7 +594,7 @@ void runSub_Md(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -601,7 +627,7 @@ void runSub_VV(){
 	uint64_t i = 0;
 	
 	for(;i<Y->len;i++){
-		printf("\t%f\n", Y->data[i]);
+		printf("\t%lf\n", Y->data[i]);
 	}
 }
 
@@ -640,7 +666,7 @@ void runSub_MM(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -674,7 +700,7 @@ void runExp_M(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -709,7 +735,7 @@ void runExpLog_M(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -743,7 +769,7 @@ void runGraphExample(){
 	
 	for(;i<Y->rows;i++){
 		for(j = 0;j<Y->cols;j++){
-			printf("\t%f", Y->data[i*Y->cols +j]);
+			printf("\t%lf", Y->data[i*Y->cols +j]);
 		}
 		printf("\n");
 	}
@@ -764,6 +790,7 @@ int main(int argc, char *argv[]) {
 	runMult_MvM();
 	runMult_Md();
 	runDot_VV();
+	runCross_VV();
 	
 	// This will fail on purpose.
 	 runDiv_MM();
