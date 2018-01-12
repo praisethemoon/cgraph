@@ -1157,7 +1157,8 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			break;
 
 		case CGNT_VARIABLE:{
-			CGNode* constant = map_get(&graph->vars, node->var->name);
+			result = dmt_calloc(1, sizeof(CGResultNode));
+			CGNode* constant = *map_get(&graph->vars, node->var->name);
 			result->type = constant->constant->type;
 			result->value = constant->constant->value;
 			break;
