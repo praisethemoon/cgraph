@@ -5,8 +5,6 @@
 
 typedef struct CGPVariable {
 	char* name;
-	CGVarType type;
-	void* value;
 } CGPVariable;
 
 typedef struct CGPConstant {

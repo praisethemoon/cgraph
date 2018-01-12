@@ -11,6 +11,16 @@
 
 #include "memory.h"
 
+CGNode* makeVarNode(char* name){
+	CGPVariable* var = dmt_calloc(1, sizeof(CGPVariable));
+	var->name = name;
+	
+	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	node->type = CGNT_VARIABLE;
+	node->var = var;
+	
+	return node;
+}
 
 CGNode* makeDoubleConstantNode(double value){
 	CGDouble* d = dmt_calloc(1, sizeof(CGDouble));
@@ -83,4 +93,13 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 	node->uop->uhs = uhs;
 	
 	return node;
+}
+
+CGraph* makeGraph(char* name){
+	CGraph* graph = dmt_calloc(1, sizeof(CGraph));
+	graph->name = name;
+}
+
+void graphSetVar(CGraph* graph, char* name, CGPConstant* value){
+	map_set(&graph->vars, name, value);
 }

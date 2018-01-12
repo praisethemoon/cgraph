@@ -25,7 +25,7 @@ extern const char* VariableTypeString[];
 void dumpNode(CGNode* node){
 	fprintf(stderr, "\t\t+Node: '%s'\n", NodeTypeString[node->type]);
 	if(node->type == CGNT_CONSTANT){
-		fprintf(stderr, "\t\t+Type: '%s'\n", VariableTypeString[node->var->type]);
+		fprintf(stderr, "\t\t+Type: '%s'\n", VariableTypeString[node->constant->type]);
 	}
 }
 
@@ -1153,7 +1153,12 @@ CGResultNode* processBinaryOperation(CGBinaryOperationType type, CGNode* lhs, CG
 	}
 }
 
-CGResultNode* computeCGNode(CGNode* node){
+CGResultNode* computeRawNode(CGNode* node){
+	return computeCGNode(NULL, node);
+}
+
+
+CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	CGResultNode* result = NULL;
 	
 	switch(node->type){
@@ -1162,11 +1167,13 @@ CGResultNode* computeCGNode(CGNode* node){
 			result->type = node->constant->type;
 			result->value = node->constant->value;
 			break;
-		case CGNT_VARIABLE:
-			result = dmt_calloc(1, sizeof(CGResultNode));
-			result->type = node->var->type;
-			result->value = node->var->value;
+
+		case CGNT_VARIABLE:{
+			CGPConstant* constant = map_get(&graph->vars, node->var->name);
+			result->type = constant->type;
+			result->value = constant->value;
 			break;
+		}
 		case CGNT_BINARY_OPERATION:
 			result = processBinaryOperation(node->bop->type, node->bop->lhs, node->bop->rhs, node);
 			break;
@@ -1175,4 +1182,8 @@ CGResultNode* computeCGNode(CGNode* node){
 	}
 	
 	return result;
+}
+
+CGResultNode* computeGraph(CGraph* graph){
+	return computeCGNode(graph, graph->root);
 }

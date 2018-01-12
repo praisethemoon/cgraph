@@ -25,7 +25,8 @@ typedef struct CGNode {
 }CGNode;
 
 typedef struct CGraph {
-	CGNode* node;
+	char* name;
+	CGNode* root;
 	map_t(CGNode*) vars;
 }CGraph;
 
@@ -62,6 +63,8 @@ typedef struct  {
 	CGError* error;
 }CGResultNode;
 
-CGResultNode* computeCGNode(CGNode* node);
+CGResultNode* computeRawNode(CGNode* node);
+CGResultNode* computeCGNode(CGraph* graph, CGNode* node);
+CGResultNode* computeGraph(CGraph* graph);
 
 #endif

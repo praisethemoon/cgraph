@@ -36,7 +36,7 @@ void runMult_MV(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -65,7 +65,7 @@ void runMult_MM(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: (%ld, %ld)\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -94,7 +94,7 @@ void runMult_Md(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: (%ld, %ld)\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -121,7 +121,7 @@ void runMult_dd(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGDouble* Y = (CGDouble*)result->value;
 
 	fprintf(stdout, "result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
@@ -141,7 +141,7 @@ void runMult_dV(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -178,7 +178,7 @@ void runMult_MvM(){
 	
 	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode2, rhsNode2);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -209,7 +209,7 @@ void runDot_VV(){
 	CGNode* rhsNode = makeVectorConstantNode(3, value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_MULT, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -241,7 +241,7 @@ void runDiv_MM(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_DIV, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -268,7 +268,7 @@ void runDiv_Vd(){
 	CGNode* rhsNode = makeDoubleConstantNode(value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_DIV, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -298,7 +298,7 @@ void runDiv_Md(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_DIV, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -328,7 +328,7 @@ void runAdd_dd(){
 	CGNode* rhsNode = makeDoubleConstantNode(value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGDouble* Y = (CGDouble*)result->value;
 
 	printf("result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
@@ -349,7 +349,7 @@ void runAdd_Vd(){
 	CGNode* rhsNode = makeDoubleConstantNode(value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -379,7 +379,7 @@ void runAdd_Md(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -414,7 +414,7 @@ void runAdd_MV(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -449,7 +449,7 @@ void runAdd_VV(){
 	CGNode* rhsNode = makeVectorConstantNode(3, value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -485,7 +485,7 @@ void runAdd_MM(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -515,7 +515,7 @@ void runSub_dd(){
 	CGNode* rhsNode = makeDoubleConstantNode(value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGDouble* Y = (CGDouble*)result->value;
 
 	printf("result: %s value: %f\n", getVariableTypeString(result->type), Y->value);
@@ -536,7 +536,7 @@ void runSub_Vd(){
 	CGNode* rhsNode = makeDoubleConstantNode(value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -566,7 +566,7 @@ void runSub_Md(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -602,7 +602,7 @@ void runSub_VV(){
 	CGNode* rhsNode = makeVectorConstantNode(3, value2);
 	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGVector* Y = (CGVector*)result->value;
 
 	printf("result: %s shape: %ld\n", getVariableTypeString(result->type), Y->len);
@@ -638,7 +638,7 @@ void runSub_MM(){
 
 	CGNode* node = makeBinaryOpNode(CGBOT_SUB, lhsNode, rhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -672,7 +672,7 @@ void runExp_M(){
 
 	CGNode* node = makeUnaryOpNode(CGUOT_EXP, uhsNode);
 	
-	CGResultNode* result = computeCGNode(node);
+	CGResultNode* result = computeRawNode(node);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -707,7 +707,41 @@ void runExpLog_M(){
 	CGNode* node1 = makeUnaryOpNode(CGUOT_EXP, uhsNode);
 	CGNode* node2 = makeUnaryOpNode(CGUOT_LOG, node1);
 	
-	CGResultNode* result = computeCGNode(node2);
+	CGResultNode* result = computeRawNode(node2);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%f", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
+void runGraphExample(){
+	CGraph* graph = makeGraph("preprocess");
+	
+	
+	double value1[] = {
+		3, 1, 3, 1,
+		1, 0, 9, 1,
+		2, 6, 5, 1,
+		1, 1, 1, 0,
+	};
+	
+	
+	CGNode* uhsNode = makeMatrixConstantNode(4, 4, value1);
+	
+	graphSetVar(graph, "A", uhsNode->constant);
+	
+	graph->root = makeVarNode("A");
+	
+	CGResultNode* result = computeGraph(graph);
 	CGMatrix* Y = (CGMatrix*)result->value;
 
 	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
@@ -762,5 +796,6 @@ int main(int argc, char *argv[]) {
 	runExp_M();
 	runExpLog_M();
 	
+	runGraphExample();
 	//profiler_dump_file("stats.txt");
 }
