@@ -817,4 +817,5 @@ int main(int argc, char *argv[]) {
 	
 	runGraphExample();
 	//profiler_dump_file("stats.txt");
+	return 0;
 }
