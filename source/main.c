@@ -741,6 +741,39 @@ void runExpLog_M(){
 	}
 }
 
+void runT_M(){
+	/*
+	 * TODO: check if d == 0 then throw error
+	 */
+	printf("Running M^t example\n");
+	double value1[] = {
+		3, 1, 3, 1, 0,
+		1, 0, 9, 1, 0.5,
+		2, 6, 5, 1, 0.3,
+		1, 1, 1, 0, 1.1
+	};
+	
+	
+	CGNode* uhsNode = makeMatrixConstantNode(4, 5, value1);
+
+	CGNode* node = makeUnaryOpNode(CGUOT_TRANSPOSE, uhsNode);
+	
+	CGResultNode* result = computeRawNode(node);
+	CGMatrix* Y = (CGMatrix*)result->value;
+
+	printf("result: %s shape: %ld.%ld\n", getVariableTypeString(result->type), Y->rows, Y->cols);
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	
+	for(;i<Y->rows;i++){
+		for(j = 0;j<Y->cols;j++){
+			printf("\t%lf", Y->data[i*Y->cols +j]);
+		}
+		printf("\n");
+	}
+}
+
 void runGraphExample(){
 	printf("Running graph example");
 	CGraph* graph = makeGraph("preprocess");
@@ -815,6 +848,7 @@ int main(int argc, char *argv[]) {
 	
 	runExp_M();
 	runExpLog_M();
+	runT_M();
 	
 	runGraphExample();
 	//profiler_dump_file("stats.txt");

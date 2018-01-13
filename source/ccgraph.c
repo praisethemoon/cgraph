@@ -885,7 +885,40 @@ CGResultNode* logM(CGMatrix* M){
 }
 
 
+/*
+ * *********************
+ * Transpose Multiplication
+ * *********************
+ */
 
+/*
+ * exp(M)
+ */
+CGResultNode* transposeM(CGMatrix* M){
+	uint64_t size = M->rows*M->cols;
+	
+	double* y = dmt_calloc(size, sizeof(double));
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->data = y;
+	Y->rows = M->cols;
+	Y->cols = M->rows;
+	Y->data = y;
+	
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	for(;i<M->rows;i++){
+		for(j = 0;j<M->cols;j++){
+			y[j*Y->cols+i] = M->data[i*M->cols +j];
+		}
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
 CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CGNode* uhs, CGNode* parentNode){
 	CGVarType uhsType = CGVT_DOUBLE;
 	void* uhsValue = NULL;
@@ -962,8 +995,15 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			break;
 		}
 		case CGUOT_INV:
-		case CGUOT_TRANSPOSE:
 			return NULL;
+			
+		case CGUOT_TRANSPOSE:{
+			
+			if(uhsType == CGVT_MATRIX){
+				return transposeM((CGMatrix*)uhsValue);
+			}
+			break;
+		}
 	}
 	
 	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
