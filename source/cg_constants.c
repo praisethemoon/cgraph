@@ -41,7 +41,8 @@ const char* ErrorTypeString[] = {
 	"INCOMPATIBLE_DIMENTIONS_EXCEPTION",
 	"OVERFLOW_EXCEPTION",
 	"VARIABLE_DOES_NOT_EXIST",
-	"OPERATION_NOT_IMPLEMENTED"
+	"OPERATION_NOT_IMPLEMENTED",
+	"MATRIX_NOT_INVERTIBLE",
 };
 
 const char* getBinaryOperationTypeString(CGBinaryOperationType type){

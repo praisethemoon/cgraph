@@ -58,7 +58,12 @@ typedef enum CGErrorType {
 	/*
 	 * Operation is not yet supported.
 	 */
-	CGET_OPERATION_NOT_IMPLEMENTED
+	CGET_OPERATION_NOT_IMPLEMENTED,
+	
+	/*
+	 * Matrix is not invertible
+	 */
+	CGET_MATRIX_NOT_INVERTIBLE
 	
 }CGErrorType;
 

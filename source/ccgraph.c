@@ -887,12 +887,26 @@ CGResultNode* logM(CGMatrix* M){
 
 /*
  * *********************
- * Transpose Multiplication
+ * Invert
  * *********************
  */
 
 /*
  * exp(M)
+ */
+CGResultNode* transposeM(CGMatrix* M){
+	
+	return result;
+}
+
+/*
+ * *********************
+ * Transpose
+ * *********************
+ */
+
+/*
+ * M^t
  */
 CGResultNode* transposeM(CGMatrix* M){
 	uint64_t size = M->rows*M->cols;
@@ -995,10 +1009,9 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			break;
 		}
 		case CGUOT_INV:
-			return NULL;
+			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode);
 			
 		case CGUOT_TRANSPOSE:{
-			
 			if(uhsType == CGVT_MATRIX){
 				return transposeM((CGMatrix*)uhsValue);
 			}
@@ -1229,7 +1242,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			break;
 			
 		case CGNT_GRAPH:
-			return NULL;
+			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node);
 	}
 	
 	return result;
