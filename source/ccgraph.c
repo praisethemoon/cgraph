@@ -892,14 +892,6 @@ CGResultNode* logM(CGMatrix* M){
  */
 
 /*
- * exp(M)
- */
-CGResultNode* transposeM(CGMatrix* M){
-	
-	return result;
-}
-
-/*
  * *********************
  * Transpose
  * *********************
