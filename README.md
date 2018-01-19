@@ -94,7 +94,7 @@ optimizations will come once the library becomes stable.
 - Lua API for graph construction
 - Derivative calculations
 - Usage of BLAS in all operations
-- GPU BLAS Implentations (cuBLAS probably)
+- GPU BLAS Implentations (cuBLAS probably & CUDA as well
 - Multithreaded implentation
 - Analyze graph to optimize calculations i.e `A^T.xB` is 3 three operations expression that can be reduced to one operation in BLAS.
 - Graph plotting and visualization
@@ -109,6 +109,7 @@ optimizations will come once the library becomes stable.
 - map  [https://github.com/rxi/map](https://github.com/rxi/map)
 - vec [https://github.com/rxi/dmt](https://github.com/rxi/dmt)
 - smallprofiler [https://github.com/realbogart/smallprofiler](https://github.com/realbogart/smallprofiler)
+- luaarray [http://www.nongnu.org/techne/lua/luaarray/](http://www.nongnu.org/techne/lua/luaarray/)
 
 ### Help Requested
 If you would like to contribute, feel free to fork this stuff.

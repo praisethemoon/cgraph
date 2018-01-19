@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(ccgraph)
+project(cgraph)
 
 set (PROJECT_INCLUDE_DIR
 	/usr/local/include
@@ -9,6 +9,7 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}/source/vendor/lua
 	${PROJECT_SOURCE_DIR}/source/vendor/container
 	${PROJECT_SOURCE_DIR}/source/vendor/thread
+	${PROJECT_SOURCE_DIR}/source/vendor/luaarray
 )
 
 
@@ -16,6 +17,9 @@ set( EXTERNAL_DEPS
 	${PROJECT_SOURCE_DIR}/source/vendor/memory/memory.c
 	${PROJECT_SOURCE_DIR}/source/vendor/thread/tinycthread.c
 	${PROJECT_SOURCE_DIR}/source/vendor/container/vec.c
+	${PROJECT_SOURCE_DIR}/source/vendor/container/map.c
+	${PROJECT_SOURCE_DIR}/source/vendor/luaarray/array.c
+	${PROJECT_SOURCE_DIR}/source/vendor/luaarray/core.c
 	${PROJECT_SOURCE_DIR}/source/vendor/container/map.c
 )
 
@@ -60,19 +64,26 @@ set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/source/cg_factory.c
 	${PROJECT_SOURCE_DIR}/source/cg_constants.c
 	${PROJECT_SOURCE_DIR}/source/cg_errors.c
+	${PROJECT_SOURCE_DIR}/source/lua_api/lua_api.c
 	${PROJECT_SOURCE_DIR}/source/main.c
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
 
-add_executable(ccgraph 
+add_library(cgraph SHARED
 	${EXTERNAL_DEPS}
 	${LUA_SRCS}
 	${PROJECT_SRCS}
 )
 
+#add_executable(cgraph 
+#	${EXTERNAL_DEPS}
+#	${LUA_SRCS}
+#	${PROJECT_SRCS}
+#)
+
 if (UNIX)
-	target_link_libraries(ccgraph 
+	target_link_libraries(cgraph 
 		m 
 		pthread
 		lapack
@@ -81,11 +92,12 @@ if (UNIX)
 endif ()
 
 if (UNIX AND NOT APPLE)
-	target_link_libraries(ccgraph rt)
+	target_link_libraries(cgraph rt)
 endif ()
 
 if (WIN32)
-	target_link_libraries(ccgraph kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32)
+	target_link_libraries(cgraph kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32)
 endif ()
 
-install(TARGETS ccgraph RUNTIME DESTINATION bin)
+#install(TARGETS cgraph RUNTIME DESTINATION bin)
+install(TARGETS cgraph DESTINATION bin)
