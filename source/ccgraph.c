@@ -1236,6 +1236,43 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		case CGNT_GRAPH:
 			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node);
 	}
+	CGResultNode* res = result;
+	switch(res->type){
+		case CGVT_DOUBLE:{
+			CGDouble* value = (CGDouble*)res->value;
+			printf("value %f\n", value->value);
+			break;
+		}
+		
+			
+		case CGVT_VECTOR:{
+			CGVector* value = (CGVector*)res->value;
+			
+			
+			uint64_t i = 0;
+			printf("Vector len: %d\n", value->len);
+			for(;i<value->len;i++){
+				printf("\t%d\t%lf\n", i, value->data[i]);
+			}
+			
+			break;
+		}
+			
+		case CGVT_MATRIX:{
+			CGMatrix* value = (CGMatrix*)res->value;
+			printf("Matrix len: %dx%d\n", value->rows, value->cols);
+			
+			uint64_t i = 0;
+			uint64_t j = 0;
+			for(;i<value->rows;i++){
+				for(j = 0;j<value->cols;j++){
+					printf("\t%lf", value->data[i*value->cols +j]);
+				}
+				printf("\n");
+			}
+			break;
+		}
+	}
 	
 	return result;
 }
