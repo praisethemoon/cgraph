@@ -1,78 +1,59 @@
 
-function tprint (tbl, indent)
-  if not indent then indent = 0 end
-  if type(tbl) ~= "table" then
-	print(tbl)
-return 
-end
-  for k, v in pairs(tbl) do
-    formatting = string.rep("  ", indent) .. k .. ": "
-    if type(v) == "table" then
-      print(formatting)
-      tprint(v, indent+1)
-    else
-      print(formatting , v)
-    end
-  end
+require ('libcgraph')
+local io = io
+local write = io.write
+
+function _renderDouble(value)
+	write("Scalar [value=", value,"]\n")
 end
 
-local function pretty(a, prefix)
-   if type(a) == "number" then
-      return tostring(a)
-   else
-      local s, m, last, number
-
-      prefix = prefix or ""
-      m = #a
-      last = a[m]
-      number = type(last) == "number"
-
-      s = prefix .. "{"
-
-      if not number then
-	 s = s .. "\n"
-      end
-	 
-      for i = 1, m - 1 do
-	 s = s .. pretty(a[i], prefix .. "  ") .. ", "
-
-	 if not number then
-	    s = s .. "\n"
-	 end
-      end
-
-      s = s .. pretty(last, prefix .. "  ")
-
-      if not number then
-	 s = s .. "\n" .. prefix
-      end
-
-      return s .. "}"
-   end
+function _renderVector(len, value)
+	write("Vec [len: ", len, ", value=\n")
+	for i, v in ipairs(value) do
+		write("\t[", i-1, "] = \t", v, "\n")
+	end
+	write("]\n")
 end
 
-local function size(a)
-   return type(a) == "number" and {} or {#a, unpack(size(a[1]))}
+
+function _renderMatrix(rows, cols, value)
+	write("Mat [rows: ", rows, ", cols = ", cols, ", value=")
+	for i=1,rows do
+		write("\n\t")
+		for j=1,rows do
+			write("\t", value[(i-1)*cols +j])
+		end
+	end
+	write("\n]\n")
 end
-require('libcgraph')
-
-
-
 x = cgraph.matrix(3, 3, cgraph.doubles({1, 2, 3, 4, 5,6 ,7 ,8 ,9}))
-y = cgraph.double(3)
+y = cgraph.matrix(3, 3, cgraph.doubles({1, 2, 3, 4, 5,6 ,7 ,8 ,9}))
+alpha = cgraph.vector(9, cgraph.doubles({1, 2, 3, 4, 5,6 ,7 ,8 ,9}))
+z = cgraph.bop(0, x, y)
+
+v = cgraph.var("a")
+
+u = cgraph.bop(1, z, v) 
+
+ 
+
+g = cgraph.graph("test", u)
+
+cgraph.setVar(g, "a", cgraph.double(1))
+
+res = cgraph.compute(g)
+
+print(res.type, res.len or res.rows..'.'..res.cols, res.value)
+_renderMatrix(res.rows, res.cols, res.value)
+_renderVector(9, cgraph.doubles({1, 2, 3, 4, 5,6 ,7 ,8 ,9}))
 
 
-z = cgraph.bop(2, x, y) 
-
-g = cgraph.graph("test", z)
-
-v, t = cgraph.compute(g)
 
 
 
-print(v)
-tprint(v)
-print(t)
-for i, v in ipairs(t or {}) do
-	print(i, v)
-end
+
+
+
+
+
+

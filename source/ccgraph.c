@@ -1237,6 +1237,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node);
 	}
 	CGResultNode* res = result;
+	/*
 	switch(res->type){
 		case CGVT_DOUBLE:{
 			CGDouble* value = (CGDouble*)res->value;
@@ -1273,6 +1274,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			break;
 		}
 	}
+	*/
 	
 	return result;
 }
