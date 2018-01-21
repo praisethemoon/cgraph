@@ -89,17 +89,70 @@ optimizations will come once the library becomes stable.
 |`log`|unary|||`vector`|:heavy_check_mark:|
 |`log`|unary|||`matrix`|:heavy_check_mark:|
 
+### Example (Lua API):
+
+```lua
+local CGraph = require 'CGraph'
+local array = CGraph.array
+
+
+local function sigmoid(z)
+	local Z = CGraph.variable("z")
+	local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
+	local graph = CGraph.graph("sigmoid", sigmoid)
+	graph:setVar("z", z)
+	graph:plot()
+	local res = graph:eval()
+	return res
+end
+
+print(sigmoid(CGraph.double(0)))
+
+
+return sigmoid
+```
+
+returns:
+
+`Scalar [value: 0.5]`
+
+and created a file named `sigmoid.dot` containing the DOT Graph instance:
+
+```dot
+digraph sigmoid{
+	1 [label="B /"];
+	2 [label="Scalar =1"];
+	3 [label="B +"];
+	4 [label="Scalar =1"];
+	5 [label="U exp"];
+	6 [label="U -"];
+	7 [label="Variable z"];
+	1 -> Result ;
+	2 -> 1;
+	3 -> 1;
+	4 -> 3;
+	5 -> 3;
+	6 -> 5;
+	7 -> 6;
+}
+```
+
+You can plot it with Graphviz's `dot` cmd line: `dot -Tpng sigmoid.dot -o sigmoid.png` to get
+
+![lua/sigmoid.png](lua/sigmoid.png)
+
+
 ### Future work
 - Graph variables (done)
-- Lua API for graph construction
+- Lua API for graph construction (done)
 - Derivative calculations
 - Usage of BLAS in all operations
 - GPU BLAS Implentations (cuBLAS probably & CUDA as well
 - Multithreaded implentation
 - Analyze graph to optimize calculations i.e `A^T.xB` is 3 three operations expression that can be reduced to one operation in BLAS.
-- Graph plotting and visualization
+- Graph plotting and visualization (done)
 - Switch to LuaJIT instead of Lua API
-- Travis CI
+- Travis CI (done)
 - Valgrind to check memory
 
 ### Dependencies included within the source code:
