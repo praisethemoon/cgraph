@@ -89,24 +89,23 @@ local function nodeToString(uhs)
 		elseif uhs.tensorType == TensorType.MATRIX then
 			return _renderMatrix(uhs.rows, uhs.cols, uhs.value)
 		else 
-			return "[UNKNOWN]"
+			return "[UNKNOWN]\n"
 		end
 	elseif uhs.type == 'bop' then
-		return "Binary  "..bopToString(uhs.opType)
+		return "Binary  "..bopToString(uhs.opType) .. '\n'
 	elseif uhs.type == 'uop' then
-		return "Unary  "..uopToString(uhs.opType)
+		return "Unary  "..uopToString(uhs.opType)..'\n'
 	elseif uhs.type == 'var' then
-		return "Variable [name: " .. uhs.name .. ']'
+		return "Variable [name: " .. uhs.name .. ']\n'
 	else
-		return "[UNKNOWN]"
+		return "[UNKNOWN]\n"
 	end
-		
 end
 
 local mt = {
 	__unm = function(uhs)
 		local node = cgraph.uop(UnaryOperationType.MINUS, uhs.node)
-		local op = {type='uop', opType=UnaryOperationType.MINUS, node = node}
+		local op = {type='uop', opType=UnaryOperationType.MINUS, node = node, uhs=uhs}
 		setmetatable(op, getmetatable(uhs))
 				
 		return op
@@ -114,7 +113,7 @@ local mt = {
 	
 	__add = function(lhs, rhs)
 		local node = cgraph.bop(BinaryOperationType.ADD, lhs.node, rhs.node)
-		local op = {type='bop', opType=BinaryOperationType.ADD, node = node}
+		local op = {type='bop', opType=BinaryOperationType.ADD, node = node, lhs=lhs, rhs=rhs}
 		setmetatable(op, getmetatable(lhs))
 				
 		return op
@@ -122,7 +121,7 @@ local mt = {
 	
 	__sub = function(lhs, rhs)
 		local node = cgraph.bop(BinaryOperationType.SUB, lhs.node, rhs.node)
-		local op = {type='bop', opType=BinaryOperationType.SUB, node = node}
+		local op = {type='bop', opType=BinaryOperationType.SUB, node = node, lhs=lhs, rhs=rhs}
 		setmetatable(op, getmetatable(lhs))
 				
 		return op
@@ -130,7 +129,7 @@ local mt = {
 	
 	__mul = function(lhs, rhs)
 		local node = cgraph.bop(BinaryOperationType.MULT, lhs.node, rhs.node)
-		local op = {type='bop', opType=BinaryOperationType.MULT, node = node}
+		local op = {type='bop', opType=BinaryOperationType.MULT, node=node, lhs=lhs, rhs=rhs}
 		setmetatable(op, getmetatable(lhs))
 				
 		return op
@@ -138,7 +137,7 @@ local mt = {
 	
 	__div = function(lhs, rhs)
 		local node = cgraph.bop(BinaryOperationType.DIV, lhs.node, rhs.node)
-		local op = {type='bop', opType=BinaryOperationType.DIV, node = node}
+		local op = {type='bop', opType=BinaryOperationType.DIV, node = node, lhs=lhs, rhs=rhs}
 		setmetatable(op, getmetatable(lhs))
 				
 		return op
@@ -146,7 +145,7 @@ local mt = {
 	
 	__pow = function(lhs, rhs)
 		local node = cgraph.bop(BinaryOperationType.ADD, lhs.node, rhs.node)
-		local op = {type='bop', opType=BinaryOperationType.POW, node = node}
+		local op = {type='bop', opType=BinaryOperationType.POW, node = node, lhs=lhs, rhs=rhs}
 		setmetatable(op, getmetatable(lhs))
 				
 		return op
@@ -190,7 +189,7 @@ end
 
 local pow = function(lhs, rhs)
 	local node = cgraph.bop(BinaryOperationType.POW, lhs.node, rhs.node)
-	local op = {type='bop', opType=BinaryOperationType.POW, node = node}
+	local op = {type='bop', opType=BinaryOperationType.POW, node = node, lhs=lhs, rhs=rhs}
 	setmetatable(op, mt)
 			
 	return op
@@ -198,7 +197,7 @@ end
 
 local dot = function(lhs, rhs)
 	local node = cgraph.bop(BinaryOperationType.DOT, lhs.node, rhs.node)
-	local op = {type='bop', opType=BinaryOperationType.DOT, node = node}
+	local op = {type='bop', opType=BinaryOperationType.DOT, node = node, lhs=lhs, rhs=rhs}
 	setmetatable(op, mt)
 			
 	return op
@@ -206,7 +205,7 @@ end
 
 local inv = function(uhs)
 	local node = cgraph.uop(UnaryOperationType.INV, uhs.node)
-	local op = {type='uop', opType=UnaryOperationType.INV, node = node}
+	local op = {type='uop', opType=UnaryOperationType.INV, node = node, uhs=uhs}
 	setmetatable(op, mt)
 			
 	return op
@@ -214,7 +213,7 @@ end
 
 local tr = function(uhs)
 	local node = cgraph.uop(UnaryOperationType.TRANSPOSE, uhs.node)
-	local op = {type='uop', opType=UnaryOperationType.TRANSPOSE, node = node}
+	local op = {type='uop', opType=UnaryOperationType.TRANSPOSE, node=node, uhs=uhs}
 	setmetatable(op, mt)
 			
 	return op
@@ -222,7 +221,7 @@ end
 
 local log = function(uhs)
 	local node = cgraph.uop(UnaryOperationType.LOG, uhs.node)
-	local op = {type='uop', opType=UnaryOperationType.LOG, node = node}
+	local op = {type='uop', opType=UnaryOperationType.LOG, node = node, uhs=uhs}
 	setmetatable(op, mt)
 			
 	return op
@@ -230,10 +229,64 @@ end
 
 local exp = function(uhs)
 	local node = cgraph.uop(UnaryOperationType.EXP, uhs.node)
-	local op = {type='uop', opType=UnaryOperationType.EXP, node = node}
+	local op = {type='uop', opType=UnaryOperationType.EXP, node = node, uhs=uhs}
 	setmetatable(op, mt)
 			
 	return op
+end
+
+local function nodeToDot(uhs, str)
+	function listNodeToString(uhs, str, idCounter)
+		local idCounter = idCounter + 1
+		uhs.__id__ = idCounter
+		if uhs.type == 'value' then
+			if uhs.tensorType == TensorType.DOUBLE then
+				str = str .. "\t" .. idCounter ..' [label="Scalar ='..(uhs.value)..'"];\n';
+			elseif uhs.tensorType == TensorType.VECTOR then
+				str = str .. "\t" .. idCounter ..' [label="Vector <'..(uhs.len)..'>"];\n';
+			elseif uhs.tensorType == TensorType.MATRIX then
+				str = str .. "\t" .. idCounter ..' [label="Matrix <'..(uhs.rows)..'x'..(uhs.cols)'>"];\n';
+			else 
+				str = str .. "\t" .. idCounter ..' [label="UNKNOWN"];\n';
+			end
+			return str, idCounter
+		elseif uhs.type == 'bop' then
+			str = str .. "\t" .. idCounter ..' [label="B '..bopToString(uhs.opType)..'"];\n';
+			str, idCounter = listNodeToString(uhs.lhs, str, idCounter)
+			str, idCounter= listNodeToString(uhs.rhs, str, idCounter)
+			return str, idCounter
+		elseif uhs.type == 'uop' then
+			str = str .. "\t" .. idCounter ..' [label="U '..uopToString(uhs.opType)..'"];\n';
+			str, idCounter = listNodeToString(uhs.uhs, str, idCounter)
+			return str, idCounter
+		elseif uhs.type == 'var' then
+			str = str .. "\t" .. idCounter ..' [label="Variable '..(uhs.name)..'"];\n';
+			return str, idCounter
+		else
+			str = str .. "\t" .. idCounter ..' [label="UNKNOWN"];\n';
+		end
+	end
+	
+	function renderNodesToString(node, str)
+		if node.type == 'bop' then
+			str = str .. "\t" .. node.lhs.__id__ .. ' -> ' .. node.__id__ .. ';\n'
+			str = str .. "\t" .. node.rhs.__id__ .. ' -> ' .. node.__id__ .. ';\n'
+			str = renderNodesToString(node.lhs, str)
+			str = renderNodesToString(node.rhs, str)
+			return str
+		elseif node.type == 'uop' then
+			str = str .. "\t" .. node.uhs.__id__ .. ' -> ' .. node.__id__ .. ';\n'
+			str = renderNodesToString(node.uhs, str)
+			return str
+		end
+		
+		return str
+	end
+	
+	str, id = listNodeToString(uhs, str, 0)
+	str = str .. '\t' ..(uhs.__id__ ).. ' -> Result ;\n'
+	str = renderNodesToString(uhs, str)
+	return str
 end
 
 local graph = function(name, rootNode)
@@ -264,8 +317,24 @@ local graph = function(name, rootNode)
 		end
 	end
 	
+	function Graph:plot()
+		local str = 'digraph ' .. self.name .. '{\n'
+		str = nodeToDot(self.root, str)
+		str = str .. '}'
+		
+		local f = io.open(self.name..".dot", "w")
+		if f ~= nil then
+			f:write(str)
+			f:close()
+		else
+			print("Cannot open file '"..self.name..'.dot"')
+		end
+	end
+	
 	return Graph:create(name, rootNode)
+	
 end
+
 
 local CGraph = {
 	array=array,

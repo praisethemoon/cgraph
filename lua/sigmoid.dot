@@ -1,0 +1,16 @@
+digraph sigmoid{
+	1 [label="B /"];
+	2 [label="Scalar =1"];
+	3 [label="B +"];
+	4 [label="Scalar =1"];
+	5 [label="U exp"];
+	6 [label="U -"];
+	7 [label="Variable z"];
+	1 -> Result ;
+	2 -> 1;
+	3 -> 1;
+	4 -> 3;
+	5 -> 3;
+	6 -> 5;
+	7 -> 6;
+}
