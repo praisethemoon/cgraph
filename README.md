@@ -81,7 +81,7 @@ optimizations will come once the library becomes stable.
 |`inv`|unary|||`double`|:heavy_multiplication_x:|
 |`inv`|unary|||`vector`|:heavy_multiplication_x:|
 |`inv`|unary|||`matrix`|:heavy_multiplication_x:|
-|`T`|unary|||`matrix`|:heavy_multiplication_x:|
+|`T`|unary|||`matrix`|:heavy_check_mark:|
 |`exp`|unary|||`double`|:heavy_check_mark:|
 |`exp`|unary|||`vector`|:heavy_check_mark:|
 |`exp`|unary|||`matrix`|:heavy_check_mark:|
