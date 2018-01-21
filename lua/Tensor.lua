@@ -1,14 +1,15 @@
 
 require ('libcgraph')
 
-local class = require("middleclass")
+
+local cgraph = cgraph
 local io = io
 local write = io.weite
 
 local TensorType = {
 	DOUBLE = 0,
 	VECTOR = 1,
-	MATRIX = 2
+	MATRIX = 2have
 }
 
 local Tensor = class('Tensor')
@@ -37,28 +38,29 @@ function _renderMatrix(rows, cols, value)
 	write("]\n")
 end
 
-function Tensor:initialize(tensorType, value, len_or_cols_x_rows)
-	self.tensorType = tensorType
-	self.value = value
-	
-	if type(len_or_cols_x_rows) == "number" then
-		self.len = len_or_rows
-	elseif type(len_or_cols_x_rows) == "table" then
-		if #len_or_cols_x_rows == 2 then
-			self.rows = len_or_cols_x_rows[1]
-			self.cols = len_or_cols_x_rows[2]
-		else
-			error("len_or_cols_x_rows must either be a scalar (to represent vector len) or a two sized table (to represent {rows, cols}")
+local CGraph = {
+	double = function (value){
+		local self = {type=TensorType.DOUBLE, value=value, node=cgraph.double(value)}
+		
+		local _mt = {}
+		
+		_mt.__type = "Double"
+		_mt.__call = function(table)
+			return table.value
 		end
-	end
-end
-
-function Tenssor:render()
-	if self.tensorType == TensorType.DOUBLE then
-		_renderDouble(self.value)
-	elseif self.tensorType == TensorType.VECTOR then
-		_renderVector(self.len, self.value)
-	else
-		_renderMatrix(self.rows, self.cols, self.value)
-	end
-end
+		
+		_mt.__index
+		
+		return self
+	},
+	
+	vector = function(len, value){
+		local self = {type=TensorType.VECTOR, value=value, len=len, node=cgraph.vector(len, value)}
+		return self
+	},
+	
+	matrix = function(rows, cols, value){
+		local self = {type=TensorType.MATRIX, value=value, rows=rows, cols=cols, node=cgraph.matrix(rows, cols, value)}
+		return self
+	}
+}

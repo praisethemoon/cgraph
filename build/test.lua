@@ -26,6 +26,7 @@ function _renderMatrix(rows, cols, value)
 	end
 	write("\n]\n")
 end
+
 x = cgraph.matrix(3, 3, cgraph.doubles({1, 2, 3, 4, 5,6 ,7 ,8 ,9}))
 y = cgraph.matrix(3, 3, cgraph.doubles({1, 2, 3, 4, 5,6 ,7 ,8 ,9}))
 alpha = cgraph.vector(9, cgraph.doubles({1, 2, 3, 4, 5,6 ,7 ,8 ,9}))
