@@ -60,8 +60,8 @@ static CGNode* checkGraph(lua_State* L, int index){
 	return graph;
 }
 
-static void pushGraph(CGraph* L, CGraph* graph){
-	CGraph* lgraph= (CGNode *)lua_newuserdata(L, sizeof(CGraph));
+static void pushGraph(lua_State* L, CGraph* graph){
+	CGraph* lgraph= (CGraph *)lua_newuserdata(L, sizeof(CGraph));
 	*lgraph = *graph;
 	luaL_getmetatable(L, CGRAPH);
 	lua_setmetatable(L, -2);
