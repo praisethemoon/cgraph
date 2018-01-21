@@ -248,7 +248,7 @@ local graph = function(name, rootNode)
 	end
 	
 	function Graph:setVar(name, uhs)
-		cgraph.setVar(self.cdata, uhs.node)
+		cgraph.setVar(self.cdata, name, uhs.node)
 	end
 	
 	function Graph:eval()
