@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 
-#include "ccgraph.h"
+#include "cgraph.h"
 #include "cg_operation.h"
 
 const char* BinaryOperationTypeString[] = {

@@ -1,7 +1,7 @@
 #ifndef CG_OPERATION_H
 #define CG_OPERATION_H
 
-#include "ccgraph.h"
+#include "cgraph.h"
 
 typedef enum CGBinaryOperationType {
 	CGBOT_ADD=0,

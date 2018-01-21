@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "ccgraph.h"
+#include "cgraph.h"
 #include "cg_operation.h"
 #include "cg_types.h"
 #include "cg_variables.h"

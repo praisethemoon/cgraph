@@ -60,7 +60,7 @@ set(LUA_SRCS
 )
 
 set (PROJECT_SRCS
-	${PROJECT_SOURCE_DIR}/source/ccgraph.c
+	${PROJECT_SOURCE_DIR}/source/cgraph.c
 	${PROJECT_SOURCE_DIR}/source/cg_factory.c
 	${PROJECT_SOURCE_DIR}/source/cg_constants.c
 	${PROJECT_SOURCE_DIR}/source/cg_errors.c

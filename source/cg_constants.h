@@ -1,7 +1,7 @@
 #ifndef CG_CONSTANTS_H
 #define CG_CONSTANTS_H
 
-#include "ccgraph.h"
+#include "cgraph.h"
 #include "cg_operation.h"
 #include "cg_types.h"
 #include "cg_variables.h"

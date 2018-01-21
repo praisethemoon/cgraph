@@ -1,4 +1,4 @@
-CCGraph
+CGraph
 ===
 
 ![resources/logo.png](resources/logo.png)
@@ -7,7 +7,7 @@ CCGraph
 
 ### About
 
-CCGraph, short for C Computation Graph is a C library for building Tensor graphs.
+CGraph, short for C Computation Graph is a C library for building Tensor graphs.
 It will support a Lua API in the future.
 
 > You see the logo? Illuminaty confirmed

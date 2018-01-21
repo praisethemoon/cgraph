@@ -5,7 +5,7 @@
 
 #include "../cg_factory.h"
 #include "../cg_types.h"
-#include "../ccgraph.h"
+#include "../cgraph.h"
 #include "../cg_operation.h"
 #include "../cg_constants.h"
 #include "../cg_errors.h"
