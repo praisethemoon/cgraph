@@ -1010,6 +1010,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			break;
 		}
 	}
+	printf("FUCK2! %d\n", type);
 	
 	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
 }
@@ -1200,8 +1201,8 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		case CGBOT_TMULT:
 			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode);
 	}
-	
-	return returnResultError(graph,CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
+	printf("FUCK!\n");
+	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
 }
 
 CGResultNode* computeRawNode(CGNode* node){
@@ -1221,9 +1222,10 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 
 		case CGNT_VARIABLE:{
 			result = dmt_calloc(1, sizeof(CGResultNode));
-			CGNode* constant = *map_get(&graph->vars, node->var->name);
-			result->type = constant->constant->type;
-			result->value = constant->constant->value;
+			CGNode* constantNode = *map_get(&graph->vars, node->var->name);
+			CGResultNode* rnode = computeCGNode(graph, constantNode);
+			result->type = rnode->type;
+			result->value = rnode->value;
 			break;
 		}
 		case CGNT_BINARY_OPERATION:

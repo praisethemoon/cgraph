@@ -12,7 +12,12 @@ local function sigmoid(z)
 	return res
 end
 
-print(sigmoid(CGraph.double(0)))
+print(sigmoid(CGraph.dot( CGraph.vector(3, array {1, 2, 3}), CGraph.vector(3, array {4, 5, 6}) )))
 
+--[[
+local node = CGraph.dot( CGraph.vector(3, array {1, 2, 3}), CGraph.vector(3, array {4, 5, 6}) )
+local graph = CGraph.graph("sigmoid", node)
+print(sigmoid(graph:eval()))
+]]
 
 return sigmoid

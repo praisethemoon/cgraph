@@ -193,13 +193,15 @@ static int lua_setGraphVar(lua_State* L){
 	graphSetVar(graph, name, node);
 	
 	lua_pushnil(L);
-	
 	return 1;
 }
 
 static int lua_computeGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	CGResultNode* res = computeGraph(graph);
+	
+	//if(res->error
+	
 	lua_newtable(L);
 	lua_pushstring(L, "type");
 	lua_pushinteger(L, res->type);
