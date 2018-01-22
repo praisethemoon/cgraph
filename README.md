@@ -70,8 +70,6 @@ optimizations will come once the library becomes stable.
 |`^`|binary|`vector`|`double`||:heavy_check_mark:|
 |`^`|binary|`matrix`|`double`||:heavy_check_mark:|
 |`.`|binary|`vector`|`vector`||:heavy_check_mark:|
-|`^T*`|binary|`vector`|`double`||:heavy_multiplication_x:|
-|`^T*`|binary|`vector`|`vector`||:heavy_multiplication_x:|
 |`^T*`|binary|`matrix`|`double`||:heavy_multiplication_x:|
 |`^T*`|binary|`matrix`|`vector`||:heavy_multiplication_x:|
 |`^T*`|binary|`matrix`|`matrix`||:heavy_multiplication_x:|
