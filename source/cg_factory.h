@@ -17,6 +17,7 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
 
 CGraph* makeGraph(char* name);
 void graphSetVar(CGraph* graph, char* name, CGNode* value);
+CGNode* graphGetVar(CGraph* graph, char* name);
 
 
 #endif

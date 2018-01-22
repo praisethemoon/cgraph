@@ -46,8 +46,9 @@ static CGNode* checkNode(lua_State* L, int index){
 }
 
 static void pushNode(lua_State* L, CGNode* node){
-	CGNode* lnode = (CGNode *)lua_newuserdata(L, sizeof(CGNode));
-	*lnode = *node;
+	//CGNode* lnode = (CGNode *)lua_newuserdata(L, sizeof(CGNode));
+	//*lnode = *node;
+	lua_pushlightuserdata(L, node);
 	luaL_getmetatable(L, CGNODE);
 	lua_setmetatable(L, -2);
 }
@@ -65,6 +66,57 @@ static void pushGraph(lua_State* L, CGraph* graph){
 	*lgraph = *graph;
 	luaL_getmetatable(L, CGRAPH);
 	lua_setmetatable(L, -2);
+}
+
+static int lua_getBinaryOperationTypeString(lua_State* L){
+	uint64_t i = lua_tointeger(L, 1);
+	
+	lua_pushstring(L, getBinaryOperationTypeString(i));
+	return 1;
+}
+
+
+static int lua_getUnaryOperationTypeString(lua_State* L){
+	uint64_t i = lua_tointeger(L, 1);
+	
+	lua_pushstring(L, getUnaryOperationTypeString(i));
+	return 1;
+}
+
+static int lua_getNodeTypeString(lua_State* L){
+	uint64_t i = lua_tointeger(L, 1);
+	
+	lua_pushstring(L, getNodeTypeString(i));
+	return 1;
+}
+
+static int lua_getVariableTypeString(lua_State* L){
+	uint64_t i = lua_tointeger(L, 1);
+	
+	lua_pushstring(L, getVariableTypeString(i));
+	return 1;
+}
+
+static int lua_getErrorTypeString(lua_State* L){
+	uint64_t i = lua_tointeger(L, 1);
+	
+	lua_pushstring(L, getErrorTypeString(i));
+	return 1;
+}
+
+/* NOT USED 
+ * TODO: Remove this 
+ */
+static int lua_getBinaryOperations(lua_State* L){
+	lua_newtable(L);
+	uint8_t i = 0;
+	for(;i <= MAX_BINARY_OPERATION;i++){
+		lua_pushstring(L, getBinaryOperationTypeString(i));
+		lua_pushinteger(L, i);
+		lua_settable(L, -3);
+	}
+	
+	return 1;
 }
 
 static int lua_createVariable(lua_State* L){
@@ -196,11 +248,39 @@ static int lua_setGraphVar(lua_State* L){
 	return 1;
 }
 
+static int lua_getGraphVar(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	const char* name = lua_tostring(L, 2);
+	
+	CGNode* node = graphGetVar(graph, name);
+	
+	if(node == NULL)
+	{
+		lua_pushnil(L);
+	}
+	else {
+		pushNode(L, node);
+	}
+	
+	return 1;
+}
+
 static int lua_computeGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	CGResultNode* res = computeGraph(graph);
 	
-	//if(res->error
+	if(res->error != NULL)
+	{
+		lua_newtable(L);
+		lua_pushstring(L, "error");
+		lua_pushinteger(L, (int)res->error->errorType);
+		lua_settable(L, -3);
+		lua_pushstring(L, "node");
+		pushNode(L, res->error->faultyNode);
+		lua_settable(L, -3);
+		
+		return 1;
+	}
 	
 	lua_newtable(L);
 	lua_pushstring(L, "type");
@@ -276,11 +356,15 @@ static int lua_computeGraph(lua_State* L){
 	return 1;
 }
 
-
 int luaopen_libcgraph(lua_State *L)
 {
 	struct luaL_Reg driver[] =
 	{
+		{"bopToString", lua_getBinaryOperationTypeString},
+		{"uopToString", lua_getUnaryOperationTypeString},
+		{"nodeTypeToString", lua_getNodeTypeString},
+		{"varTypeToString", lua_getVariableTypeString},
+		{"errorTypeToString", lua_getErrorTypeString},
 		{"var", lua_createVariable},
 		{"double", lua_createDoubleConstant},
 		{"vector", lua_createVectorConstant},
@@ -289,6 +373,7 @@ int luaopen_libcgraph(lua_State *L)
 		{"uop", lua_createUnaryOperation},
 		{"graph", lua_createGraph},
 		{"setVar", lua_setGraphVar},
+		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
 		{NULL, NULL}
 	};

@@ -19,6 +19,12 @@
 
 #include "memory.h"
 
+#define CHECK_RESULT(node) \
+if(node->error != NULL){\
+	return node;\
+}
+	
+
 /*
  * *********************
  * Multiplication
@@ -936,6 +942,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 	else
 	{
 		CGResultNode* lhsResult = computeCGNode(graph, uhs);
+		CHECK_RESULT(lhsResult)
 		uhsType = lhsResult->type;
 		uhsValue = lhsResult->value;
 	}
@@ -1010,8 +1017,6 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			break;
 		}
 	}
-	printf("FUCK2! %d\n", type);
-	
 	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
 }
 
@@ -1030,6 +1035,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 	else
 	{
 		CGResultNode* lhsResult = computeCGNode(graph, lhs);
+		CHECK_RESULT(lhsResult)
 		lhsType = lhsResult->type;
 		lhsValue = lhsResult->value;
 	}
@@ -1041,6 +1047,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 	else
 	{
 		CGResultNode* rhsResult = computeCGNode(graph, rhs);
+		CHECK_RESULT(rhsResult)
 		rhsType = rhsResult->type;
 		rhsValue = rhsResult->value;
 	}
@@ -1201,7 +1208,6 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		case CGBOT_TMULT:
 			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode);
 	}
-	printf("FUCK!\n");
 	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
 }
 
@@ -1224,6 +1230,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			result = dmt_calloc(1, sizeof(CGResultNode));
 			CGNode* constantNode = *map_get(&graph->vars, node->var->name);
 			CGResultNode* rnode = computeCGNode(graph, constantNode);
+			CHECK_RESULT(rnode)
 			result->type = rnode->type;
 			result->value = rnode->value;
 			break;
@@ -1238,45 +1245,6 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		case CGNT_GRAPH:
 			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node);
 	}
-	CGResultNode* res = result;
-	/*
-	switch(res->type){
-		case CGVT_DOUBLE:{
-			CGDouble* value = (CGDouble*)res->value;
-			printf("value %f\n", value->value);
-			break;
-		}
-		
-			
-		case CGVT_VECTOR:{
-			CGVector* value = (CGVector*)res->value;
-			
-			
-			uint64_t i = 0;
-			printf("Vector len: %d\n", value->len);
-			for(;i<value->len;i++){
-				printf("\t%d\t%lf\n", i, value->data[i]);
-			}
-			
-			break;
-		}
-			
-		case CGVT_MATRIX:{
-			CGMatrix* value = (CGMatrix*)res->value;
-			printf("Matrix len: %dx%d\n", value->rows, value->cols);
-			
-			uint64_t i = 0;
-			uint64_t j = 0;
-			for(;i<value->rows;i++){
-				for(j = 0;j<value->cols;j++){
-					printf("\t%lf", value->data[i*value->cols +j]);
-				}
-				printf("\n");
-			}
-			break;
-		}
-	}
-	*/
 	
 	return result;
 }

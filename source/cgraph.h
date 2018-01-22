@@ -14,6 +14,8 @@ typedef enum CGNodeType {
 	CGNT_UNARY_OPERATION
 }CGNodeType;
 
+#define MAX_NODE_TYPE CGNT_UNARY_OPERATION
+
 typedef struct CGNode {
 	CGNodeType type;
 	union {
@@ -66,6 +68,8 @@ typedef enum CGErrorType {
 	CGET_MATRIX_NOT_INVERTIBLE
 	
 }CGErrorType;
+
+#define MAX_ERROR_TYPE
 
 typedef struct CGError {
 	CGErrorType errorType;

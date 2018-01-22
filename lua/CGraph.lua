@@ -29,29 +29,23 @@ local UnaryOperationType = {
 }
 
 local function bopToString(bop)
-	local bopStr = {
-		[0] = "+",
-		[1] = "-",
-		[2] = "*",
-		[3] = "/",
-		[4] = "^",
-		[5] = ".",
-		[6] = "T*",
-	}
-	
-	return bopStr[bop]
+	return cgraph.bopToString(bop)
 end
 
 local function uopToString(uop)
-	local uopStr = {
-		[0] = "-",
-		[1] = "inv",
-		[2] = "T",
-		[3] = "exp",
-		[4] = "log",
-	}
-	
-	return uopStr[uop]
+	return cgraph.uopToString(uop)
+end
+
+local function nodeTypeToString(n)
+	return cgraph.nodeTypeToString(n)
+end
+
+local function tensorTypeToString(t)
+	return cgraph.varTypeToString(t)
+end
+
+local function errorTypeToString(e)
+	return cgraph.errorTypeToString(e)
 end
 
 local function _renderDouble(value)
@@ -235,35 +229,47 @@ local exp = function(uhs)
 	return op
 end
 
-local function nodeToDot(uhs, str)
+local function nodeToDot(graph, uhs, str)
 	function listNodeToString(uhs, str, idCounter)
 		local idCounter = idCounter + 1
 		uhs.__id__ = idCounter
+		local fillAttribute = ''
+		
+		--print(uhs.type, uhs.opType, uhs.node, graph.err.node, errorTypeToString(graph.err.type))
+		
+		if uhs.node ~= nil and graph.err ~= nil and uhs.node == graph.err.node then
+			fillAttribute =', style="filled", fillcolor=red '
+		end
 		if uhs.type == 'value' then
 			if uhs.tensorType == TensorType.DOUBLE then
-				str = str .. "\t" .. idCounter ..' [label="Scalar ='..(uhs.value)..'"];\n';
+				str = str .. "\t" .. idCounter ..' [label="Scalar ='..(uhs.value)..'", style="filled", fillcolor=".7 .3 1.0"];\n';
 			elseif uhs.tensorType == TensorType.VECTOR then
-				str = str .. "\t" .. idCounter ..' [label="Vector <'..(uhs.len)..'>"];\n';
+				str = str .. "\t" .. idCounter ..' [label="Vector <'..(uhs.len)..'>", style="filled", fillcolor=".7 .5 1.0"];\n';
 			elseif uhs.tensorType == TensorType.MATRIX then
-				str = str .. "\t" .. idCounter ..' [label="Matrix <'..(uhs.rows)..'x'..(uhs.cols)'>"];\n';
+				str = str .. "\t" .. idCounter ..' [label="Matrix <'..(uhs.rows)..'x'..(uhs.cols)..'>", style="filled", fillcolor=".7 .8 1.0"];\n';
 			else 
 				str = str .. "\t" .. idCounter ..' [label="UNKNOWN"];\n';
 			end
 			return str, idCounter
 		elseif uhs.type == 'bop' then
-			str = str .. "\t" .. idCounter ..' [label="B '..bopToString(uhs.opType)..'"];\n';
+			str = str .. "\t" .. idCounter ..' [label="'..bopToString(uhs.opType)..'"'..fillAttribute..', shape=circle];\n';
 			str, idCounter = listNodeToString(uhs.lhs, str, idCounter)
 			str, idCounter= listNodeToString(uhs.rhs, str, idCounter)
 			return str, idCounter
 		elseif uhs.type == 'uop' then
-			str = str .. "\t" .. idCounter ..' [label="U '..uopToString(uhs.opType)..'"];\n';
+			str = str .. "\t" .. idCounter ..' [label="'..uopToString(uhs.opType)..'"'..fillAttribute..', shape=circle];\n';
 			str, idCounter = listNodeToString(uhs.uhs, str, idCounter)
 			return str, idCounter
 		elseif uhs.type == 'var' then
-			str = str .. "\t" .. idCounter ..' [label="Variable '..(uhs.name)..'"];\n';
+			str = str .. "\t" .. idCounter ..' [label="Var '..(uhs.name)..'"'..fillAttribute..', shape=box];\n';
+			local v = graph:getVar(uhs.name)
+			if v ~= nil then
+				str, idCounter = listNodeToString(v, str, idCounter)
+			end
+			
 			return str, idCounter
 		else
-			str = str .. "\t" .. idCounter ..' [label="UNKNOWN"];\n';
+			str = str .. "\t" .. idCounter ..' [label="UNKNOWN"'..fillAttribute..', shape=plaintext];\n';
 		end
 	end
 	
@@ -278,6 +284,13 @@ local function nodeToDot(uhs, str)
 			str = str .. "\t" .. node.uhs.__id__ .. ' -> ' .. node.__id__ .. ';\n'
 			str = renderNodesToString(node.uhs, str)
 			return str
+		elseif node.type == 'var' then
+			local v = graph:getVar(node.name)
+			if v ~= nil then
+				str = str .. "\t" .. v.__id__ .. ' -> ' .. node.__id__ .. ';\n'
+				str = renderNodesToString(v, str)
+			end
+			
 		end
 		
 		return str
@@ -294,7 +307,7 @@ local graph = function(name, rootNode)
 	Graph.__index = Graph
 	
 	function Graph:create(name, root)
-		local graph = {name= name, root=root, cdata=cgraph.graph(name, root.node)}
+		local graph = {name= name, root=root, cdata=cgraph.graph(name, root.node), vars={}}
 		setmetatable(graph, Graph)
 		
 		return graph
@@ -302,10 +315,26 @@ local graph = function(name, rootNode)
 	
 	function Graph:setVar(name, uhs)
 		cgraph.setVar(self.cdata, name, uhs.node)
+		self.vars[name] = uhs
+	end
+	
+	function Graph:getNativeVar(name)
+		return cgraph.getVar(self.cdata, name)
+	end
+	
+	function Graph:getVar(name)
+		return self.vars[name]
 	end
 	
 	function Graph:eval()
+		self.err = {}
 		local res = cgraph.compute(self.cdata)
+		
+		if res.error then
+			print('error', errorTypeToString(res.error))
+			self.err = res
+			return res
+		end
 		if res.type == TensorType.DOUBLE then
 			return double(res.value)
 		elseif res.type == TensorType.VECTOR then
@@ -319,7 +348,7 @@ local graph = function(name, rootNode)
 	
 	function Graph:plot()
 		local str = 'digraph ' .. self.name .. '{\n'
-		str = nodeToDot(self.root, str)
+		str = nodeToDot(self, self.root, str)
 		str = str .. '}'
 		
 		local f = io.open(self.name..".dot", "w")

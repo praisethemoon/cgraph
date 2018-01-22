@@ -19,7 +19,7 @@ local g4 = CGraph.graph("test", PHI)
 
 print(g4:eval())
 
-  local endTime = os.clock()
-  
-  
-  print(endTime - startTime)
+local endTime = os.clock()
+
+
+print(endTime - startTime)

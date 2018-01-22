@@ -9,6 +9,8 @@ typedef enum CGVarType {
 	CGVT_MATRIX,
 }CGVarType;
 
+#define MAX_VAR_TYPE CGVT_MATRIX
+
 typedef struct CGDouble {
 	double value;
 }CGDouble;

@@ -13,6 +13,8 @@ typedef enum CGBinaryOperationType {
 	CGBOT_TMULT, // transpose + mult
 } CGBinaryOperationType;
 
+#define MAX_BINARY_OPERATION CGBOT_TMULT
+
 
 typedef enum CGUnaryOperationType {
 	CGUOT_MINUS=0,
@@ -21,6 +23,8 @@ typedef enum CGUnaryOperationType {
 	CGUOT_EXP,
 	CGUOT_LOG,
 } CGUnaryOperationType;
+
+#define MAX_UNARY_OPERATION CGUOT_LOG
 
 typedef struct CGBinaryOperation {
 	struct CGNode* lhs;

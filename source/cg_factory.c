@@ -107,3 +107,6 @@ void graphSetVar(CGraph* graph, char* name, CGNode* value){
 	map_set(&graph->vars, name, value);
 }
 
+CGNode* graphGetVar(CGraph* graph, char* name){
+	return map_get(&graph->vars, name);
+}
