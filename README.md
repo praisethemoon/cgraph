@@ -5,6 +5,9 @@ CGraph
 
 > C Computation Graph Library
 
+### Build Status:
+[![Build Status](https://travis-ci.org/praisethemoon/cgraph.svg?branch=master)](https://travis-ci.org/praisethemoon/cgraph)
+
 ### About
 
 CGraph, short for C Computation Graph is a C library for building Tensor graphs.
@@ -36,56 +39,56 @@ optimizations will come once the library becomes stable.
 
 ### Supported Operations:
 
-|operator|type|lhs|rhs|uhs|implemented|
-|:---:|:---:|:---:|:---:|:---:|:---:|
-|`*`|binary|`double`|`double`||:heavy_check_mark:|
-|`*`|binary|`double`|`vector`||:heavy_check_mark:|
-|`*`|binary|`double`|`matrix`||:heavy_check_mark:|
-|`*`|binary|`vector`|`double`||:heavy_check_mark:|
-|`*`|binary|`matrix`|`double`||:heavy_check_mark:|
-|`*` (cross)|binary|`vector`|`vector`||:heavy_check_mark:|
-|`*`|binary|`matrix`|`vector`||:heavy_check_mark:|
-|`*`|binary|`matrix`|`matrix`||:heavy_check_mark:|
-|`+`|binary|`double`|`double`||:heavy_check_mark:|
-|`+`|binary|`double`|`vector`||:heavy_check_mark:|
-|`+`|binary|`double`|`matrix`||:heavy_check_mark:|
-|`+`|binary|`vector`|`vector`||:heavy_check_mark:|
-|`+`|binary|`vector`|`double`||:heavy_check_mark:|
-|`+`|binary|`matrix`|`double`||:heavy_check_mark:|
-|`+`|binary|`matrix`|`matrix`||:heavy_check_mark:|
-|`+`|binary|`matrix`|`vector`||:heavy_check_mark:|
-|`-`|binary|`double`|`double`||:heavy_check_mark:|
-|`-`|binary|`double`|`vector`||:heavy_check_mark:|
-|`-`|binary|`double`|`matrix`||:heavy_check_mark:|
-|`-`|binary|`vector`|`double`||:heavy_check_mark:|
-|`-`|binary|`vector`|`vector`||:heavy_check_mark:|
-|`-`|binary|`vector`|`matrix`||:heavy_check_mark:|
-|`-`|binary|`matrix`|`double`||:heavy_check_mark:|
-|`-`|binary|`matrix`|`vector`||:heavy_check_mark:|
-|`-`|binary|`matrix`|`matrix`||:heavy_check_mark:|
-|`/`|binary|`double`|`double`||:heavy_check_mark:|
-|`/`|binary|`vector`|`double`||:heavy_check_mark:|
-|`/`|binary|`matrix`|`double`||:heavy_check_mark:|
-|`^`|binary|`double`|`double`||:heavy_check_mark:|
-|`^`|binary|`vector`|`double`||:heavy_check_mark:|
-|`^`|binary|`matrix`|`double`||:heavy_check_mark:|
-|`.`|binary|`vector`|`vector`||:heavy_check_mark:|
-|`^T*`|binary|`matrix`|`double`||:heavy_multiplication_x:|
-|`^T*`|binary|`matrix`|`vector`||:heavy_multiplication_x:|
-|`^T*`|binary|`matrix`|`matrix`||:heavy_multiplication_x:|
-|`-`|unary|||`double`|:heavy_check_mark:|
-|`-`|unary|||`vector`|:heavy_check_mark:|
-|`-`|unary|||`matrix`|:heavy_check_mark:|
-|`inv`|unary|||`double`|:heavy_multiplication_x:|
-|`inv`|unary|||`vector`|:heavy_multiplication_x:|
-|`inv`|unary|||`matrix`|:heavy_multiplication_x:|
-|`T`|unary|||`matrix`|:heavy_check_mark:|
-|`exp`|unary|||`double`|:heavy_check_mark:|
-|`exp`|unary|||`vector`|:heavy_check_mark:|
-|`exp`|unary|||`matrix`|:heavy_check_mark:|
-|`log`|unary|||`double`|:heavy_check_mark:|
-|`log`|unary|||`vector`|:heavy_check_mark:|
-|`log`|unary|||`matrix`|:heavy_check_mark:|
+|operator|type|lhs|rhs|uhs|implemented|implementation method|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|`*`|binary|`double`|`double`||:heavy_check_mark:|`c`|
+|`*`|binary|`double`|`vector`||:heavy_check_mark:|`blas`|
+|`*`|binary|`double`|`matrix`||:heavy_check_mark:|`blas`|
+|`*`|binary|`vector`|`double`||:heavy_check_mark:|`blas`|
+|`*`|binary|`matrix`|`double`||:heavy_check_mark:|`blas`|
+|`*` (cross)|binary|`vector`|`vector`||:heavy_check_mark:|`c`|
+|`*`|binary|`matrix`|`vector`||:heavy_check_mark:|`blas`|
+|`*`|binary|`matrix`|`matrix`||:heavy_check_mark:|`blas`|
+|`+`|binary|`double`|`double`||:heavy_check_mark:|`c`|
+|`+`|binary|`double`|`vector`||:heavy_check_mark:|`c`|
+|`+`|binary|`double`|`matrix`||:heavy_check_mark:|`c`|
+|`+`|binary|`vector`|`vector`||:heavy_check_mark:|`c`|
+|`+`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
+|`+`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
+|`+`|binary|`matrix`|`matrix`||:heavy_check_mark:|`c`|
+|`+`|binary|`matrix`|`vector`||:heavy_check_mark:|`c`|
+|`-`|binary|`double`|`double`||:heavy_check_mark:|`c`|
+|`-`|binary|`double`|`vector`||:heavy_check_mark:|`c`|
+|`-`|binary|`double`|`matrix`||:heavy_check_mark:|`c`|
+|`-`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
+|`-`|binary|`vector`|`vector`||:heavy_check_mark:|`c`|
+|`-`|binary|`vector`|`matrix`||:heavy_check_mark:|`c`|
+|`-`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
+|`-`|binary|`matrix`|`vector`||:heavy_check_mark:|`c`|
+|`-`|binary|`matrix`|`matrix`||:heavy_check_mark:|`c`|
+|`/`|binary|`double`|`double`||:heavy_check_mark:|`c`|
+|`/`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
+|`/`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
+|`^`|binary|`double`|`double`||:heavy_check_mark:|`c`|
+|`^`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
+|`^`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
+|`.`|binary|`vector`|`vector`||:heavy_check_mark:|`blas`|
+|`^T*`|binary|`matrix`|`double`||:heavy_multiplication_x:|`c`|
+|`^T*`|binary|`matrix`|`vector`||:heavy_multiplication_x:|`c`|
+|`^T*`|binary|`matrix`|`matrix`||:heavy_multiplication_x:|`c`|
+|`-`|unary|||`double`|:heavy_check_mark:|`c`|
+|`-`|unary|||`vector`|:heavy_check_mark:|`c`|
+|`-`|unary|||`matrix`|:heavy_check_mark:|`c`|
+|`inv`|unary|||`double`|:heavy_multiplication_x:|`c`|
+|`inv`|unary|||`vector`|:heavy_multiplication_x:|`c`|
+|`inv`|unary|||`matrix`|:heavy_multiplication_x:|`c`|
+|`T`|unary|||`matrix`|:heavy_check_mark:|`c`|
+|`exp`|unary|||`double`|:heavy_check_mark:|`c`|
+|`exp`|unary|||`vector`|:heavy_check_mark:|`c`|
+|`exp`|unary|||`matrix`|:heavy_check_mark:|`c`|
+|`log`|unary|||`double`|:heavy_check_mark:|`c`|
+|`log`|unary|||`vector`|:heavy_check_mark:|`c`|
+|`log`|unary|||`matrix`|:heavy_check_mark:|`c`|
 
 ### Example (Lua API):
 
@@ -107,7 +110,6 @@ end
 print(sigmoid(CGraph.dot( CGraph.vector(3, array {0,0,0}), CGraph.vector(3, array {0,0,0}) )))
 
 return sigmoid
-
 ```
 
 returns:

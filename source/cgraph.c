@@ -78,13 +78,9 @@ CGResultNode* mulDM(CGDouble* a, CGMatrix* M){
 	Y->cols = M->cols;
 	Y->data = y;
 	
-	memcpy(y, M->data, size*sizeof(double));
 	
-	uint64_t i = 0;
-	
-	for(;i<size;i++){
-		y[i] *= value;
-	}
+	cblas_dcopy(size, M->data, 1, y, 1);
+	cblas_dscal(size, a->value, y, 1);
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_MATRIX;
