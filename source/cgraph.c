@@ -4,6 +4,7 @@
  * 
  */
 
+#include <inttypes.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -16,6 +17,7 @@
 #include "cg_types.h"
 #include "cg_variables.h"
 #include "cg_errors.h"
+#include "cg_constants.h"
 
 #include "memory.h"
 
@@ -34,7 +36,7 @@ if(node->error != NULL){\
 /*
  * d.d 
  */
-CGResultNode* mulDD(CGDouble* M, CGDouble* V){
+CGResultNode* mulDD(CGDouble* M, CGDouble* V, CGraph* graph, CGNode* parentNode){
 	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
 	Y->value = M->value * V->value;
 	
@@ -48,14 +50,16 @@ CGResultNode* mulDD(CGDouble* M, CGDouble* V){
 /*
  * d.V == V.d
  */
-CGResultNode* mulDV(CGDouble* a, CGVector* V){
+CGResultNode* mulDV(CGDouble* a, CGVector* V, CGraph* graph, CGNode* parentNode){
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->len = V->len;
 	Y->data = y;
 	
-	cblas_dcopy(V->len, V->data, 1, y, 1);
-	cblas_dscal(V->len, a->value, y, 1);
+	if(a->value != 0){
+		cblas_dcopy(V->len, V->data, 1, y, 1);
+		cblas_dscal(V->len, a->value, y, 1);
+	}
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_VECTOR;
@@ -68,7 +72,7 @@ CGResultNode* mulDV(CGDouble* a, CGVector* V){
 /*
  * d.M == M.d
  */
-CGResultNode* mulDM(CGDouble* a, CGMatrix* M){
+CGResultNode* mulDM(CGDouble* a, CGMatrix* M, CGraph* graph, CGNode* parentNode){
 	uint64_t size = M->cols*M->rows;
 	double value = a->value;
 	
@@ -78,9 +82,10 @@ CGResultNode* mulDM(CGDouble* a, CGMatrix* M){
 	Y->cols = M->cols;
 	Y->data = y;
 	
-	
-	cblas_dcopy(size, M->data, 1, y, 1);
-	cblas_dscal(size, a->value, y, 1);
+	if(a->value != 0){
+		cblas_dcopy(size, M->data, 1, y, 1);
+		cblas_dscal(size, a->value, y, 1);
+	}
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_MATRIX;
@@ -92,7 +97,13 @@ CGResultNode* mulDM(CGDouble* a, CGMatrix* M){
 /*
  * M.v
  */
-CGResultNode* mulMV(CGMatrix* M, CGVector* V){
+CGResultNode* mulMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
+	if(M->cols != V->len){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot multiply M(%"PRIu64", %"PRIu64") by V(%"PRIu64")", M->rows, M->cols, V->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
+	}
+	
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->len = V->len;
@@ -112,7 +123,13 @@ CGResultNode* mulMV(CGMatrix* M, CGVector* V){
 /*
  * M.N
  */
-CGResultNode* mulMM(CGMatrix* M, CGMatrix* N){
+CGResultNode* mulMM(CGMatrix* M, CGMatrix* N, CGraph* graph, CGNode* parentNode){
+	if(M->cols != N->rows){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot multiply M(%"PRIu64", %"PRIu64") by N(%"PRIu64", %"PRIu64")", M->rows, M->cols, N->rows, N->cols);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
+	}
+	
 	double* z = dmt_calloc(M->rows*N->cols, sizeof(double));
 	
 	CGMatrix* Z = dmt_calloc(1, sizeof(CGMatrix));
@@ -136,9 +153,11 @@ CGResultNode* mulMM(CGMatrix* M, CGMatrix* N){
 /*
  * V.V
  */
-CGResultNode* crossVV(CGVector* V1, CGVector* V2){
+CGResultNode* crossVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentNode){
 	if(V1->len != V2->len){
-		// TODO: throw error
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot compute Cross Product of V(%"PRIu64") by V(%"PRIu64")", V1->len, V2->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = V1->len;
@@ -171,9 +190,11 @@ CGResultNode* crossVV(CGVector* V1, CGVector* V2){
 /*
  * V.V
  */
-CGResultNode* dotVV(CGVector* V1, CGVector* V2){
+CGResultNode* dotVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentNode){
 	if(V1->len != V2->len){
-		// TODO: throw error
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot compute Dot Product of V(%"PRIu64") by V(%"PRIu64")", V1->len, V2->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = V1->len;
@@ -199,7 +220,13 @@ CGResultNode* dotVV(CGVector* V1, CGVector* V2){
 /*
  *  d/d
  */
-CGResultNode* divDD(CGDouble* D1, CGDouble* D2){
+CGResultNode* divDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNode){
+	if(D2->value == 0.0){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Diving by zero D/(D=0)");
+		return returnResultError(graph, CGET_DIVIDE_BY_ZERO, parentNode, msg);
+	}
+	
 	double res = D1->value / D2->value;
 	
 	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
@@ -214,20 +241,22 @@ CGResultNode* divDD(CGDouble* D1, CGDouble* D2){
 
 /*
  *  V/d
- * TODO: optimize as Multiplication of inverse of `d`
  */
-CGResultNode* divVD(CGVector* V, CGDouble* D){
+CGResultNode* divVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode){
+	if(D->value == 0.0){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Diving by zero V/(D=0)");
+		return returnResultError(graph, CGET_DIVIDE_BY_ZERO, parentNode, msg);
+	}
+	
 	double* res = dmt_calloc(V->len, sizeof(double));
 	double value = D->value;
 	
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->data = res;
 	
-	uint64_t i = 0;
-	
-	for(;i<V->len;i++){
-		res[i] = V->data[i] / value;
-	}
+	cblas_dcopy(V->len, V->data, 1, res, 1);
+	cblas_dscal(V->len, 1.0/D->value, res, 1);
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_VECTOR;
@@ -239,7 +268,13 @@ CGResultNode* divVD(CGVector* V, CGDouble* D){
 /*
  *  M/d
  */
-CGResultNode* divMD(CGMatrix* M, CGDouble* D){
+CGResultNode* divMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode){
+	if(D->value == 0.0){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Diving by zero M/(D=0)");
+		return returnResultError(graph, CGET_DIVIDE_BY_ZERO, parentNode, msg);
+	}
+	
 	uint64_t size = M->rows*M->cols;
 	double* res = dmt_calloc(size, sizeof(double));
 	double value = D->value;
@@ -249,11 +284,8 @@ CGResultNode* divMD(CGMatrix* M, CGDouble* D){
 	Y->cols = M->cols;
 	Y->data = res;
 	
-	uint64_t i = 0;
-	
-	for(;i<size;i++){
-		res[i] = M->data[i] / value;
-	}
+	cblas_dcopy(size, M->data, 1, res, 1);
+	cblas_dscal(size, 1.0/D->value, res, 1);
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_MATRIX;
@@ -271,7 +303,7 @@ CGResultNode* divMD(CGMatrix* M, CGDouble* D){
 /*
  * d+d
  */
-CGResultNode* addDD(CGDouble* D1, CGDouble* D2){
+CGResultNode* addDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNode){
 	double res = D1->value + D2->value;
 	
 	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
@@ -287,7 +319,7 @@ CGResultNode* addDD(CGDouble* D1, CGDouble* D2){
 /*
  * V+d
  */
-CGResultNode* addVD(CGVector* V, CGDouble* D){
+CGResultNode* addVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode){
 	double* res = dmt_calloc(V->len, sizeof(double));
 	double value = D->value;
 	
@@ -311,7 +343,7 @@ CGResultNode* addVD(CGVector* V, CGDouble* D){
 /*
  * M+d
  */
-CGResultNode* addMD(CGMatrix* M, CGDouble* D){
+CGResultNode* addMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode){
 	uint64_t size = M->rows*M->cols;
 	double* res = dmt_calloc(size, sizeof(double));
 	double value = D->value;
@@ -337,9 +369,11 @@ CGResultNode* addMD(CGMatrix* M, CGDouble* D){
 /*
  * V+V
  */
-CGResultNode* addVV(CGVector* V1, CGVector* V2){
+CGResultNode* addVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentNode){
 	if(V1->len != V2->len){
-		// TODO: throw error
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot Add V(%"PRIu64") by V(%"PRIu64")", V1->len, V2->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = V1->len;
@@ -367,9 +401,11 @@ CGResultNode* addVV(CGVector* V1, CGVector* V2){
 /*
  * M+V
  */
-CGResultNode* addMV(CGMatrix* M, CGVector* V){
+CGResultNode* addMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
 	if(M->rows != V->len){
-		// TODO: throw error
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot Add M(%"PRIu64", %"PRIu64") by V(%"PRIu64")", M->rows, M->cols, V->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = M->cols*M->rows;
@@ -396,9 +432,11 @@ CGResultNode* addMV(CGMatrix* M, CGVector* V){
 /*
  * M+M
  */
-CGResultNode* addMM(CGMatrix* M1, CGMatrix* M2){
-	if((M1->rows != M2->rows) || (M1->cols != M2->cols)){
-		// TODO: throw error
+CGResultNode* addMM(CGMatrix* M1, CGMatrix* M2, CGraph* graph, CGNode* parentNode){
+	if((M1->rows != M2->rows) && (M1->cols != M2->cols)){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot multiply M(%"PRIu64", %"PRIu64") by N(%"PRIu64", %"PRIu64")", M1->rows, M1->cols, M2->rows, M2->cols);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = M1->cols*M1->rows;
@@ -432,7 +470,7 @@ CGResultNode* addMM(CGMatrix* M1, CGMatrix* M2){
 /*
  * d-d
  */
-CGResultNode* subDD(CGDouble* D1, CGDouble* D2){
+CGResultNode* subDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNode){
 	double res = D1->value - D2->value;
 	
 	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
@@ -448,7 +486,7 @@ CGResultNode* subDD(CGDouble* D1, CGDouble* D2){
 /*
  * V-d
  */
-CGResultNode* subVD(CGVector* V, CGDouble* D){
+CGResultNode* subVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode){
 	double* res = dmt_calloc(V->len, sizeof(double));
 	double value = D->value;
 	
@@ -472,7 +510,7 @@ CGResultNode* subVD(CGVector* V, CGDouble* D){
 /*
  * d-V
  */
-CGResultNode* subDV(CGDouble* D, CGVector* V){
+CGResultNode* subDV(CGDouble* D, CGVector* V, CGraph* graph, CGNode* parentNode){
 	double* res = dmt_calloc(V->len, sizeof(double));
 	double value = D->value;
 	
@@ -497,7 +535,7 @@ CGResultNode* subDV(CGDouble* D, CGVector* V){
 /*
  * M-d
  */
-CGResultNode* subMD(CGMatrix* M, CGDouble* D){
+CGResultNode* subMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode){
 	uint64_t size = M->rows*M->cols;
 	double* res = dmt_calloc(size, sizeof(double));
 	double value = D->value;
@@ -523,7 +561,7 @@ CGResultNode* subMD(CGMatrix* M, CGDouble* D){
 /*
  * D-M
  */
-CGResultNode* subDM(CGDouble* D, CGMatrix* M){
+CGResultNode* subDM(CGDouble* D, CGMatrix* M, CGraph* graph, CGNode* parentNode){
 	uint64_t size = M->rows*M->cols;
 	double* res = dmt_calloc(size, sizeof(double));
 	double value = D->value;
@@ -550,9 +588,11 @@ CGResultNode* subDM(CGDouble* D, CGMatrix* M){
 /*
  * V-V
  */
-CGResultNode* subVV(CGVector* V1, CGVector* V2){
+CGResultNode* subVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentNode){
 	if(V1->len != V2->len){
-		// TODO: throw error
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot Substract V(%"PRIu64") by V(%"PRIu64")", V1->len, V2->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = V1->len;
@@ -578,9 +618,11 @@ CGResultNode* subVV(CGVector* V1, CGVector* V2){
 /*
  * M-M
  */
-CGResultNode* subMM(CGMatrix* M1, CGMatrix* M2){
-	if((M1->rows != M2->rows) || (M1->cols != M2->cols)){
-		// TODO: throw error
+CGResultNode* subMM(CGMatrix* M1, CGMatrix* M2, CGraph* graph, CGNode* parentNode){
+	if((M1->rows != M2->rows) && (M1->cols != M2->cols)){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot Substract M(%"PRIu64", %"PRIu64") by N(%"PRIu64", %"PRIu64")", M1->rows, M1->cols, M2->rows, M2->cols);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = M1->cols*M1->rows;
@@ -607,9 +649,11 @@ CGResultNode* subMM(CGMatrix* M1, CGMatrix* M2){
 /*
  * M-V
  */
-CGResultNode* subMV(CGMatrix* M, CGVector* V){
+CGResultNode* subMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
 	if(M->rows != V->len){
-		// TODO: throw error
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot Substract M(%"PRIu64", %"PRIu64") by V(%"PRIu64")", M->rows, M->cols, V->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = M->cols*M->rows;
@@ -636,9 +680,12 @@ CGResultNode* subMV(CGMatrix* M, CGVector* V){
 /*
  * V-M
  */
-CGResultNode* subVM(CGVector* V, CGMatrix* M){
+CGResultNode* subVM(CGVector* V, CGMatrix* M, CGraph* graph, CGNode* parentNode){
+	
 	if(M->rows != V->len){
-		// TODO: throw error
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot Substract V(%"PRIu64") by M(%"PRIu64", %"PRIu64")", V->len, M->rows, M->cols);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
 	uint64_t size = M->cols*M->rows;
@@ -672,7 +719,7 @@ CGResultNode* subVM(CGVector* V, CGMatrix* M){
 /*
  * d^d
  */
-CGResultNode* powDD(CGDouble* D1, CGDouble* D2){
+CGResultNode* powDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNode){
 	double res = pow(D1->value, D2->value);
 	
 	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
@@ -688,7 +735,7 @@ CGResultNode* powDD(CGDouble* D1, CGDouble* D2){
 /*
  * V^d
  */
-CGResultNode* powVD(CGVector* V, CGDouble* D){
+CGResultNode* powVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode){
 	double* res = dmt_calloc(V->len, sizeof(double));
 	double value = D->value;
 	
@@ -712,7 +759,7 @@ CGResultNode* powVD(CGVector* V, CGDouble* D){
 /*
  * M^d
  */
-CGResultNode* powMD(CGMatrix* M, CGDouble* D){
+CGResultNode* powMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode){
 	uint64_t size = M->rows*M->cols;
 	double* res = dmt_calloc(size, sizeof(double));
 	double value = D->value;
@@ -743,7 +790,7 @@ CGResultNode* powMD(CGMatrix* M, CGDouble* D){
 /*
  * M^T.v
  */
-CGResultNode* mulMtV(CGMatrix* M, CGVector* V){
+CGResultNode* mulMtV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->len = V->len;
@@ -764,7 +811,7 @@ CGResultNode* mulMtV(CGMatrix* M, CGVector* V){
 /*
  * exp(d)
  */
-CGResultNode* expD(CGDouble* D){
+CGResultNode* expD(CGDouble* D, CGraph* graph, CGNode* parentNode){
 	double y = exp(D->value);
 	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
 	Y->value = y;
@@ -779,7 +826,7 @@ CGResultNode* expD(CGDouble* D){
 /*
  * exp(v)
  */
-CGResultNode* expV(CGVector* V){
+CGResultNode* expV(CGVector* V, CGraph* graph, CGNode* parentNode){
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->data = y;
@@ -801,7 +848,7 @@ CGResultNode* expV(CGVector* V){
 /*
  * exp(M)
  */
-CGResultNode* expM(CGMatrix* M){
+CGResultNode* expM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
 	uint64_t size = M->rows*M->cols;
 	
 	double* y = dmt_calloc(size, sizeof(double));
@@ -827,7 +874,7 @@ CGResultNode* expM(CGMatrix* M){
 /*
  * log(d)
  */
-CGResultNode* logD(CGDouble* D){
+CGResultNode* logD(CGDouble* D, CGraph* graph, CGNode* parentNode){
 	double y = log(D->value);
 	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
 	Y->value = y;
@@ -842,7 +889,7 @@ CGResultNode* logD(CGDouble* D){
 /*
  * log(V)
  */
-CGResultNode* logV(CGVector* V){
+CGResultNode* logV(CGVector* V, CGraph* graph, CGNode* parentNode){
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->data = y;
@@ -864,7 +911,7 @@ CGResultNode* logV(CGVector* V){
 /*
  * exp(M)
  */
-CGResultNode* logM(CGMatrix* M){
+CGResultNode* logM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
 	uint64_t size = M->rows*M->cols;
 	
 	double* y = dmt_calloc(size, sizeof(double));
@@ -893,6 +940,8 @@ CGResultNode* logM(CGMatrix* M){
  * *********************
  */
 
+// TODO
+
 /*
  * *********************
  * Transpose
@@ -902,7 +951,7 @@ CGResultNode* logM(CGMatrix* M){
 /*
  * M^t
  */
-CGResultNode* transposeM(CGMatrix* M){
+CGResultNode* transposeM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
 	uint64_t size = M->rows*M->cols;
 	
 	double* y = dmt_calloc(size, sizeof(double));
@@ -930,6 +979,7 @@ CGResultNode* transposeM(CGMatrix* M){
 CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CGNode* uhs, CGNode* parentNode){
 	CGVarType uhsType = CGVT_DOUBLE;
 	void* uhsValue = NULL;
+	CGResultNode* newres = NULL;
 	
 	if(uhs->type == CGNT_CONSTANT){
 		uhsType = uhs->constant->type;
@@ -941,20 +991,27 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		CHECK_RESULT(lhsResult)
 		uhsType = lhsResult->type;
 		uhsValue = lhsResult->value;
+		dmt_free(lhsResult);
 	}
 	
 	switch(type){
 		case CGUOT_EXP:{
 			if(uhsType == CGVT_DOUBLE){
-				return expD((CGDouble*)uhsValue);
+				newres = expD((CGDouble*)uhsValue, graph, parentNode);
+				freeDoubleValue(uhsValue);
+				return newres;
 			}
 			
 			if(uhsType == CGVT_VECTOR){
-				return expV((CGVector*)uhsValue);
+				newres = expV((CGVector*)uhsValue, graph, parentNode);
+				freeVectorValue(uhsValue);
+				return newres;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
-				return expM((CGMatrix*)uhsValue);
+				newres = expM((CGMatrix*)uhsValue, graph, parentNode);
+				freeMatrixValue(uhsValue);
+				return newres;
 			}
 			break;
 		}
@@ -962,15 +1019,21 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		
 		case CGUOT_LOG:{
 			if(uhsType == CGVT_DOUBLE){
-				return logD((CGDouble*)uhsValue);
+				newres = logD((CGDouble*)uhsValue, graph, parentNode);
+				freeDoubleValue(uhsValue);
+				return newres;
 			}
 			
 			if(uhsType == CGVT_VECTOR){
-				return logV((CGVector*)uhsValue);
+				newres = logV((CGVector*)uhsValue, graph, parentNode);
+				freeVectorValue(uhsValue);
+				return newres;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
-				return logM((CGMatrix*)uhsValue);
+				newres = logM((CGMatrix*)uhsValue, graph, parentNode);
+				freeMatrixValue(uhsValue);
+				return newres;
 			}
 			break;
 		}
@@ -980,8 +1043,10 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				CGDouble* rhs = dmt_calloc(1, sizeof(CGDouble));
 				rhs->value = -1;
 				
-				CGResultNode* res = mulDD((CGDouble*)uhsValue, rhs);
-				dmt_free(rhs);
+				CGResultNode* res = mulDD((CGDouble*)uhsValue, rhs, graph, parentNode);
+				
+				freeDoubleValue(uhsValue);
+				freeDoubleValue(rhs);
 				return res;
 			}
 			
@@ -989,37 +1054,48 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				CGDouble* lhs = dmt_calloc(1, sizeof(CGDouble));
 				lhs->value = -1;
 				
-				CGResultNode* res = mulDV(lhs, (CGVector*)uhsValue);
-				dmt_free(lhs);
+				CGResultNode* res = mulDV(lhs, (CGVector*)uhsValue, graph, parentNode);
+				
+				freeVectorValue(uhsValue);
+				freeDoubleValue(lhs);
 				return res;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
 				CGDouble* lhs = dmt_calloc(1, sizeof(CGDouble));
 				lhs->value = -1;
-				CGResultNode* res = mulDM(lhs, (CGMatrix*)uhsValue);
-				dmt_free(lhs);
+				CGResultNode* res = mulDM(lhs, (CGMatrix*)uhsValue, graph, parentNode);
+				
+				freeMatrixValue(uhsValue);
+				freeDoubleValue(lhs);
 				return res;
 			}
 			break;
 		}
-		case CGUOT_INV:
-			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode);
+		case CGUOT_INV:{
+			char msg[MAX_ERR_FMT_LEN];
+			snprintf(msg, MAX_ERR_FMT_LEN, "Operation `%s` is not implemented/supported", getUnaryOperationTypeString(uhsType));
+			newres = returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode, msg);
+		}
 			
 		case CGUOT_TRANSPOSE:{
 			if(uhsType == CGVT_MATRIX){
-				return transposeM((CGMatrix*)uhsValue);
+				newres = transposeM((CGMatrix*)uhsValue, graph, parentNode);
+				freeMatrixValue(uhsValue);
+				return newres;
 			}
 			break;
 		}
 	}
-	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
+	char msg[MAX_ERR_FMT_LEN];
+	snprintf(msg, MAX_ERR_FMT_LEN, "Operation [%s %s] cannot be applied", getVariableTypeString(uhsType), getUnaryOperationTypeString(type));
+	newres = returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode, msg);
 }
 
 CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, CGNode* lhs, CGNode* rhs, CGNode* parentNode){
 	CGVarType lhsType = CGVT_DOUBLE;
 	CGVarType rhsType = CGVT_DOUBLE;
-	
+	CGResultNode* newres = NULL;
 	void* lhsValue = NULL;
 	void* rhsValue = NULL;
 	
@@ -1034,6 +1110,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		CHECK_RESULT(lhsResult)
 		lhsType = lhsResult->type;
 		lhsValue = lhsResult->value;
+		dmt_free(lhsResult);
 	}
 	// RHS
 	if(rhs->type == CGNT_CONSTANT){
@@ -1046,149 +1123,246 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		CHECK_RESULT(rhsResult)
 		rhsType = rhsResult->type;
 		rhsValue = rhsResult->value;
+		dmt_free(rhsResult);
 	}
 	
 	switch(type){
 		case CGBOT_ADD:{
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
-				return addDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+				newres = addDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
-				return addVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+				newres = addVD((CGVector*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
-				return addVD((CGVector*)rhsValue, (CGDouble*)lhsValue);
+				newres = addVD((CGVector*)rhsValue, (CGDouble*)lhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
-				return addMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
+				newres = addMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
-				return addMD((CGMatrix*)rhsValue, (CGDouble*)lhsValue);
+				newres = addMD((CGMatrix*)rhsValue, (CGDouble*)lhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
-				return addVV((CGVector*)lhsValue, (CGVector*)rhsValue);
+				newres = addVV((CGVector*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
-				return addMV((CGMatrix*)lhsValue, (CGVector*)rhsValue);
+				newres = addMV((CGMatrix*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
-				return addMV((CGMatrix*)rhsValue, (CGVector*)lhsValue);
+				newres = addMV((CGMatrix*)rhsValue, (CGVector*)lhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
-				return addMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
+				newres = addMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
 			}
 			break;
 		}
 		
 		case CGBOT_SUB:{
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
-				return subDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+				newres = subDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
-				return subVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+				newres = subVD((CGVector*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
-				return subDV((CGDouble*)lhsValue, (CGVector*)rhsValue);
+				newres = subDV((CGDouble*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
-				return subMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
+				newres = subMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
-				return subDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue);
+				newres = subDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
-				return subVV((CGVector*)lhsValue, (CGVector*)rhsValue);
+				newres = subVV((CGVector*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
-				return subMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
+				newres = subMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
-				return subMV((CGMatrix*)lhsValue, (CGVector*)rhsValue);
+				newres = subMV((CGMatrix*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
-				return subVM((CGVector*)lhsValue, (CGMatrix*)rhsValue);
+				newres = subVM((CGVector*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
 			}
 			break;
 		}
 		
 		case CGBOT_DIV:{
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
-				return divDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+				newres = divDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
-				return divVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+				newres = divVD((CGVector*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
-				return divMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
+				newres = divMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			break;
 		}
 		
 		case CGBOT_MULT:{
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
-				return mulMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue);
+				newres = mulMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
-				return mulMV((CGMatrix*)lhsValue, (CGVector*)rhsValue);
+				newres = mulMV((CGMatrix*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
-				return mulDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+				newres = mulDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
-				return mulDV((CGDouble*)lhsValue, (CGVector*)rhsValue);
+				newres = mulDV((CGDouble*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
-				return mulDV((CGDouble*)rhsValue, (CGVector*)lhsValue);
+				newres = mulDV((CGDouble*)rhsValue, (CGVector*)lhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
-				return mulDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue);
+				newres = mulDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
-				return mulDM((CGDouble*)rhsValue, (CGMatrix*)lhsValue);
+				newres = mulDM((CGDouble*)rhsValue, (CGMatrix*)lhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
-				return crossVV((CGVector*)rhsValue, (CGVector*)lhsValue);
+				newres = crossVV((CGVector*)rhsValue, (CGVector*)lhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
 			}
 			break;
 		}
 		
 		case CGBOT_POW:{
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
-				return powDD((CGDouble*)lhsValue, (CGDouble*)rhsValue);
+				newres = powDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
-				return powVD((CGVector*)lhsValue, (CGDouble*)rhsValue);
+				newres = powVD((CGVector*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
-				return powMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue);
+				newres = powMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				freeMatrixValue(lhsValue);
+				freeDoubleValue(rhsValue);
+				return newres;
 			}
 			break;
 		}
@@ -1196,15 +1370,25 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		case CGBOT_DOT: {
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
-				return dotVV((CGVector*)lhsValue, (CGVector*)rhsValue);
+				newres = dotVV((CGVector*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeVectorValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
+				
 			}
 			break;
 		}
 		
-		case CGBOT_TMULT:
-			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode);
+		case CGBOT_TMULT:{
+			char msg[MAX_ERR_FMT_LEN];
+			snprintf(msg, MAX_ERR_FMT_LEN, "Operation `%s` is not implemented/supported", getBinaryOperationTypeString(type));
+			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode, msg);
+		}
 	}
-	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode);
+	
+	char msg[MAX_ERR_FMT_LEN];
+	snprintf(msg, MAX_ERR_FMT_LEN, "Operation [%s %s %s] cannot be applied", getVariableTypeString(lhsType), getBinaryOperationTypeString(type), getVariableTypeString(rhsType));
+	return returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode, msg);
 }
 
 CGResultNode* computeRawNode(CGNode* node){
@@ -1225,10 +1409,19 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		case CGNT_VARIABLE:{
 			result = dmt_calloc(1, sizeof(CGResultNode));
 			CGNode* constantNode = *map_get(&graph->vars, node->var->name);
+			
+			if(constantNode == NULL)
+			{
+				char msg[MAX_ERR_FMT_LEN];
+				snprintf(msg, MAX_ERR_FMT_LEN, "No variable `%s` was found in graph `%s`", node->var->name, graph!=NULL?graph->name:"[anonymous]");
+				return returnResultError(graph, CGET_VARIABLE_DOES_NOT_EXIST, node, msg);
+			}
+			
 			CGResultNode* rnode = computeCGNode(graph, constantNode);
 			CHECK_RESULT(rnode)
 			result->type = rnode->type;
 			result->value = rnode->value;
+			dmt_free(rnode);
 			break;
 		}
 		case CGNT_BINARY_OPERATION:
@@ -1238,8 +1431,11 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			result = processUnaryOperation(graph, node->uop->type, node->uop->uhs, node);
 			break;
 			
-		case CGNT_GRAPH:
-			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node);
+		case CGNT_GRAPH:{
+			char msg[MAX_ERR_FMT_LEN];
+			snprintf(msg, MAX_ERR_FMT_LEN, "Operation [GRAPH] is not implemented/supported");
+			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node, msg);
+		}
 	}
 	
 	return result;
@@ -1249,9 +1445,99 @@ CGResultNode* computeGraph(CGraph* graph){
 	return computeCGNode(graph, graph->root);
 }
 
-void freeNode(CGNode* node){
+void freeDoubleValue(CGDouble* v){
+	dmt_free(v);
+}
+
+void freeVectorValue(CGVector* data){
+	dmt_free(data->data);
+	dmt_free(data);
+}
+
+void freeMatrixValue(CGMatrix* data){
+	dmt_free(data->data);
+	dmt_free(data);
+}
+
+void freeNode(CGraph* graph, CGNode* node){
+	switch(node->type){
+		case CGNT_CONSTANT:
+			{
+				dmt_free(node->constant);
+			}
+			break;
+
+		case CGNT_VARIABLE:{
+			CGNode* constantNode = *map_get(&graph->vars, node->var->name);
+			map_remove(&graph->vars, node->var->name);
+			
+			if(constantNode != NULL){
+				freeNode(graph, constantNode);
+			}
+			
+			dmt_free(node->var);			
+			break;
+		}
+		case CGNT_BINARY_OPERATION:
+			freeNode(graph, node->bop->lhs);
+			freeNode(graph, node->bop->rhs);
+			
+			dmt_free(node->bop);
+			break;
+			
+		case CGNT_UNARY_OPERATION:
+			freeNode(graph, node->uop->uhs);
+			dmt_free(node->uop);
+			break;
+			
+		case CGNT_GRAPH:{
+			break;
+		}
+	}
+	
+	dmt_free(node);
+}
+
+void freeResultNode(CGResultNode* node){
+	if(node->error){
+		dmt_free(node->error);
+		dmt_free(node);
+		return;
+	}
+	
+	switch(node->type){
+		case CGVT_DOUBLE:
+			freeDoubleValue(node->value);
+			break;
+		case CGVT_VECTOR:
+			freeVectorValue(node->value);
+			break;
+		case CGVT_MATRIX:
+			freeMatrixValue(node->value);
+			break;
+	}
+	
+	dmt_free(node);
 }
 
 void freeGraph(CGraph* graph){
+	if(graph == NULL)
+		return;
 	
+	if(graph->root != NULL){
+		freeNode(graph, graph->root);
+	}
+	
+	const char *key;
+	
+	map_iter_t iter = map_iter(&graph->vars);
+
+	while ((key = map_next(&graph->vars, &iter))) {
+		CGNode* node = *map_get(&graph->vars, key);
+		if(node != NULL){
+			freeNode(graph, node);
+		}
+	}
+	
+	// graph pointer must be freed elsewhere. in lua API we create a copy so we cannot free the parameter of this function.
 }

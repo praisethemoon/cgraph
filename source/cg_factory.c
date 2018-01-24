@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "cgraph.h"
 #include "cg_operation.h"
@@ -10,6 +11,12 @@
 #include "cg_factory.h"
 
 #include "memory.h"
+
+double* vcopy(uint64_t len, const double* data){
+	double* newdata = dmt_calloc(len, sizeof(double));
+	memcpy(newdata, data, len*sizeof(double));
+	return newdata;
+}
 
 CGNode* makeVarNode(char* name){
 	CGPVariable* var = dmt_calloc(1, sizeof(CGPVariable));

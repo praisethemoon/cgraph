@@ -9,6 +9,11 @@ local function sigmoid(z)
 	graph:setVar("z", z)
 	local res = graph:eval()
 	graph:plot()
+	--print("before")
+	--CGraph.dumpMem()
+	--print("after")
+	--graph:free()
+	--CGraph.dumpMem()
 	return res
 end
 

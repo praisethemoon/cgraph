@@ -65,15 +65,21 @@ typedef enum CGErrorType {
 	/*
 	 * Matrix is not invertible
 	 */
-	CGET_MATRIX_NOT_INVERTIBLE
+	CGET_MATRIX_NOT_INVERTIBLE,
+	
+	/*
+	 * Did you just yourself in the foot?
+	 */
+	CGET_DIVIDE_BY_ZERO,
 	
 }CGErrorType;
 
-#define MAX_ERROR_TYPE
+#define MAX_ERROR_TYPE CGET_DIVIDE_BY_ZERO
 
 typedef struct CGError {
 	CGErrorType errorType;
 	CGNode* faultyNode;
+	char* message;
 }CGError;
 
 typedef struct  {
@@ -86,7 +92,11 @@ CGResultNode* computeRawNode(CGNode* node);
 CGResultNode* computeCGNode(CGraph* graph, CGNode* node);
 CGResultNode* computeGraph(CGraph* graph);
 
-void freeNode(CGNode* node);
+void freeDoubleValue(CGDouble* v);
+void freeVectorValue(CGVector* data);
+void freeMatrixValue(CGMatrix* data);
+void freeResultNode(CGResultNode* node);
+void freeNode(CGraph* graph, CGNode* node);
 void freeGraph(CGraph* graph);
 
 #endif

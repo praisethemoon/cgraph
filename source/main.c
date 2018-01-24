@@ -779,19 +779,22 @@ void runGraphExample(){
 	CGraph* graph = makeGraph("preprocess");
 	
 	
-	double value1[] = {
-		3, 1, 3, 1,
-		1, 0, 9, 1,
-		2, 6, 5, 1,
-		1, 1, 1, 0,
-	};
+	double value1 = 0;
+	double value2 = 1;
 	
 	
-	CGNode* uhsNode = makeMatrixConstantNode(4, 4, value1);
+	CGNode* uhsNode0 = makeDoubleConstantNode(0);
+	CGNode* uhsNode1 = makeDoubleConstantNode(1);
+	CGNode* uhsNode2 = makeDoubleConstantNode(1);
+	CGNode* node1 = makeUnaryOpNode(CGUOT_MINUS, uhsNode0);
+	CGNode* node2 = makeUnaryOpNode(CGUOT_EXP, node1);
+	CGNode* node3 = (node2);
+	CGNode* node4 = makeBinaryOpNode(CGBOT_ADD, uhsNode1, node3);
+	CGNode* node5 = makeBinaryOpNode(CGBOT_DIV, uhsNode2, node4);
 	
-	graphSetVar(graph, "A", uhsNode);
+	//graphSetVar(graph, "A", uhsNode);
 	
-	graph->root = makeVarNode("A");
+	graph->root = node5;
 	
 	CGResultNode* result = computeGraph(graph);
 	CGMatrix* Y = (CGMatrix*)result->value;
@@ -807,6 +810,8 @@ void runGraphExample(){
 		}
 		printf("\n");
 	}
+	
+	freeGraph(graph);
 }
 
 /*
@@ -816,7 +821,7 @@ int main(int argc, char *argv[]) {
 	//profiler_initialize();
 	
 	printf("Initializing\n");
-	
+	/*
 	runMult_dd();
 	runMult_dV();
 	runMult_MV();
@@ -849,8 +854,9 @@ int main(int argc, char *argv[]) {
 	runExp_M();
 	runExpLog_M();
 	runT_M();
-	
+	*/
 	runGraphExample();
 	//profiler_dump_file("stats.txt");
+	dmt_dump(stdout);
 	return 0;
 }

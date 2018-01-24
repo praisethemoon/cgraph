@@ -8,6 +8,9 @@
 
 #include "memory.h"
 
+// utilities
+double* vcopy(uint64_t len, const double* data);
+
 CGNode* makeVarNode(char* name);
 CGNode* makeDoubleConstantNode(double value);
 CGNode* makeVectorConstantNode(uint64_t  len, double* value);

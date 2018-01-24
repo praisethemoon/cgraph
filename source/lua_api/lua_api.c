@@ -55,7 +55,7 @@ static void pushNode(lua_State* L, CGNode* node){
 
 static CGNode* checkGraph(lua_State* L, int index){
 	CGraph* graph = NULL;
-	luaL_checktype(L, index, LUA_TUSERDATA);
+	//luaL_checktype(L, index, LUA_TUSERDATA);
 	graph = (CGraph*)luaL_checkudata(L, index, CGRAPH);
 	
 	return graph;
@@ -64,6 +64,8 @@ static CGNode* checkGraph(lua_State* L, int index){
 static void pushGraph(lua_State* L, CGraph* graph){
 	CGraph* lgraph= (CGraph *)lua_newuserdata(L, sizeof(CGraph));
 	*lgraph = *graph;
+	
+	//lua_pushlightuserdata(L, graph);
 	luaL_getmetatable(L, CGRAPH);
 	lua_setmetatable(L, -2);
 }
@@ -275,6 +277,9 @@ static int lua_computeGraph(lua_State* L){
 		lua_pushstring(L, "error");
 		lua_pushinteger(L, (int)res->error->errorType);
 		lua_settable(L, -3);
+		lua_pushstring(L, "message");
+		lua_pushstring(L, res->error->message);
+		lua_settable(L, -3);
 		lua_pushstring(L, "node");
 		pushNode(L, res->error->faultyNode);
 		lua_settable(L, -3);
@@ -356,6 +361,25 @@ static int lua_computeGraph(lua_State* L){
 	return 1;
 }
 
+static int lua_freeGraph(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	
+	if(graph->root != NULL){
+		freeGraph(graph);
+		graph->root = NULL;
+	}
+	
+	lua_pushnil(L);
+	return 1;
+}
+
+static int lua_dumpMemoryState(lua_State* L){
+	dmt_dump(stderr);
+
+	lua_pushnil(L);
+	return 1;
+}
+
 int luaopen_libcgraph(lua_State *L)
 {
 	struct luaL_Reg driver[] =
@@ -375,6 +399,8 @@ int luaopen_libcgraph(lua_State *L)
 		{"setVar", lua_setGraphVar},
 		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
+		{"freeGraph", lua_freeGraph},
+		{"dumpMem", lua_dumpMemoryState},
 		{NULL, NULL}
 	};
 
@@ -384,6 +410,12 @@ int luaopen_libcgraph(lua_State *L)
 	lua_pushcclosure (L, create, 1);
 	lua_setfield (L, -2, "doubles");
 	
+	static const luaL_Reg CGRAPH_meta[] = {
+		{"__gc", lua_freeGraph},
+		{0, 0}
+	};
+	
+	/* TODO: set gc to metatable */
 	luaL_newmetatable(L, CGNODE);  
 	luaL_newmetatable(L, CGRAPH);
 	return 1;

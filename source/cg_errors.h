@@ -6,6 +6,8 @@
 #include "cg_types.h"
 #include "cg_variables.h"
 
-CGResultNode* returnResultError(CGraph* graph, CGErrorType errorType, CGNode* faultyNode);
+#define MAX_ERR_FMT_LEN 1024
+
+CGResultNode* returnResultError(CGraph* graph, CGErrorType errorType, CGNode* faultyNode, char* errmsg);
 
 #endif

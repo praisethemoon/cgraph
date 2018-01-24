@@ -152,6 +152,7 @@ local mt = {
 
 --- Here comes the good stuff
 local array = cgraph.doubles
+local dumpMem = cgraph.dumpMem
 
 local double = function (value)
 	local self = {type='value', tensorType=TensorType.DOUBLE, value=value, node=cgraph.double(value)}
@@ -360,12 +361,16 @@ local graph = function(name, rootNode)
 		end
 	end
 	
-	return Graph:create(name, rootNode)
+	function Graph:free()
+		cgraph.freeGraph(self.cdata)
+	end
 	
+	return Graph:create(name, rootNode)
 end
 
 
 local CGraph = {
+	dumpMem=dumpMem,
 	array=array,
 	double=double,
 	vector=vector,

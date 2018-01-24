@@ -147,7 +147,7 @@ You can plot it with Graphviz's `dot` cmd line: `dot -Tpng sigmoid.dot -o sigmoi
 - Lua API for graph construction (done)
 - Derivative calculations
 - Usage of BLAS in all operations
-- GPU BLAS Implentations (cuBLAS probably & CUDA as well
+- GPU BLAS i (cuBLAS probably & CUDA as well
 - Multithreaded implentation
 - Analyze graph to optimize calculations i.e `A^T.xB` is 3 three operations expression that can be reduced to one operation in BLAS.
 - Graph plotting and visualization (done)
