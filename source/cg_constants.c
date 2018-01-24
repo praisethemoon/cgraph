@@ -20,6 +20,10 @@ const char* UnaryOperationTypeString[] = {
 	"T",
 	"exp",
 	"log",
+	"sin",
+	"cos",
+	"tan",
+	"tanh",
 };
 
 const char* NodeTypeString[] = {

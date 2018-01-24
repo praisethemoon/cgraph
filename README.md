@@ -89,6 +89,18 @@ optimizations will come once the library becomes stable.
 |`log`|unary|||`double`|:heavy_check_mark:|`c`|
 |`log`|unary|||`vector`|:heavy_check_mark:|`c`|
 |`log`|unary|||`matrix`|:heavy_check_mark:|`c`|
+|`sin`|unary|||`double`|:heavy_check_mark:|`c`|
+|`sin`|unary|||`vector`|:heavy_check_mark:|`c`|
+|`sin`|unary|||`matrix`|:heavy_check_mark:|`c`|
+|`cos`|unary|||`double`|:heavy_check_mark:|`c`|
+|`cos`|unary|||`vector`|:heavy_check_mark:|`c`|
+|`cos`|unary|||`matrix`|:heavy_check_mark:|`c`|
+|`tan`|unary|||`double`|:heavy_check_mark:|`c`|
+|`tan`|unary|||`vector`|:heavy_check_mark:|`c`|
+|`tan`|unary|||`matrix`|:heavy_check_mark:|`c`|
+|`tanh`|unary|||`double`|:heavy_check_mark:|`c`|
+|`tanh`|unary|||`vector`|:heavy_check_mark:|`c`|
+|`tanh`|unary|||`matrix`|:heavy_check_mark:|`c`|
 
 ### Example (Lua API):
 

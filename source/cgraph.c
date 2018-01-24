@@ -933,6 +933,279 @@ CGResultNode* logM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
 	return result;
 }
 
+/*
+ * *********************
+ * Sin
+ * *********************
+ */
+
+/*
+ * sin(d)
+ */
+CGResultNode* sinD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+	double y = sin(D->value);
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = y;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * sin(V)
+ */
+CGResultNode* sinV(CGVector* V, CGraph* graph, CGNode* parentNode){
+	double* y = dmt_calloc(V->len, sizeof(double));
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = y;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		y[i] = sin(V->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * sin(M)
+ */
+CGResultNode* sinM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
+	uint64_t size = M->rows*M->cols;
+	
+	double* y = dmt_calloc(size, sizeof(double));
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->data = y;
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		y[i] = sin(M->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * *********************
+ * cos
+ * *********************
+ */
+
+/*
+ * cos(d)
+ */
+CGResultNode* cosD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+	double y = cos(D->value);
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = y;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * cos(V)
+ */
+CGResultNode* cosV(CGVector* V, CGraph* graph, CGNode* parentNode){
+	double* y = dmt_calloc(V->len, sizeof(double));
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = y;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		y[i] = cos(V->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * cos(M)
+ */
+CGResultNode* cosM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
+	uint64_t size = M->rows*M->cols;
+	
+	double* y = dmt_calloc(size, sizeof(double));
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->data = y;
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		y[i] = cos(M->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+
+/*
+ * *********************
+ * tan
+ * *********************
+ */
+
+/*
+ * tan(d)
+ */
+CGResultNode* tanD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+	double y = tan(D->value);
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = y;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * tan(V)
+ */
+CGResultNode* tanV(CGVector* V, CGraph* graph, CGNode* parentNode){
+	double* y = dmt_calloc(V->len, sizeof(double));
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = y;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		y[i] = tan(V->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * tan(M)
+ */
+CGResultNode* tanM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
+	uint64_t size = M->rows*M->cols;
+	
+	double* y = dmt_calloc(size, sizeof(double));
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->data = y;
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		y[i] = tan(M->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+
+/*
+ * *********************
+ * tanh
+ * *********************
+ */
+
+/*
+ * tanh(d)
+ */
+CGResultNode* tanhD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+	double y = tanh(D->value);
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = y;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * tanh(V)
+ */
+CGResultNode* tanhV(CGVector* V, CGraph* graph, CGNode* parentNode){
+	double* y = dmt_calloc(V->len, sizeof(double));
+	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
+	Y->data = y;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		y[i] = tanh(V->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * tanh(M)
+ */
+CGResultNode* tanhM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
+	uint64_t size = M->rows*M->cols;
+	
+	double* y = dmt_calloc(size, sizeof(double));
+	CGMatrix* Y = dmt_calloc(1, sizeof(CGMatrix));
+	Y->data = y;
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		y[i] = tanh(M->data[i]);
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
 
 /*
  * *********************
@@ -1072,6 +1345,91 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			}
 			break;
 		}
+		
+		case CGUOT_SIN:{
+			if(uhsType == CGVT_DOUBLE){
+				newres = sinD((CGDouble*)uhsValue, graph, parentNode);
+				freeDoubleValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_VECTOR){
+				newres = sinV((CGVector*)uhsValue, graph, parentNode);
+				freeVectorValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_MATRIX){
+				newres = sinM((CGMatrix*)uhsValue, graph, parentNode);
+				freeMatrixValue(uhsValue);
+				return newres;
+			}
+			break;
+		}
+		
+		case CGUOT_COS:{
+			if(uhsType == CGVT_DOUBLE){
+				newres = cosD((CGDouble*)uhsValue, graph, parentNode);
+				freeDoubleValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_VECTOR){
+				newres = cosV((CGVector*)uhsValue, graph, parentNode);
+				freeVectorValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_MATRIX){
+				newres = cosM((CGMatrix*)uhsValue, graph, parentNode);
+				freeMatrixValue(uhsValue);
+				return newres;
+			}
+			break;
+		}
+		
+		case CGUOT_TAN:{
+			if(uhsType == CGVT_DOUBLE){
+				newres = tanD((CGDouble*)uhsValue, graph, parentNode);
+				freeDoubleValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_VECTOR){
+				newres = tanV((CGVector*)uhsValue, graph, parentNode);
+				freeVectorValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_MATRIX){
+				newres = tanM((CGMatrix*)uhsValue, graph, parentNode);
+				freeMatrixValue(uhsValue);
+				return newres;
+			}
+			break;
+		}
+		
+		case CGUOT_TANH:{
+			if(uhsType == CGVT_DOUBLE){
+				newres = tanhD((CGDouble*)uhsValue, graph, parentNode);
+				freeDoubleValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_VECTOR){
+				newres = tanhV((CGVector*)uhsValue, graph, parentNode);
+				freeVectorValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_MATRIX){
+				newres = tanhM((CGMatrix*)uhsValue, graph, parentNode);
+				freeMatrixValue(uhsValue);
+				return newres;
+			}
+			break;
+		}
+		
 		case CGUOT_INV:{
 			char msg[MAX_ERR_FMT_LEN];
 			snprintf(msg, MAX_ERR_FMT_LEN, "Operation `%s` is not implemented/supported", getUnaryOperationTypeString(uhsType));

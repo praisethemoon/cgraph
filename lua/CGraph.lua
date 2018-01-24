@@ -26,6 +26,10 @@ local UnaryOperationType = {
 	TRANSPOSE=2,
 	EXP=3,
 	LOG=4,
+	SIN=5,
+	COS=6,
+	TAN=7,
+	TANH=8
 }
 
 local function bopToString(bop)
