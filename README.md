@@ -132,13 +132,16 @@ and created a file named `sigmoid.dot` containing the DOT Graph instance:
 
 ```dot
 digraph sigmoid{
-	1 [label="B /"];
-	2 [label="Scalar =1"];
-	3 [label="B +"];
-	4 [label="Scalar =1"];
-	5 [label="U exp"];
-	6 [label="U -"];
-	7 [label="Variable z"];
+	1 [label="/", shape=circle];
+	2 [label="Scalar =1", style="filled", fillcolor=".7 .3 1.0"];
+	3 [label="+", shape=circle];
+	4 [label="Scalar =1", style="filled", fillcolor=".7 .3 1.0"];
+	5 [label="exp", shape=circle];
+	6 [label="-", shape=circle];
+	7 [label="Var z", shape=box];
+	8 [label="dot", shape=circle];
+	9 [label="Vector <3>", style="filled", fillcolor=".7 .5 1.0"];
+	10 [label="Vector <3>", style="filled", fillcolor=".7 .5 1.0"];
 	1 -> Result ;
 	2 -> 1;
 	3 -> 1;
@@ -146,6 +149,9 @@ digraph sigmoid{
 	5 -> 3;
 	6 -> 5;
 	7 -> 6;
+	8 -> 7;
+	9 -> 8;
+	10 -> 8;
 }
 ```
 
