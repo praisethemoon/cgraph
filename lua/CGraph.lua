@@ -234,6 +234,38 @@ local exp = function(uhs)
 	return op
 end
 
+local sin = function(uhs)
+	local node = cgraph.uop(UnaryOperationType.SIN, uhs.node)
+	local op = {type='uop', opType=UnaryOperationType.SIN, node = node, uhs=uhs}
+	setmetatable(op, mt)
+			
+	return op
+end
+
+local cos = function(uhs)
+	local node = cgraph.uop(UnaryOperationType.COS, uhs.node)
+	local op = {type='uop', opType=UnaryOperationType.COS, node = node, uhs=uhs}
+	setmetatable(op, mt)
+			
+	return op
+end
+
+local tan = function(uhs)
+	local node = cgraph.uop(UnaryOperationType.TAN, uhs.node)
+	local op = {type='uop', opType=UnaryOperationType.TAN, node = node, uhs=uhs}
+	setmetatable(op, mt)
+			
+	return op
+end
+
+local tanh = function(uhs)
+	local node = cgraph.uop(UnaryOperationType.TANH, uhs.node)
+	local op = {type='uop', opType=UnaryOperationType.TANH, node = node, uhs=uhs}
+	setmetatable(op, mt)
+			
+	return op
+end
+
 local function nodeToDot(graph, uhs, str)
 	function listNodeToString(uhs, str, idCounter)
 		local idCounter = idCounter + 1
@@ -381,6 +413,10 @@ local CGraph = {
 	matrix=matrix,
 	variable=variable,
 	pow=pow,
+	sin=sin,
+	cos=cos,
+	tan=tan,
+	tanh=tanh,
 	dot=dot,
 	inv=inv,
 	tr=tr,

@@ -218,6 +218,10 @@ static int lua_createUnaryOperation(lua_State* L){
 		CGUOT_TRANSPOSE,
 		CGUOT_EXP,
 		CGUOT_LOG,
+		CGUOT_SIN,
+		CGUOT_COS,
+		CGUOT_TAN,
+		CGUOT_TANH,
 	};
 	
 	uint8_t type = lua_tointeger(L, 1);

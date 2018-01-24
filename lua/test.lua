@@ -5,11 +5,11 @@ local startTime = os.clock()
 
 local A = CGraph.double(3)
 local B = CGraph.vector(9, array{1, 2, 3, 4, 5, 6, 7, 8, 9})
-local C = CGraph.matrix(3, 3, array{1, 2, 3, 4, 5, 6, 7, 8, 9})
+local C = CGraph.vector(9, array{1, 2, 3, 4, 5, 6, 7, 8, 9})
 
 local Z = A + B
-local Y = Z - A
-local W = Z * Y
+local Y = Z - C
+local W = CGraph.sin(Y)
 local PHI = CGraph.exp(-W)
 
 --local g1 = CGraph.graph("test", Z)

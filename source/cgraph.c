@@ -958,6 +958,7 @@ CGResultNode* sinD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * sin(V)
  */
 CGResultNode* sinV(CGVector* V, CGraph* graph, CGNode* parentNode){
+	printf("computing sinV\n");
 	double* y = dmt_calloc(V->len, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
 	Y->data = y;
