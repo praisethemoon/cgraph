@@ -1898,5 +1898,7 @@ void freeGraph(CGraph* graph){
 		}
 	}
 	
+	map_deinit_(&graph->vars);
+	
 	// graph pointer must be freed elsewhere. in lua API we create a copy so we cannot free the parameter of this function.
 }
