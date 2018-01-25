@@ -64,6 +64,7 @@ set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/source/cg_factory.c
 	${PROJECT_SOURCE_DIR}/source/cg_constants.c
 	${PROJECT_SOURCE_DIR}/source/cg_errors.c
+	${PROJECT_SOURCE_DIR}/source/cg_diff.c
 	${PROJECT_SOURCE_DIR}/source/lua_api/lua_api.c
 	${PROJECT_SOURCE_DIR}/source/main.c
 )
