@@ -10,6 +10,7 @@
 #include "../cg_constants.h"
 #include "../cg_errors.h"
 #include "../cg_variables.h"
+#include "../cg_diff.h"
 
 #define CGNODE "CGNode"
 #define CGRAPH "CGraph"
@@ -36,6 +37,7 @@ static int create (lua_State *L)
 
 	return 1;
 }
+
 
 static CGNode* checkNode(lua_State* L, int index){
 	CGNode* node = NULL;
@@ -365,6 +367,174 @@ static int lua_computeGraph(lua_State* L){
 	return 1;
 }
 
+
+void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
+	lua_newtable(L);
+	
+	switch(node->type){
+		case CGNT_BINARY_OPERATION: {
+			lua_pushstring(L, "type");
+			lua_pushstring(L, "bop");
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "opType");
+			lua_pushinteger(L, node->bop->type);
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "lhs");
+			nodeToLuaTable(node->bop->lhs, L, graph);
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "rhs");
+			nodeToLuaTable(node->bop->rhs, L, graph);
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "node");
+			pushNode(L, node);
+			lua_settable(L, -3);
+			
+			return;
+		}
+		
+		case CGNT_UNARY_OPERATION: {
+			lua_pushstring(L, "type");
+			lua_pushstring(L, "uop");
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "opType");
+			lua_pushinteger(L, node->uop->type);
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "uhs");
+			nodeToLuaTable(node->uop->uhs, L, graph);
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "node");
+			pushNode(L, node);
+			lua_settable(L, -3);
+			
+			return;
+		}
+		
+		case CGNT_VARIABLE: {
+			lua_pushstring(L, "type");
+			lua_pushstring(L, "var");
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "name");
+			lua_pushstring(L, node->var->name);
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "node");
+			pushNode(L, node);
+			lua_settable(L, -3);
+			
+			return;
+		}
+		
+		
+		case CGNT_CONSTANT: {
+			lua_pushstring(L, "type");
+			lua_pushstring(L, "value");
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "tensorType");
+			lua_pushinteger(L, node->constant->type);
+			lua_settable(L, -3);
+			
+			lua_pushstring(L, "node");
+			pushNode(L, node);
+			lua_settable(L, -3);
+			
+			switch(node->constant->type){
+				case CGVT_DOUBLE:{
+					CGDouble* value = (CGDouble*)node->constant->value;
+					
+					lua_pushstring(L, "value");
+					lua_pushnumber(L, value->value);
+					lua_settable(L, -3);
+					break;
+				}
+				
+					
+				case CGVT_VECTOR:{
+					CGVector* value = (CGVector*)node->constant->value;
+					
+					/*
+					uint64_t i = 0;
+					printf("Vector len: %d\n", value->len);
+					for(;i<value->len;i++){
+						printf("\t%d\t%lf\n", i, value->data[i]);
+					}
+					*/
+					
+					lua_pushstring(L, "len");
+					lua_pushnumber(L, value->len);
+					lua_settable(L, -3);
+					int size[]= {0};
+					size[0] = value->len;
+					
+					lua_pushstring(L, "value");
+					array_createarrayv (L, ARRAY_TDOUBLE, value->data, 1, size);
+					lua_settable(L, -3);
+					break;
+				}
+					
+				case CGVT_MATRIX:{
+					CGMatrix* value = (CGMatrix*)node->constant->value;
+					/*
+					printf("Matrix len: %dx%d\n", value->rows, value->cols);
+					
+					uint64_t i = 0;
+					uint64_t j = 0;
+					for(;i<value->rows;i++){
+						for(j = 0;j<value->cols;j++){
+							printf("\t%lf", value->data[i*value->cols +j]);
+						}
+						printf("\n");
+					}
+					*/
+					lua_pushstring(L, "rows");
+					lua_pushnumber(L, value->rows);
+					lua_settable(L, -3);
+					
+					lua_pushstring(L, "cols");
+					lua_pushnumber(L, value->cols);
+					lua_settable(L, -3);
+					
+					int size[]= {0};
+					size[0] = value->rows*value->cols;
+					
+					lua_pushstring(L, "value");
+					array_createarrayv (L, ARRAY_TDOUBLE, value->data, 1, size);
+					lua_settable(L, -3);
+					break;
+				}
+			}
+			return;
+		}
+	}
+}
+
+static int lua_diffGraph(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	char* newName = lua_tostring(L, 2);
+	char* wrtNode = lua_tostring(L, 3);
+	
+	CGraph* newGraph = graph_diff(graph, newName, wrtNode);
+	
+	lua_newtable(L);
+	
+	lua_pushstring(L, "graph");
+	pushGraph(L, newGraph);
+	lua_settable(L, -3);
+	lua_pushstring(L, "root");
+	nodeToLuaTable(newGraph->root, L, newGraph);
+	lua_settable(L, -3);
+	
+	return 1;
+}
+
 static int lua_freeGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	
@@ -403,6 +573,7 @@ int luaopen_libcgraph(lua_State *L)
 		{"setVar", lua_setGraphVar},
 		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
+		{"diff", lua_diffGraph},
 		{"freeGraph", lua_freeGraph},
 		{"dumpMem", lua_dumpMemoryState},
 		{NULL, NULL}

@@ -92,6 +92,10 @@ CGResultNode* computeRawNode(CGNode* node);
 CGResultNode* computeCGNode(CGraph* graph, CGNode* node);
 CGResultNode* computeGraph(CGraph* graph);
 
+
+void optimizeNode(CGNode* node, CGraph* graph);
+void optimizeGraph(CGraph* graph);
+
 void freeDoubleValue(CGDouble* v);
 void freeVectorValue(CGVector* data);
 void freeMatrixValue(CGMatrix* data);

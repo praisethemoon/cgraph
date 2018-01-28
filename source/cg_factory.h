@@ -15,6 +15,9 @@ CGNode* makeVarNode(char* name);
 CGNode* makeDoubleConstantNode(double value);
 CGNode* makeVectorConstantNode(uint64_t  len, double* value);
 CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value);
+CGNode* makeZeroDoubleConstantNode();
+CGNode* makeZeroVectorConstantNode(uint64_t  len);
+CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols);
 CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs);
 CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
 

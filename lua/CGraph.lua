@@ -142,7 +142,7 @@ local mt = {
 	end,
 	
 	__pow = function(lhs, rhs)
-		local node = cgraph.bop(BinaryOperationType.ADD, lhs.node, rhs.node)
+		local node = cgraph.bop(BinaryOperationType.POW, lhs.node, rhs.node)
 		local op = {type='bop', opType=BinaryOperationType.POW, node = node, lhs=lhs, rhs=rhs}
 		setmetatable(op, getmetatable(lhs))
 				
@@ -395,6 +395,14 @@ local graph = function(name, rootNode)
 		else
 			print("Cannot open file '"..self.name..'.dot"')
 		end
+	end
+	
+	function Graph:diff(var, newName)
+		local res = cgraph.diff(self.cdata, newName, var)
+		local graph = {name= newName, root=res.root, cdata=res.graph, vars=self.vars}
+		setmetatable(graph, Graph)
+		
+		return graph
 	end
 	
 	function Graph:free()

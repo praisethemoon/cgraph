@@ -25,7 +25,126 @@
 if(node->error != NULL){\
 	return node;\
 }
+/*
+ * Helper function
+ */
+
+void* copyNodeValue(CGNode* node){
+	if(node->type != CGNT_CONSTANT){
+		fprintf(stderr, "Call to copyNodeValue with a non-constant node.\n... This should not happen, but who knows these days.");
+		exit(-1);
+	}
 	
+	switch(node->constant->type){
+		case CGVT_DOUBLE: {
+			CGDouble* d = dmt_calloc(1, sizeof(CGDouble));
+			d->value = ((CGDouble*)node->constant->value)->value;
+			
+			return d;
+		}
+		
+		case CGVT_VECTOR: {
+			CGVector* V = dmt_calloc(1, sizeof(CGVector));
+			CGVector* src = (CGVector*)node->constant->value;
+			
+			V->len = src->len;
+			V->data = dmt_calloc(V->len, sizeof(double));
+			
+			memcpy(V->data, src->data, V->len*sizeof(double));
+			return V;
+		}
+		
+		case CGVT_MATRIX: {
+			CGMatrix* M = dmt_calloc(1, sizeof(CGMatrix));
+			CGMatrix* src = (CGMatrix*)node->constant->value;
+			
+			uint64_t size = src->cols * src->rows;
+			
+			M->rows = src->rows;
+			M->cols = src->cols;
+			M->data = dmt_calloc(size, sizeof(double));
+			
+			memcpy(M->data, src->data, size*sizeof(double));
+			return M;
+		}
+	}
+}
+
+
+void* copyRNodeValue(CGResultNode* node){
+	switch(node->type){
+		case CGVT_DOUBLE: {
+			CGDouble* d = dmt_calloc(1, sizeof(CGDouble));
+			d->value = ((CGDouble*)node->value)->value;
+			
+			return d;
+		}
+		
+		case CGVT_VECTOR: {
+			CGVector* V = dmt_calloc(1, sizeof(CGVector));
+			CGVector* src = (CGVector*)node->value;
+			
+			V->len = src->len;
+			V->data = dmt_calloc(V->len, sizeof(double));
+			
+			memcpy(V->data, src->data, V->len*sizeof(double));
+			return V;
+		}
+		
+		case CGVT_MATRIX: {
+			CGMatrix* M = dmt_calloc(1, sizeof(CGMatrix));
+			CGMatrix* src = (CGMatrix*)node->value;
+			
+			uint64_t size = src->cols * src->rows;
+			
+			M->rows = src->rows;
+			M->cols = src->cols;
+			M->data = dmt_calloc(size, sizeof(double));
+			
+			memcpy(M->data, src->data, size*sizeof(double));
+			return M;
+		}
+	}
+	printf("DIE\n");
+}
+
+uint8_t nodeValueIsZero(CGNode* node){
+	assert(node->type == CGNT_CONSTANT);
+	
+	switch(node->constant->type){
+		case CGVT_DOUBLE: {
+			double value = ((CGDouble*)node->constant->value)->value;
+			
+			return value == 0.0;
+		}
+		
+		case CGVT_VECTOR: {
+			uint64_t len = ((CGVector*)node->constant->value)->len;
+			double* values = ((CGVector*)node->constant->value)->data;
+			
+			uint64_t i = 0;
+			for(; i < len; i++)
+				if(values[i] != 0)
+					return 0;
+			
+			return 1;
+		}
+		
+		case CGVT_MATRIX: {
+			CGMatrix* M = node->constant->value;
+			uint64_t len = M->rows * M->cols;
+			double* values = M->data;
+			
+			uint64_t i = 0;
+			for(; i < len; i++)
+				if(values[i] != 0)
+					return 0;
+
+			return 1;
+		}
+	}
+	
+}
 
 /*
  * *********************
@@ -1257,7 +1376,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 	
 	if(uhs->type == CGNT_CONSTANT){
 		uhsType = uhs->constant->type;
-		uhsValue = uhs->constant->value;
+		uhsValue = copyNodeValue(uhs);
 	}
 	else
 	{
@@ -1461,7 +1580,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 	// LHS
 	if(lhs->type == CGNT_CONSTANT){
 		lhsType = lhs->constant->type;
-		lhsValue = lhs->constant->value;
+		lhsValue = copyNodeValue(lhs);
 	}
 	else
 	{
@@ -1474,7 +1593,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 	// RHS
 	if(rhs->type == CGNT_CONSTANT){
 		rhsType = rhs->constant->type;
-		rhsValue = rhs->constant->value;
+		rhsValue = copyNodeValue(rhs);
 	}
 	else
 	{
@@ -1779,7 +1898,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			CGResultNode* rnode = computeCGNode(graph, constantNode);
 			CHECK_RESULT(rnode)
 			result->type = rnode->type;
-			result->value = rnode->value;
+			result->value = copyRNodeValue(rnode);
 			dmt_free(rnode);
 			break;
 		}
@@ -1798,6 +1917,19 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	}
 	
 	return result;
+}
+
+
+void optimizeNode(CGNode* node, CGraph* graph){
+	if(node->type == CGNT_BINARY_OPERATION){
+		if(node->bop->lhs->type == CGNT_CONSTANT){
+			
+		}
+	}
+}
+
+void optimizeGraph(CGraph* graph){
+	optimizeNode(graph->root, graph);
 }
 
 CGResultNode* computeGraph(CGraph* graph){
@@ -1898,7 +2030,7 @@ void freeGraph(CGraph* graph){
 		}
 	}
 	
-	map_deinit_(&graph->vars);
+	map_deinit(&graph->vars);
 	
 	// graph pointer must be freed elsewhere. in lua API we create a copy so we cannot free the parameter of this function.
 }

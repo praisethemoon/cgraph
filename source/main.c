@@ -12,6 +12,7 @@
 #include "cg_variables.h"
 #include "cg_factory.h"
 #include "cg_constants.h"
+#include "cg_diff.h"
 
 #include "memory.h"
 
@@ -814,6 +815,52 @@ void runGraphExample(){
 	freeGraph(graph);
 }
 
+void runGraphDiffExample(){
+	printf("Running graph diff example");
+	CGraph* graph = makeGraph("preprocess");
+	
+	
+	CGNode* lhsNode1 = makeDoubleConstantNode(2);
+	CGNode* rhsNode1 = makeBinaryOpNode(CGBOT_POW, makeVarNode("x"), makeDoubleConstantNode(3));
+	
+	CGNode* lhsNode2 = makeBinaryOpNode(CGBOT_MULT, lhsNode1, rhsNode1);
+	CGNode* rhsNode2 =  makeDoubleConstantNode(3);
+	
+	CGNode* node = makeBinaryOpNode(CGBOT_ADD, lhsNode2, rhsNode2);
+	
+	
+	//graphSetVar(graph, "A", uhsNode);
+	
+	graph->root = node;
+	
+	CGraph* d = graph_diff(graph, "diff_preprocess", "x");
+	graphSetVar(d, "x", makeDoubleConstantNode(2));
+	
+	CGResultNode* res = computeGraph(d);
+	
+	printf("result: %f\n", ((CGDouble*)res->value)->value);
+}
+
+void runSharedNodeExample(){
+	printf("Running runSharedNodeExample");
+	CGraph* graph = makeGraph("preprocess");
+	CGNode* lhsNode1 = makeDoubleConstantNode(2);
+	CGNode* add = makeBinaryOpNode(CGBOT_ADD, lhsNode1, lhsNode1);
+	CGNode* node = makeBinaryOpNode(CGBOT_ADD, add, add);
+	
+	
+	//graphSetVar(graph, "A", uhsNode);
+	
+	graph->root = node;
+	
+	CGResultNode* res = computeGraph(graph);
+	
+	printf("%f\n", ((CGDouble*)res->value)->value);
+	
+	
+	
+}
+
 /*
  * Main program
  */
@@ -855,8 +902,10 @@ int main(int argc, char *argv[]) {
 	runExpLog_M();
 	runT_M();
 	*/
-	runGraphExample();
+	//runGraphExample();
+	runGraphDiffExample();
+	//runSharedNodeExample();
 	//profiler_dump_file("stats.txt");
-	dmt_dump(stdout);
+	//dmt_dump(stdout);
 	return 0;
 }

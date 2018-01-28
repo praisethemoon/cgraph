@@ -3,7 +3,7 @@
 
 #include "cgraph.h"
 
-CGNode* diff_node(CGNode* node, CGraph* graph);
-CGraph* graph_diff(CGraph* graph, char* newName, char* rtNode);
+CGNode* diff_node(CGNode* node, CGraph* graph, const char*);
+CGraph* graph_diff(CGraph* graph, char* newName, const char* wrtNode);
 
 #endif
