@@ -163,11 +163,13 @@ You can plot it with Graphviz's `dot` cmd line: `dot -Tpng sigmoid.dot -o sigmoi
 ### Future work
 - Graph variables (done)
 - Lua API for graph construction (done)
-- Derivative calculations
+- Derivative calculations (WIP | DONE)
+- Graph optimizations: Derivative produces highly inefficient graphs that can be geatly optimized
+- Nested Graphs
 - Usage of BLAS in all operations
-- GPU BLAS i (cuBLAS probably & CUDA as well
-- Multithreaded implentation
-- Analyze graph to optimize calculations i.e `A^T.xB` is 3 three operations expression that can be reduced to one operation in BLAS.
+- GPU BLAS implementation (clBLAS probably & CUDA as well)
+- Multithreaded implementation
+- Analyze graph to optimize calculations i.e `A^T.B` is a 2-operations expression that can be reduced to one highly efficient operation in BLAS.
 - Graph plotting and visualization (done)
 - Switch to LuaJIT instead of Lua API
 - Travis CI (done)
