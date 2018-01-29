@@ -267,6 +267,14 @@ local tanh = function(uhs)
 	return op
 end
 
+local sum = function(uhs)
+	local node = cgraph.uop(UnaryOperationType.SUM, uhs.node)
+	local op = {type='uop', opType=UnaryOperationType.SUM, node = node, uhs=uhs}
+	setmetatable(op, mt)
+			
+	return op
+end
+
 local function nodeToDot(graph, uhs, str)
 	function listNodeToString(uhs, str, idCounter)
 		local idCounter = idCounter + 1
