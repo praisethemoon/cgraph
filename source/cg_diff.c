@@ -139,6 +139,10 @@ CGNode* diff_node(CGNode* node, CGraph* graph, const char* wrtNode){
 					return makeUnaryOpNode(CGUOT_MINUS, diff_node(node->uop->uhs, graph, wrtNode));
 				}
 				
+				case CGUOT_SUM: {
+					return makeUnaryOpNode(CGUOT_SUM, diff_node(node->uop->uhs, graph, wrtNode));
+				}
+				
 				// TODO:
 				case CGUOT_TANH:
 				case CGUOT_INV:
