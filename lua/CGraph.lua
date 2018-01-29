@@ -434,6 +434,7 @@ local CGraph = {
 	cos=cos,
 	tan=tan,
 	tanh=tanh,
+	sum=sum,
 	dot=dot,
 	inv=inv,
 	tr=tr,
