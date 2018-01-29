@@ -1404,6 +1404,7 @@ CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
 		y += V->data[i];
 	}
 	
+	Y->value = y;
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_DOUBLE;
 	result->value = Y;
@@ -1589,6 +1590,22 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				freeMatrixValue(uhsValue);
 				return newres;
 			}
+			break;
+		}
+		
+		case CGUOT_SUM:{
+			if(uhsType == CGVT_DOUBLE){
+				newres = sumD((CGDouble*)uhsValue, graph, parentNode);
+				freeDoubleValue(uhsValue);
+				return newres;
+			}
+			
+			if(uhsType == CGVT_VECTOR){
+				newres = sumV((CGVector*)uhsValue, graph, parentNode);
+				freeVectorValue(uhsValue);
+				return newres;
+			}
+			
 			break;
 		}
 		
