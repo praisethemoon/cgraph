@@ -26,6 +26,7 @@ typedef enum CGUnaryOperationType {
 	CGUOT_COS,
 	CGUOT_TAN,
 	CGUOT_TANH,
+	CGUOT_SUM,
 } CGUnaryOperationType;
 
 #define MAX_UNARY_OPERATION CGUOT_LOG

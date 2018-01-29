@@ -24,6 +24,7 @@ const char* UnaryOperationTypeString[] = {
 	"cos",
 	"tan",
 	"tanh",
+	"sum",
 };
 
 const char* NodeTypeString[] = {

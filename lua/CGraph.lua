@@ -29,7 +29,8 @@ local UnaryOperationType = {
 	SIN=5,
 	COS=6,
 	TAN=7,
-	TANH=8
+	TANH=8,
+	SUM=9
 }
 
 local function bopToString(bop)

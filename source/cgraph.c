@@ -1368,6 +1368,49 @@ CGResultNode* transposeM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
 	
 	return result;
 }
+
+
+/*
+ * *********************
+ * SUM
+ * *********************
+ */
+
+/*
+ * sum(D)
+ */
+CGResultNode* sumD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+	double y = D->value;
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	Y->value = y;
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ * sum(V)
+ */
+CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
+	double y = 0;
+	CGDouble* Y = dmt_calloc(1, sizeof(CGDouble));
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		y += V->data[i];
+	}
+	
+	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+
 CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CGNode* uhs, CGNode* parentNode){
 	CGVarType uhsType = CGVT_DOUBLE;
 	void* uhsValue = NULL;

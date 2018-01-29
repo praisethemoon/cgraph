@@ -55,7 +55,7 @@ static void pushNode(lua_State* L, CGNode* node){
 	lua_setmetatable(L, -2);
 }
 
-static CGNode* checkGraph(lua_State* L, int index){
+static CGraph* checkGraph(lua_State* L, int index){
 	CGraph* graph = NULL;
 	//luaL_checktype(L, index, LUA_TUSERDATA);
 	graph = (CGraph*)luaL_checkudata(L, index, CGRAPH);
@@ -224,6 +224,7 @@ static int lua_createUnaryOperation(lua_State* L){
 		CGUOT_COS,
 		CGUOT_TAN,
 		CGUOT_TANH,
+		CGUOT_SUM,
 	};
 	
 	uint8_t type = lua_tointeger(L, 1);
