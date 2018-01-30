@@ -833,7 +833,7 @@ void runGraphDiffExample(){
 	
 	graph->root = node;
 	
-	CGraph* d = graph_diff(graph, "diff_preprocess", "x");
+	CGraph* d = differentiateGraphWRTVar(graph, "diff_preprocess", "x");
 	graphSetVar(d, "x", makeDoubleConstantNode(2));
 	
 	CGResultNode* res = computeGraph(d);

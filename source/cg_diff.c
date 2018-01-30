@@ -13,8 +13,9 @@
 
 #include "memory.h"
 
+#define diff_node differentiateNodeWRTVar
 
-CGNode* diff_node(CGNode* node, CGraph* graph, const char* wrtNode){
+CGNode* differentiateNodeWRTVar(CGNode* node, CGraph* graph, const char* wrtNode){
 	switch(node->type){
 		case CGNT_VARIABLE: {
 			if(strcmp(node->var->name, wrtNode) == 0){
@@ -152,11 +153,13 @@ CGNode* diff_node(CGNode* node, CGraph* graph, const char* wrtNode){
 		}
 		
 		case CGNT_GRAPH:
-			return NULL;
+		{
+			return diff_node(node->graph->root, node->graph, wrtNode);
+		}
 	}
 }
 
-CGraph* graph_diff(CGraph* graph, char* newName, const char* rtNode){
+CGraph* differentiateGraphWRTVar(CGraph* graph, char* newName, const char* rtNode){
 	CGraph* diff = makeGraph(newName);
 	diff->root = diff_node(graph->root, graph, rtNode);
 	

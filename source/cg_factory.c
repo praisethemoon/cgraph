@@ -129,6 +129,14 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	return node;
 }
 
+CGNode* makeGraphNode(CGraph* graph){
+	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	node->type = CGNT_GRAPH;
+	node->graph = graph;
+	
+	return node;
+}
+
 CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
 	CGNode* node = dmt_calloc(1, sizeof(CGNode));
 	node->type = CGNT_BINARY_OPERATION;

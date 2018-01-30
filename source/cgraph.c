@@ -1969,9 +1969,12 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			break;
 			
 		case CGNT_GRAPH:{
+			result = computeGraph(node->graph);
+			/*
 			char msg[MAX_ERR_FMT_LEN];
 			snprintf(msg, MAX_ERR_FMT_LEN, "Operation [GRAPH] is not implemented/supported");
 			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node, msg);
+			*/
 		}
 	}
 	

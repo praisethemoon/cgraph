@@ -23,6 +23,7 @@ typedef struct CGNode {
 		CGPConstant* constant;
 		CGBinaryOperation* bop;
 		CGUnaryOperation* uop;
+		struct CGraph* graph;
 	};
 }CGNode;
 

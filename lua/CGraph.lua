@@ -187,6 +187,14 @@ local variable = function(name)
 	return self
 end
 
+local graphNode = function(graph)
+	local node = cgraph.graphNode(graph.cdata)
+	local op = {type='graph', graph=graph, node=node}
+	setmetatable(op, mt)
+			
+	return op
+end
+
 local pow = function(lhs, rhs)
 	local node = cgraph.bop(BinaryOperationType.POW, lhs.node, rhs.node)
 	local op = {type='bop', opType=BinaryOperationType.POW, node = node, lhs=lhs, rhs=rhs}
@@ -314,6 +322,10 @@ local function nodeToDot(graph, uhs, str)
 			end
 			
 			return str, idCounter
+		elseif uhs.type == 'graph' then
+			str = str .. "\t" .. idCounter ..' [label="graph '..(uhs.name)..'"'..fillAttribute..', shape=record];\n';
+			
+			return str, idCounter
 		else
 			str = str .. "\t" .. idCounter ..' [label="UNKNOWN"'..fillAttribute..', shape=plaintext];\n';
 		end
@@ -429,6 +441,7 @@ local CGraph = {
 	vector=vector,
 	matrix=matrix,
 	variable=variable,
+	graphNode = graphNode,
 	pow=pow,
 	sin=sin,
 	cos=cos,

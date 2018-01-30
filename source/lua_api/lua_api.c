@@ -162,6 +162,14 @@ static int lua_createVectorConstant(lua_State* L){
 	return 1;
 }
 
+static int lua_createGraphNode(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	CGNode* node = makeGraphNode(graph);
+	
+	pushNode(L, node);
+	return 1;
+}
+
 static int lua_createMatrixConstant(lua_State* L){
 	uint64_t rows = lua_tointeger(L, 1);
 	uint64_t cols = lua_tointeger(L, 2);
@@ -522,7 +530,7 @@ static int lua_diffGraph(lua_State* L){
 	char* newName = lua_tostring(L, 2);
 	char* wrtNode = lua_tostring(L, 3);
 	
-	CGraph* newGraph = graph_diff(graph, newName, wrtNode);
+	CGraph* newGraph = differentiateGraphWRTVar(graph, newName, wrtNode);
 	
 	lua_newtable(L);
 	
@@ -570,6 +578,7 @@ int luaopen_libcgraph(lua_State *L)
 		{"matrix", lua_createMatrixConstant},
 		{"bop", lua_createBinaryOperation},
 		{"uop", lua_createUnaryOperation},
+		{"graphNode", lua_createGraphNode},
 		{"graph", lua_createGraph},
 		{"setVar", lua_setGraphVar},
 		{"getVar", lua_getGraphVar},
