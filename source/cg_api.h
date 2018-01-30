@@ -121,8 +121,15 @@ CGRAPH_API CGNode* cg_newBinOp(CGBinaryOperationType type, CGNode* lhs, CGNode* 
  * \param[in] uhs Unary hand side
  * \return Graph node
  */
-CGRAPH_API CGNode* cg_newUnOp(CGUnaryOperation type, CGNode* uhs);
+CGRAPH_API CGNode* cg_newUnOp(CGUnaryOperationType type, CGNode* uhs);
 
+/**
+ * \brief Creates a node that is actually an entire graph.
+ * \param[in] graph Subgraph, must already have its variable setup.
+ * \return Graph node
+ */
+
+CGRAPH_API CGNode* cg_newGraphNode(CGraph* graph);
 
 /* * * * * * * * * * * *
  * Graph Processing API
@@ -216,5 +223,16 @@ CGRAPH_API CGVector* cg_getResultVectorVal(CGResultNode* result);
  * \return Matrix tensor (not opaque, you better keep mutable however)
  */
 CGRAPH_API CGMatrix* cg_getResultMatrixVal(CGResultNode* result);
+
+
+/**
+ * \brief  Derivates a graph with respect to a variable
+ * \param[in] graph graph to compute its derivative
+ * \param[in] newName Resulting graph's name
+ * \param[in] wrtVar With respect to variable name
+ * \return Graph, representing the derivative of the original
+ */
+CGRAPH_API CGraph* cg_diffGraph(CGraph* graph, char* newName, char* wrtVar);
+
 
 #endif
