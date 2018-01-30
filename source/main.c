@@ -13,6 +13,7 @@
 #include "cg_factory.h"
 #include "cg_constants.h"
 #include "cg_diff.h"
+#include "cg_enums.h"
 
 #include "memory.h"
 

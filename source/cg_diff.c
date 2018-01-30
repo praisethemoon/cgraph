@@ -10,6 +10,7 @@
 #include "cg_factory.h"
 #include "cg_constants.h"
 #include "cg_errors.h"
+#include "cg_enums.h"
 
 #include "memory.h"
 

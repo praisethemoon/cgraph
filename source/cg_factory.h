@@ -5,6 +5,7 @@
 #include "cg_operation.h"
 #include "cg_types.h"
 #include "cg_variables.h"
+#include "cg_enums.h"
 
 #include "memory.h"
 

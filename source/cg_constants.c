@@ -3,6 +3,7 @@
 
 #include "cgraph.h"
 #include "cg_operation.h"
+#include "cg_enums.h"
 
 const char* BinaryOperationTypeString[] = {
 	"+",

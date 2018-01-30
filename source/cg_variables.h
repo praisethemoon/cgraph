@@ -2,6 +2,7 @@
 #define CG_VARIABLES_H
 
 #include "cg_types.h"
+#include "cg_enums.h"
 
 typedef struct CGPVariable {
 	char* name;

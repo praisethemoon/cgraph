@@ -3,13 +3,7 @@
 
 #include <stdint.h>
 
-typedef enum CGVarType {
-	CGVT_DOUBLE=0,
-	CGVT_VECTOR,
-	CGVT_MATRIX,
-}CGVarType;
-
-#define MAX_VAR_TYPE CGVT_MATRIX
+#include "cg_enums.h"
 
 typedef struct CGDouble {
 	double value;
@@ -19,11 +13,6 @@ typedef struct CGVector {
 	double* data;
 	uint64_t len;
 }CGVector;
-
-typedef enum CGMShape {
-	CGMS_ROW_MAJOR=0,
-	CGMS_COL_MAJOR
-}CGMShape;
 
 typedef struct CGMatrix {
 	double* data;

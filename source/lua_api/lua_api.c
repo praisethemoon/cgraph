@@ -11,6 +11,7 @@
 #include "../cg_errors.h"
 #include "../cg_variables.h"
 #include "../cg_diff.h"
+#include "../cg_enums.h"
 
 #define CGNODE "CGNode"
 #define CGRAPH "CGraph"
