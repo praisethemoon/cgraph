@@ -162,6 +162,5 @@ CGNode* differentiateNodeWRTVar(CGNode* node, CGraph* graph, const char* wrtNode
 CGraph* differentiateGraphWRTVar(CGraph* graph, char* newName, const char* rtNode){
 	CGraph* diff = makeGraph(newName);
 	diff->root = diff_node(graph->root, graph, rtNode);
-	
 	return diff;
 }

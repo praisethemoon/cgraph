@@ -522,6 +522,11 @@ void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 			}
 			return;
 		}
+		
+		case CGNT_GRAPH:
+		{
+			// TODO: Generate LUA Graph that must  be reinterpreted by lua API
+		}
 	}
 }
 

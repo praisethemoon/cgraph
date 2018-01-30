@@ -105,7 +105,6 @@ void* copyRNodeValue(CGResultNode* node){
 			return M;
 		}
 	}
-	printf("DIE\n");
 }
 
 uint8_t nodeValueIsZero(CGNode* node){
