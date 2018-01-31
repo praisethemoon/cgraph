@@ -180,9 +180,10 @@ You can plot it with Graphviz's `dot` cmd line: `dot -Tpng sigmoid.dot -o sigmoi
 - tinycthreads [https://github.com/tinycthread/tinycthread](https://github.com/tinycthread/tinycthread)
 - dmt [https://github.com/rxi/dmt](https://github.com/rxi/dmt)
 - map  [https://github.com/rxi/map](https://github.com/rxi/map)
-- vec [https://github.com/rxi/dmt](https://github.com/rxi/dmt)
+- vec [https://github.com/rxi/vec](https://github.com/rxi/vec)
 - smallprofiler [https://github.com/realbogart/smallprofiler](https://github.com/realbogart/smallprofiler)
 - luaarray [http://www.nongnu.org/techne/lua/luaarray/](http://www.nongnu.org/techne/lua/luaarray/)
+- minunit [https://github.com/siu/minunit](https://github.com/siu/minunit)
 
 ### Help Requested
 If you would like to contribute, feel free to fork this stuff.
