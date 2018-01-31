@@ -20,7 +20,7 @@ double* vcopy(uint64_t len, const double* data){
 }
 
 CGNode* makeVarNode(char* name){
-	CGPVariable* var = dmt_calloc(1, sizeof(CGPVariable));
+	CGVariable* var = dmt_calloc(1, sizeof(CGVariable));
 	var->name = name;
 	
 	CGNode* node = dmt_calloc(1, sizeof(CGNode));
@@ -174,5 +174,5 @@ void graphSetVar(CGraph* graph, char* name, CGNode* value){
 }
 
 CGNode* graphGetVar(CGraph* graph, char* name){
-	return map_get(&graph->vars, name);
+	return *map_get(&graph->vars, name);
 }

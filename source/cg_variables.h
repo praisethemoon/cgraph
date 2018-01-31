@@ -4,15 +4,15 @@
 #include "cg_types.h"
 #include "cg_enums.h"
 
-typedef struct CGPVariable {
+typedef struct CGVariable {
 	char* name;
-} CGPVariable;
+} CGVariable;
 
 typedef struct CGPConstant {
 	CGVarType type;
 	void* value;
 } CGPConstant;
 
-CGPVariable* newVariable(CGVarType type);
+CGVariable* newVariable(CGVarType type);
 
 #endif

@@ -16,7 +16,7 @@
 
 struct CGNode;
 struct CGraph;
-struct CGPVariable;
+struct CGVariable;
 struct CGPConstant;
 struct CGBinaryOperation;
 struct CGUnaryOperation;

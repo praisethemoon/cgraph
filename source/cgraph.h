@@ -10,7 +10,7 @@
 typedef struct CGNode {
 	CGNodeType type;
 	union {
-		CGPVariable* var;
+		CGVariable* var;
 		CGPConstant* constant;
 		CGBinaryOperation* bop;
 		CGUnaryOperation* uop;
