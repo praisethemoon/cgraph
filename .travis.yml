@@ -10,8 +10,9 @@ compiler:
         - gcc
  
 script:
+        - cd source
         - mkdir build
         - cd build
         - cmake ..
         - make
-        - ./cgraph
+        - ./unittest/cg_unittest 
