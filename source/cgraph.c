@@ -223,14 +223,14 @@ CGResultNode* mulMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
 		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
-	double* y = dmt_calloc(V->len, sizeof(double));
+	double* y = dmt_calloc(M->rows, sizeof(double));
 	CGVector* Y = dmt_calloc(1, sizeof(CGVector));
-	Y->len = V->len;
+	Y->len = M->rows;
 	Y->data = y;
 	
 	cblas_dgemv(M->shape == CGMS_ROW_MAJOR?CblasRowMajor:CblasColMajor,
 		    CblasNoTrans, M->rows, M->cols, 1.0, M->data,
-		    V->len, V->data, 1, 0.0, Y->data, 1);
+		    M->cols, V->data, 1, 0.0, Y->data, 1);
 	
 	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_VECTOR;

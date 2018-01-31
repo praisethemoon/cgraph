@@ -10,6 +10,7 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}/source/vendor/container
 	${PROJECT_SOURCE_DIR}/source/vendor/thread
 	${PROJECT_SOURCE_DIR}/source/vendor/luaarray
+	${PROJECT_SOURCE_DIR}/source/vendor/minunit/
 )
 
 
@@ -66,23 +67,24 @@ set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/source/cg_errors.c
 	${PROJECT_SOURCE_DIR}/source/cg_diff.c
 	${PROJECT_SOURCE_DIR}/source/cg_api.c
-	${PROJECT_SOURCE_DIR}/source/lua_api/lua_api.c
+	${PROJECT_SOURCE_DIR}/source/cg_unittests.c
+#	${PROJECT_SOURCE_DIR}/source/lua_api/lua_api.c
 	${PROJECT_SOURCE_DIR}/source/main.c
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
 
-add_library(cgraph SHARED
-	${EXTERNAL_DEPS}
-	${LUA_SRCS}
-	${PROJECT_SRCS}
-)
-
-#add_executable(cgraph 
+#add_library(cgraph SHARED
 #	${EXTERNAL_DEPS}
 #	${LUA_SRCS}
 #	${PROJECT_SRCS}
 #)
+
+add_executable(cgraph 
+	${EXTERNAL_DEPS}
+	${LUA_SRCS}
+	${PROJECT_SRCS}
+)
 
 if (UNIX)
 	target_link_libraries(cgraph 
@@ -101,5 +103,5 @@ if (WIN32)
 	target_link_libraries(cgraph kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32)
 endif ()
 
-#install(TARGETS cgraph RUNTIME DESTINATION bin)
-install(TARGETS cgraph DESTINATION bin)
+install(TARGETS cgraph RUNTIME DESTINATION bin)
+#install(TARGETS cgraph DESTINATION bin)
