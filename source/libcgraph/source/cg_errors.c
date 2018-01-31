@@ -9,7 +9,7 @@
 #include "cg_factory.h"
 #include "cg_errors.h"
 #include "cg_constants.h"
-#include "memory.h"
+#include <malloc.h>
 
 void dumpNode(CGNode* node){
 	fprintf(stderr, "\t\t+Node: '%s'\n", getNodeTypeString(node->type));
@@ -34,8 +34,8 @@ CGResultNode* returnResultError(CGraph* graph, CGErrorType errorType, CGNode* fa
 	else
 		fprintf(stderr, "Exception in graph (anonymous): %s\n", getErrorTypeString(errorType));
 	fprintf(stderr, "%s\n", errmsg);
-	CGResultNode* result = dmt_calloc(1, sizeof(CGResultNode));
-	result->error = dmt_calloc(1, sizeof(CGError));
+	CGResultNode* result = calloc(1, sizeof(CGResultNode));
+	result->error = calloc(1, sizeof(CGError));
 	result->error->errorType = errorType;
 	result->error->faultyNode = faultyNode;
 	result->error->message = errmsg;

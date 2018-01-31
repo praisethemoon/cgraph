@@ -11,19 +11,19 @@
 #include "cg_factory.h"
 #include "cg_enums.h"
 
-#include "memory.h"
+#include <malloc.h>
 
 double* vcopy(uint64_t len, const double* data){
-	double* newdata = dmt_calloc(len, sizeof(double));
+	double* newdata = calloc(len, sizeof(double));
 	memcpy(newdata, data, len*sizeof(double));
 	return newdata;
 }
 
 CGNode* makeVarNode(char* name){
-	CGVariable* var = dmt_calloc(1, sizeof(CGVariable));
+	CGVariable* var = calloc(1, sizeof(CGVariable));
 	var->name = name;
 	
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_VARIABLE;
 	node->var = var;
 	
@@ -31,14 +31,14 @@ CGNode* makeVarNode(char* name){
 }
 
 CGNode* makeDoubleConstantNode(double value){
-	CGDouble* d = dmt_calloc(1, sizeof(CGDouble));
+	CGDouble* d = calloc(1, sizeof(CGDouble));
 	d->value = value;
 	
-	CGPConstant* c = dmt_calloc(1, sizeof(CGPConstant));
+	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_DOUBLE;
 	c->value = d;
 	
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
 	
@@ -46,15 +46,15 @@ CGNode* makeDoubleConstantNode(double value){
 }
 
 CGNode* makeVectorConstantNode(uint64_t  len, double* value){
-	CGVector* v = dmt_calloc(1, sizeof(CGVector));
+	CGVector* v = calloc(1, sizeof(CGVector));
 	v->data = value;
 	v->len = len;
 	
-	CGPConstant* c = dmt_calloc(1, sizeof(CGPConstant));
+	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_VECTOR;
 	c->value = v;
 	
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
 	
@@ -63,17 +63,17 @@ CGNode* makeVectorConstantNode(uint64_t  len, double* value){
 
 
 CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value){
-	CGMatrix* m = dmt_calloc(1, sizeof(CGMatrix));
+	CGMatrix* m = calloc(1, sizeof(CGMatrix));
 	m->data = value;
 	m->rows = rows;
 	m->cols = cols;
 	m->shape = CGMS_ROW_MAJOR;
 	
-	CGPConstant* c = dmt_calloc(1, sizeof(CGPConstant));
+	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_MATRIX;
 	c->value = m;
 	
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
 	
@@ -82,13 +82,13 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value){
 
 
 CGNode* makeZeroDoubleConstantNode(){
-	CGDouble* d = dmt_calloc(1, sizeof(CGDouble));
+	CGDouble* d = calloc(1, sizeof(CGDouble));
 	
-	CGPConstant* c = dmt_calloc(1, sizeof(CGPConstant));
+	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_DOUBLE;
 	c->value = d;
 	
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
 	
@@ -96,15 +96,15 @@ CGNode* makeZeroDoubleConstantNode(){
 }
 
 CGNode* makeZeroVectorConstantNode(uint64_t  len){
-	CGVector* v = dmt_calloc(1, sizeof(CGVector));
+	CGVector* v = calloc(1, sizeof(CGVector));
 	v->len = len;
-	v->data = dmt_calloc(len, sizeof(double));
+	v->data = calloc(len, sizeof(double));
 	
-	CGPConstant* c = dmt_calloc(1, sizeof(CGPConstant));
+	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_VECTOR;
 	c->value = v;
 	
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
 	
@@ -113,17 +113,17 @@ CGNode* makeZeroVectorConstantNode(uint64_t  len){
 
 
 CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
-	CGMatrix* m = dmt_calloc(1, sizeof(CGMatrix));
-	m->data = dmt_calloc(rows*cols, sizeof(double));
+	CGMatrix* m = calloc(1, sizeof(CGMatrix));
+	m->data = calloc(rows*cols, sizeof(double));
 	m->rows = rows;
 	m->cols = cols;
 	m->shape = CGMS_ROW_MAJOR;
 	
-	CGPConstant* c = dmt_calloc(1, sizeof(CGPConstant));
+	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_MATRIX;
 	c->value = m;
 	
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
 	
@@ -131,7 +131,7 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
 }
 
 CGNode* makeGraphNode(CGraph* graph){
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_GRAPH;
 	node->graph = graph;
 	
@@ -139,10 +139,10 @@ CGNode* makeGraphNode(CGraph* graph){
 }
 
 CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_BINARY_OPERATION;
 	
-	node->bop = dmt_calloc(1, sizeof(CGBinaryOperation));
+	node->bop = calloc(1, sizeof(CGBinaryOperation));
 	node->bop->type = type;
 	node->bop->lhs = lhs;
 	node->bop->rhs = rhs;
@@ -151,10 +151,10 @@ CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
 }
 
 CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
-	CGNode* node = dmt_calloc(1, sizeof(CGNode));
+	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_UNARY_OPERATION;
 	
-	node->uop = dmt_calloc(1, sizeof(CGUnaryOperation));
+	node->uop = calloc(1, sizeof(CGUnaryOperation));
 	node->uop->type = type;
 	node->uop->uhs = uhs;
 	
@@ -162,7 +162,7 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 }
 
 CGraph* makeGraph(char* name){
-	CGraph* graph = dmt_calloc(1, sizeof(CGraph));
+	CGraph* graph = calloc(1, sizeof(CGraph));
 	graph->name = name;
 	map_init(&graph->vars);
 	

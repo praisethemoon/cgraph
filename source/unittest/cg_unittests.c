@@ -11,7 +11,6 @@
 #include "cg_enums.h"
 #include "cg_types.h"
 
-#include "memory.h"
 #include "minunit.h"
 
 #define CHECK_ERROR(result) mu_check(cg_getResultError(result) == NULL);

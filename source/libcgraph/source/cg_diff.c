@@ -12,7 +12,7 @@
 #include "cg_errors.h"
 #include "cg_enums.h"
 
-#include "memory.h"
+#include <malloc.h>
 
 #define diff_node differentiateNodeWRTVar
 

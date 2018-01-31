@@ -14,7 +14,7 @@
 #include "cg_diff.h"
 #include "cg_enums.h"
 
-#include "memory.h"
+#include <malloc.h>
 
 CGraph* cg_newGraph(char* name, CGNode* root){
 	CGraph* graph = makeGraph(name);
