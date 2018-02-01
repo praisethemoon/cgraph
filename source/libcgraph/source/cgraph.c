@@ -1611,7 +1611,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		
 		case CGUOT_INV:{
 			char msg[MAX_ERR_FMT_LEN];
-			snprintf(msg, MAX_ERR_FMT_LEN, "Operation `%s` is not implemented/supported", getUnaryOperationTypeString(uhsType));
+			snprintf(msg, MAX_ERR_FMT_LEN, "Operation `%s` is not implemented/supported", getUnaryOperationTypeString(type));
 			newres = returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, parentNode, msg);
 		}
 			
