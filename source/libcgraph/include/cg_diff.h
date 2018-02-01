@@ -7,4 +7,7 @@
 CGNode* differentiateNodeWRTVar(CGNode* node, CGraph* graph, const char*);
 CGraph* differentiateGraphWRTVar(CGraph* graph, char* newName, const char* wrtNode);
 
+CGNode* optimizeNode(CGNode* node, CGraph* graph);
+void optimizeGraph(CGraph* graph);
+
 #endif

@@ -309,12 +309,12 @@ local function nodeToDot(graph, uhs, str)
 			str = str .. "\t" .. idCounter ..' [label="'..bopToString(uhs.opType)..'"'..fillAttribute..', shape=circle];\n';
 			str, idCounter = listNodeToString(uhs.lhs, str, idCounter)
 			str, idCounter= listNodeToString(uhs.rhs, str, idCounter)
-			print('returning bop', str, bopToString(uhs.opType))
+			--print('returning bop', str, bopToString(uhs.opType))
 			return str, idCounter
 		elseif uhs.type == 'uop' then
 			str = str .. "\t" .. idCounter ..' [label="'..uopToString(uhs.opType)..'"'..fillAttribute..', shape=circle];\n';
 			str, idCounter = listNodeToString(uhs.uhs, str, idCounter)
-			print('returning uop', str)
+			--print('returning uop', str)
 			return str, idCounter
 		elseif uhs.type == 'var' then
 			str = str .. "\t" .. idCounter ..' [label="Var '..(uhs.name)..'"'..fillAttribute..', shape=box];\n';
@@ -322,13 +322,13 @@ local function nodeToDot(graph, uhs, str)
 			if v ~= nil then
 				str, idCounter = listNodeToString(v, str, idCounter)
 			end
-			print('returning var', str)
+			--print('returning var', str)
 			
 			return str, idCounter
 		elseif uhs.type == 'graph' then
 			str = str .. "\t" .. idCounter ..' [label="graph '..(uhs.graph.name)..'"'..fillAttribute..', shape=record];\n';
 			str, idCounter= listNodeToString(uhs.graph.root, str, idCounter)
-			print('returning graph', str)
+			--print('returning graph', str)
 			return str, idCounter
 		else
 			str = str .. "\t" .. idCounter ..' [label="UNKNOWN"'..fillAttribute..', shape=plaintext];\n';
@@ -356,7 +356,7 @@ local function nodeToDot(graph, uhs, str)
 		elseif node.type == 'graph' then
 			str = str .. "\t" .. node.graph.root.__id__ .. ' -> ' .. node.__id__ .. ';\n'
 			str = renderNodesToString(node.graph.root, str)
-			print('new str', str)
+			--print('new str', str)
 			return str	
 		end
 		
@@ -433,6 +433,13 @@ local graph = function(name, rootNode)
 		setmetatable(graph, Graph)
 		
 		return graph
+	end
+	
+	function Graph:optimize(var, newName)
+		local res = cgraph.optimizeGraph(self.cdata)
+		
+		self.cdata = res.graph
+		self.root = res.root
 	end
 	
 	function Graph:free()

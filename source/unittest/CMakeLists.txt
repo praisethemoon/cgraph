@@ -6,10 +6,12 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}
 	${PROJECT_SOURCE_DIR}/../libcgraph/include/c_api
 	${PROJECT_SOURCE_DIR}/vendor/minunit/
+	${PROJECT_SOURCE_DIR}/vendor/remotery/
 )
 
 
 set (PROJECT_SRCS
+	${PROJECT_SOURCE_DIR}/vendor/remotery/Remotery.c
 	${PROJECT_SOURCE_DIR}/cg_unittests.c
 	${PROJECT_SOURCE_DIR}/main.c
 )
@@ -22,6 +24,7 @@ add_executable(cg_unittest
 if (UNIX)
 	target_link_libraries(cg_unittest 
 		m 
+		pthread
 	)
 endif ()
 

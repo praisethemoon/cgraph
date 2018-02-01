@@ -1,4 +1,4 @@
-digraph diff{
+digraph diff_1{
 	1 [label="+", shape=circle];
 	2 [label="+", shape=circle];
 	3 [label="*", shape=circle];

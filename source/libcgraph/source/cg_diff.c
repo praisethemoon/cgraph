@@ -1,6 +1,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "cg_diff.h"
 #include "cgraph.h"
@@ -164,4 +165,105 @@ CGraph* differentiateGraphWRTVar(CGraph* graph, char* newName, const char* rtNod
 	CGraph* diff = makeGraph(newName);
 	diff->root = diff_node(graph->root, graph, rtNode);
 	return diff;
+}
+
+uint8_t nodeValueIsZero(CGNode* node){
+	assert(node->type == CGNT_CONSTANT);
+	
+	switch(node->constant->type){
+		case CGVT_DOUBLE: {
+			double value = ((CGDouble*)node->constant->value)->value;
+			
+			return value == 0.0;
+		}
+		
+		case CGVT_VECTOR: {
+			uint64_t len = ((CGVector*)node->constant->value)->len;
+			double* values = ((CGVector*)node->constant->value)->data;
+			
+			uint64_t i = 0;
+			for(; i < len; i++)
+				if(values[i] != 0)
+					return 0;
+			
+			return 1;
+		}
+		
+		case CGVT_MATRIX: {
+			CGMatrix* M = node->constant->value;
+			uint64_t len = M->rows * M->cols;
+			double* values = M->data;
+			
+			uint64_t i = 0;
+			for(; i < len; i++)
+				if(values[i] != 0)
+					return 0;
+
+			return 1;
+		}
+	}
+	
+}
+
+/*
+ * TODO: Fix memory leaks
+ */
+CGNode* optimizeNode(CGNode* node, CGraph* graph){
+	switch(node->type){
+		case CGNT_BINARY_OPERATION:{
+			node->bop->lhs = optimizeNode(node->bop->lhs, graph);
+			node->bop->rhs = optimizeNode(node->bop->rhs, graph);
+			break;
+		}
+		case CGNT_UNARY_OPERATION:{
+			node->uop->uhs = optimizeNode(node->uop->uhs, graph);
+			break;
+		}
+		default:
+			break;
+	}
+	
+	if(node->type == CGNT_BINARY_OPERATION){
+		if((node->bop->type == CGBOT_MULT) || (node->bop->type == CGBOT_DIV)){
+			if(node->bop->lhs->type == CGNT_CONSTANT){
+				if(nodeValueIsZero(node->bop->lhs)){
+					//freeNode(graph, node);
+					return makeZeroDoubleConstantNode(0);
+				}
+			}
+			
+			if((node->bop->type == CGBOT_MULT) && (node->bop->rhs->type == CGNT_CONSTANT)){
+				if(nodeValueIsZero(node->bop->rhs)){
+					//freeNode(graph, node);
+					return makeZeroDoubleConstantNode(0);
+				}
+			}
+		}
+		
+		if((node->bop->type == CGBOT_ADD) || (node->bop->type == CGBOT_SUB)){
+			if(node->bop->lhs->type == CGNT_CONSTANT){
+				if(nodeValueIsZero(node->bop->lhs)){
+					CGNode* rhs = node->bop->rhs;
+					freeNode(graph, node->bop->lhs);
+					CGNode* newVal = (node->bop->type == CGBOT_SUB)?makeUnaryOpNode(CGUOT_MINUS, rhs):rhs;
+					free(node);
+					return newVal;
+				}
+			}
+			
+			if(node->bop->rhs->type == CGNT_CONSTANT){
+				if(nodeValueIsZero(node->bop->rhs)){
+					CGNode* lhs = node->bop->lhs;
+					freeNode(graph, node->bop->rhs);
+					free(node);
+					return lhs;
+				}
+			}
+		}
+	}
+	return node;
+}
+
+void optimizeGraph(CGraph* graph){
+	graph->root = optimizeNode(graph->root, graph);
 }

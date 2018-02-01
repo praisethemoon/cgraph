@@ -108,44 +108,6 @@ void* copyRNodeValue(CGResultNode* node){
 	}
 }
 
-uint8_t nodeValueIsZero(CGNode* node){
-	assert(node->type == CGNT_CONSTANT);
-	
-	switch(node->constant->type){
-		case CGVT_DOUBLE: {
-			double value = ((CGDouble*)node->constant->value)->value;
-			
-			return value == 0.0;
-		}
-		
-		case CGVT_VECTOR: {
-			uint64_t len = ((CGVector*)node->constant->value)->len;
-			double* values = ((CGVector*)node->constant->value)->data;
-			
-			uint64_t i = 0;
-			for(; i < len; i++)
-				if(values[i] != 0)
-					return 0;
-			
-			return 1;
-		}
-		
-		case CGVT_MATRIX: {
-			CGMatrix* M = node->constant->value;
-			uint64_t len = M->rows * M->cols;
-			double* values = M->data;
-			
-			uint64_t i = 0;
-			for(; i < len; i++)
-				if(values[i] != 0)
-					return 0;
-
-			return 1;
-		}
-	}
-	
-}
-
 /*
  * *********************
  * Multiplication
@@ -1981,19 +1943,6 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	return result;
 }
 
-
-void optimizeNode(CGNode* node, CGraph* graph){
-	if(node->type == CGNT_BINARY_OPERATION){
-		if(node->bop->lhs->type == CGNT_CONSTANT){
-			
-		}
-	}
-}
-
-void optimizeGraph(CGraph* graph){
-	optimizeNode(graph->root, graph);
-}
-
 CGResultNode* computeGraph(CGraph* graph){
 	return computeCGNode(graph, graph->root);
 }
@@ -2021,14 +1970,13 @@ void freeNode(CGraph* graph, CGNode* node){
 			break;
 
 		case CGNT_VARIABLE:{
-			CGNode* constantNode = *map_get(&graph->vars, node->var->name);
-			map_remove(&graph->vars, node->var->name);
-			
+			CGNode** constantNode = map_get(&graph->vars, node->var->name);
 			if(constantNode != NULL){
-				freeNode(graph, constantNode);
+				freeNode(graph, *constantNode);
+				map_remove(&graph->vars, node->var->name);
 			}
 			
-			free(node->var);			
+			free(node->var);
 			break;
 		}
 		case CGNT_BINARY_OPERATION:

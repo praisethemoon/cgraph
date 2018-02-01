@@ -562,10 +562,22 @@ static int lua_freeGraph(lua_State* L){
 	return 1;
 }
 
-static int lua_dumpMemoryState(lua_State* L){
-	dmt_dump(stderr);
-
-	lua_pushnil(L);
+static int lua_optimizeGraph(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	
+	if(graph->root != NULL){
+		optimizeGraph(graph);
+		lua_newtable(L);
+		lua_pushstring(L, "graph");
+		pushGraph(L, graph);
+		lua_settable(L, -3);
+		lua_pushstring(L, "root");
+		nodeToLuaTable(graph->root, L, graph);
+		lua_settable(L, -3);
+	}
+	else
+		lua_pushnil(L);
+	
 	return 1;
 }
 
@@ -590,8 +602,8 @@ int luaopen_libcgraph(lua_State *L)
 		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
 		{"diff", lua_diffGraph},
+		{"optimizeGraph", lua_optimizeGraph},
 		{"freeGraph", lua_freeGraph},
-		{"dumpMem", lua_dumpMemoryState},
 		{NULL, NULL}
 	};
 
