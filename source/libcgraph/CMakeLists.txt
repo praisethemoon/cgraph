@@ -33,13 +33,22 @@ add_library(cgraph STATIC
 	${PROJECT_SRCS}
 )
 
+if(COMMAND CG_USE_LIBCPUID)
+target_link_libraries(cgraph
+	cpuid
+)
+
+add_library(cgraph
+	${PROJECT_SOURCE_DIR}/source/cg_cpu.c
+)
+endif()
+
 if (UNIX)
 	target_link_libraries(cgraph 
 		m 
 		pthread
-		#lapack
 		blas
-	)
+	) 
 endif ()
 
 if (UNIX AND NOT APPLE)
@@ -50,7 +59,6 @@ if (WIN32)
 	target_link_libraries(cgraph kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32)
 endif ()
 
-#install(TARGETS cgraph DESTINATION bin)
 install(TARGETS cgraph
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)

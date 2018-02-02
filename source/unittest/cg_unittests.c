@@ -5,7 +5,7 @@
 
 
 #include <stdio.h>
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "cg_api.h"
 #include "cg_enums.h"

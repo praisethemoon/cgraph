@@ -4,6 +4,7 @@ project(cg_unittest)
 set (PROJECT_INCLUDE_DIR
 	/usr/local/include #for blas
 	${PROJECT_SOURCE_DIR}
+	${PROJECT_SOURCE_DIR}/../c_api/
 	${PROJECT_SOURCE_DIR}/../libcgraph/include/c_api
 	${PROJECT_SOURCE_DIR}/vendor/minunit/
 	${PROJECT_SOURCE_DIR}/vendor/remotery/

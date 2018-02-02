@@ -107,4 +107,28 @@ typedef enum CGMShape {
 	CGMS_COL_MAJOR
 }CGMShape;
 
+/**
+ * \brief Specifies if CPU information where correctly extracted or not
+ */
+typedef enum CPUInfoAvailabilty {
+	CGCPUINFO_AVAILABLE,
+	CGCPUINFO_NOT_AVAILABLE
+}CPUInfoAvailabilty;
+
+/**
+ * \brief Specifies various CPU features that can be extracted.
+ */
+typedef enum CPUFeatures {
+	CGCPUF_MMX = 0,
+	CGCPUF_MMX_EXT,
+	CGCPUF_SSE,
+	CGCPUF_SSE2,
+	CGCPUF_SSE3,
+	CGCPUF_3DNOW,
+	CGCPUF_AVX,
+	CGCPUF_SSSE3,
+	CGCPUF_SSE4_1,
+	CGCPUF_SSE4_2,
+}CPUFeatures;
+
 #endif

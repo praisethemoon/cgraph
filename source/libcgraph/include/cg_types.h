@@ -1,7 +1,7 @@
 #ifndef CG_TYPES_H
 #define CG_TYPES_H
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "cg_enums.h"
 

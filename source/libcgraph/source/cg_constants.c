@@ -1,5 +1,5 @@
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "cgraph.h"
 #include "cg_operation.h"

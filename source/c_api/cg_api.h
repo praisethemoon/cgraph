@@ -7,7 +7,7 @@
  */
 
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "cg_enums.h"
 #include "cg_types.h"
@@ -26,6 +26,7 @@ struct CGMatrix;
 struct CGError;
 struct CGResultNode;
 
+struct CGCPUInfo;
 /* * * * * * * * * * * *
  * Graph Creation API
  * * * * * * * * * * * */
@@ -234,5 +235,9 @@ CGRAPH_API CGMatrix* cg_getResultMatrixVal(struct CGResultNode* result);
  */
 CGRAPH_API struct CGraph* cg_diffGraph(struct CGraph* graph, char* newName, char* wrtVar);
 
+#ifdef CG_USE_LIBCPUID
+struct CGCPUInfo* getCPUInformation();
+void printCPUInfo(struct CGCPUInfo* cpuInfo);
+#endif
 
 #endif

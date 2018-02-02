@@ -48,7 +48,7 @@
 #ifndef _PROFILER_
 #define _PROFILER_
 
-#include <stdint.h>
+#include <inttypes.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>

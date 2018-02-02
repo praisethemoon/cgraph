@@ -23,7 +23,6 @@ if (UNIX)
 	target_link_libraries(cgraphapi 
 		m 
 		pthread
-		#lapack
 		blas
 	)
 endif ()
