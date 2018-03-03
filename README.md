@@ -184,6 +184,7 @@ You can plot it with Graphviz's `dot` cmd line: `dot -Tpng sigmoid.dot -o sigmoi
 - smallprofiler [https://github.com/realbogart/smallprofiler](https://github.com/realbogart/smallprofiler)
 - luaarray [http://www.nongnu.org/techne/lua/luaarray/](http://www.nongnu.org/techne/lua/luaarray/)
 - minunit [https://github.com/siu/minunit](https://github.com/siu/minunit)
+- Remotery [https://github.com/Celtoys/Remotery](https://github.com/Celtoys/Remotery)
 
 ### Help Requested
 If you would like to contribute, feel free to fork this stuff.
