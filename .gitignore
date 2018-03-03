@@ -3,3 +3,6 @@ build/*
 *.so
 *.dll
 *.o
+source/html
+source/latex
+source/build

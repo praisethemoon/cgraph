@@ -3,14 +3,15 @@
 
 #include "array.h"
 
-#include "../cg_factory.h"
-#include "../cg_types.h"
-#include "../cgraph.h"
-#include "../cg_operation.h"
-#include "../cg_constants.h"
-#include "../cg_errors.h"
-#include "../cg_variables.h"
-#include "../cg_diff.h"
+#include "cg_factory.h"
+#include "cg_types.h"
+#include "cgraph.h"
+#include "cg_operation.h"
+#include "cg_constants.h"
+#include "cg_errors.h"
+#include "cg_variables.h"
+#include "cg_diff.h"
+#include "cg_enums.h"
 
 #define CGNODE "CGNode"
 #define CGRAPH "CGraph"
@@ -153,7 +154,7 @@ static int lua_createVectorConstant(lua_State* L){
 		printf("\t%f\n", values->values.doubles[i]);
 	}
 	*/
-	double* data = dmt_calloc(len, sizeof(double));
+	double* data = calloc(len, sizeof(double));
 	memcpy(data, values->values.doubles, len*sizeof(double));
 	
 	CGNode* node = makeVectorConstantNode(len, data);
@@ -188,7 +189,7 @@ static int lua_createMatrixConstant(lua_State* L){
 	}
 	*/
 	
-	double* data = dmt_calloc( rows*cols, sizeof(double));
+	double* data = calloc( rows*cols, sizeof(double));
 	memcpy(data, values->values.doubles, rows*cols*sizeof(double));
 	CGNode* node = makeMatrixConstantNode(rows, cols, data);
 	
@@ -561,10 +562,22 @@ static int lua_freeGraph(lua_State* L){
 	return 1;
 }
 
-static int lua_dumpMemoryState(lua_State* L){
-	dmt_dump(stderr);
-
-	lua_pushnil(L);
+static int lua_optimizeGraph(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	
+	if(graph->root != NULL){
+		optimizeGraph(graph);
+		lua_newtable(L);
+		lua_pushstring(L, "graph");
+		pushGraph(L, graph);
+		lua_settable(L, -3);
+		lua_pushstring(L, "root");
+		nodeToLuaTable(graph->root, L, graph);
+		lua_settable(L, -3);
+	}
+	else
+		lua_pushnil(L);
+	
 	return 1;
 }
 
@@ -589,8 +602,8 @@ int luaopen_libcgraph(lua_State *L)
 		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
 		{"diff", lua_diffGraph},
+		{"optimizeGraph", lua_optimizeGraph},
 		{"freeGraph", lua_freeGraph},
-		{"dumpMem", lua_dumpMemoryState},
 		{NULL, NULL}
 	};
 

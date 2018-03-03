@@ -10,10 +10,9 @@ compiler:
         - gcc
  
 script:
+        - cd source
         - mkdir build
         - cd build
         - cmake ..
         - make
-        - cp libcgraph.so ../lua/
-        - cd ../lua
-        - lua test.lua
+        - ./unittest/cg_unittest 
