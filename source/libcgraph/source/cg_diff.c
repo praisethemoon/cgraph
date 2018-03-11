@@ -149,8 +149,10 @@ CGNode* differentiateNodeWRTVar(CGNode* node, CGraph* graph, const char* wrtNode
 				// TODO:
 				case CGUOT_TANH:
 				case CGUOT_INV:
-				case CGUOT_TRANSPOSE:
 					return NULL;
+					
+				case CGUOT_TRANSPOSE:
+					return makeUnaryOpNode(CGUOT_TRANSPOSE, diff_node(node->uop->uhs, graph, wrtNode));
 			}
 		}
 		

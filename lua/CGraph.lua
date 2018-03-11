@@ -435,7 +435,7 @@ local graph = function(name, rootNode)
 		return graph
 	end
 	
-	function Graph:optimize(var, newName)
+	function Graph:optimize()
 		local res = cgraph.optimizeGraph(self.cdata)
 		
 		self.cdata = res.graph

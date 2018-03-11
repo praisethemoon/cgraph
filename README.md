@@ -69,6 +69,8 @@ optimizations will come once the library becomes stable.
 |`/`|binary|`double`|`double`||:heavy_check_mark:|`c`|
 |`/`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
 |`/`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
+|`./`|binary|`double`|`vector`||:heavy_check_mark:|`c`|
+|`./`|binary|`double`|`matrix`||:heavy_check_mark:|`c`|
 |`^`|binary|`double`|`double`||:heavy_check_mark:|`c`|
 |`^`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
 |`^`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
@@ -101,6 +103,7 @@ optimizations will come once the library becomes stable.
 |`tanh`|unary|||`double`|:heavy_check_mark:|`c`|
 |`tanh`|unary|||`vector`|:heavy_check_mark:|`c`|
 |`tanh`|unary|||`matrix`|:heavy_check_mark:|`c`|
+|`sum`|unary|||`vector`|:heavy_multiplication_x:|`c`|
 
 ### Example (Lua API):
 
@@ -174,6 +177,7 @@ You can plot it with Graphviz's `dot` cmd line: `dot -Tpng sigmoid.dot -o sigmoi
 - Switch to LuaJIT instead of Lua API
 - Travis CI (done)
 - Valgrind to check memory
+- Optimal data fetching and allocation (Lazy evaluation)
 
 ### Dependencies included within the source code:
 - Lua programming language [https://github.com/lua/lua](https://github.com/lua/lua)

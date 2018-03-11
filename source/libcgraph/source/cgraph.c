@@ -335,9 +335,34 @@ CGResultNode* divVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode)
 	
 	CGVector* Y = calloc(1, sizeof(CGVector));
 	Y->data = res;
+	Y->len = V->len;
 	
 	cblas_dcopy(V->len, V->data, 1, res, 1);
 	cblas_dscal(V->len, 1.0/D->value, res, 1);
+	
+	CGResultNode* result = calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ *  d/V element-wise
+ */
+CGResultNode* divDV(CGDouble* D, CGVector* V, CGraph* graph, CGNode* parentNode){
+	double* res = calloc(V->len, sizeof(double));
+	double value = D->value;
+	
+	CGVector* Y = calloc(1, sizeof(CGVector));
+	Y->data = res;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		res[i] = value / V->data[i];
+	}
 	
 	CGResultNode* result = calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_VECTOR;
@@ -367,6 +392,32 @@ CGResultNode* divMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode)
 	
 	cblas_dcopy(size, M->data, 1, res, 1);
 	cblas_dscal(size, 1.0/D->value, res, 1);
+	
+	CGResultNode* result = calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
+ *  d/M element-wise
+ */
+CGResultNode* divDM(CGDouble* D, CGMatrix* M, CGraph* graph, CGNode* parentNode){
+	uint64_t size = M->rows*M->cols;
+	double* res = calloc(size, sizeof(double));
+	double value = D->value;
+	
+	CGMatrix* Y = calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+
+	uint64_t i = 0;
+	
+	for(;i<size;i++){
+		res[i] = value / M->data[i];
+	}
 	
 	CGResultNode* result = calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_MATRIX;
@@ -1774,12 +1825,27 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 				return newres;
 			}
 			
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
+				newres = divDV((CGDouble*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeVectorValue(rhsValue);
+				return newres;
+			}
+			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				newres = divMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
 				freeMatrixValue(lhsValue);
 				freeDoubleValue(rhsValue);
 				return newres;
 			}
+			
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
+				newres = divDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				freeDoubleValue(lhsValue);
+				freeMatrixValue(rhsValue);
+				return newres;
+			}
+			
 			break;
 		}
 		
