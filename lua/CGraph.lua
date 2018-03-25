@@ -428,7 +428,7 @@ local graph = function(name, rootNode)
 	end
 	
 	function Graph:diff(var, newName)
-		local res = cgraph.diff(self.cdata, newName, var)
+		local res = cgraph.diff(self.cdata, newName, var.node)
 		local graph = {name= newName, root=res.root, cdata=res.graph, vars=self.vars}
 		setmetatable(graph, Graph)
 		

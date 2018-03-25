@@ -15,15 +15,15 @@
 
 #include <malloc.h>
 
-#define diff_node differentiateNodeWRTVar
+#define diff_node differentiateNodeWRTNode
 
-CGNode* differentiateNodeWRTVar(CGNode* node, CGraph* graph, const char* wrtNode){
+CGNode* differentiateNodeWRTNode(CGNode* node, CGraph* graph, CGNode* wrtNode){
+	if(node == wrtNode){
+		return makeDoubleConstantNode(1);
+	}
+	
 	switch(node->type){
 		case CGNT_VARIABLE: {
-			if(strcmp(node->var->name, wrtNode) == 0){
-				return makeDoubleConstantNode(1);
-			}
-			
 			return makeDoubleConstantNode(0);
 		}
 		
@@ -163,7 +163,7 @@ CGNode* differentiateNodeWRTVar(CGNode* node, CGraph* graph, const char* wrtNode
 	}
 }
 
-CGraph* differentiateGraphWRTVar(CGraph* graph, char* newName, const char* rtNode){
+CGraph* differentiateGraphWRTNode(CGraph* graph, char* newName, CGNode* rtNode){
 	CGraph* diff = makeGraph(newName);
 	diff->root = diff_node(graph->root, graph, rtNode);
 	return diff;

@@ -4,8 +4,8 @@
 #include "cgraph.h"
 #include "cg_enums.h"
 
-CGNode* differentiateNodeWRTVar(CGNode* node, CGraph* graph, const char*);
-CGraph* differentiateGraphWRTVar(CGraph* graph, char* newName, const char* wrtNode);
+CGNode* differentiateNodeWRTNode(CGNode* node, CGraph* graph, CGNode*);
+CGraph* differentiateGraphWRTNode(CGraph* graph, char* newName, CGNode* wrtNode);
 
 CGNode* optimizeNode(CGNode* node, CGraph* graph);
 void optimizeGraph(CGraph* graph);

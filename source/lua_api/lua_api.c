@@ -534,9 +534,9 @@ void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 static int lua_diffGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	char* newName = lua_tostring(L, 2);
-	char* wrtNode = lua_tostring(L, 3);
+	CGNode* wrtNode = checkNode(L, 3);
 	
-	CGraph* newGraph = differentiateGraphWRTVar(graph, newName, wrtNode);
+	CGraph* newGraph = differentiateGraphWRTNode(graph, newName, wrtNode);
 	
 	lua_newtable(L);
 	

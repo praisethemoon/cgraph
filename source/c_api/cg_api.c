@@ -110,6 +110,6 @@ CGMatrix* cg_getResultMatrixVal(CGResultNode* result){
 	return result->value;
 }
 
-CGraph* cg_diffGraph(CGraph* graph, char* newName, char* wrtVar){
-	return differentiateGraphWRTVar(graph, newName, wrtVar);
+CGraph* cg_diffGraph(CGraph* graph, char* newName, CGNode* wrtVar){
+	return differentiateGraphWRTNode(graph, newName, wrtVar);
 }
