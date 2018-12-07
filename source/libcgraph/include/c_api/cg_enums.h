@@ -72,10 +72,9 @@ typedef enum CGUnaryOperationType {
 	CGUOT_COS,
 	CGUOT_TAN,
 	CGUOT_TANH,
-	CGUOT_SUM,
 } CGUnaryOperationType;
 
-#define MAX_UNARY_OPERATION CGUOT_SUM
+#define MAX_UNARY_OPERATION CGUOT_TANH
 
 /**
  * \brief List of the available node types
@@ -85,9 +84,11 @@ typedef enum CGNodeType {
 	CGNT_CONSTANT,
 	CGNT_GRAPH,
 	CGNT_BINARY_OPERATION,
-	CGNT_UNARY_OPERATION
+	CGNT_UNARY_OPERATION,
+	CGNT_SUM_OPERATION
 }CGNodeType;
-#define MAX_NODE_TYPE CGNT_UNARY_OPERATION
+
+#define MAX_NODE_TYPE CGNT_SUM_OPERATION
 
 /**
  * \brief List of the available tensor types

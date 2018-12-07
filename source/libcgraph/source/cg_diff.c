@@ -163,9 +163,9 @@ CGNode* differentiateNodeWRTNode(CGNode* node, CGraph* graph, CGNode* wrtNode){
 	}
 }
 
-CGraph* partialDiffWRTNode(CGNode* node, CGGraph* graph, CGNode* rtNode) {
+CGraph* partialDiffWRTNode(CGNode* node, CGraph* graph, CGNode* rtNode) {
 	if(node == rtNode){
-		return 
+		return NULL;
 	}
 }
 

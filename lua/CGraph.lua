@@ -29,8 +29,7 @@ local UnaryOperationType = {
 	SIN=5,
 	COS=6,
 	TAN=7,
-	TANH=8,
-	SUM=9
+	TANH=8
 }
 
 local function bopToString(bop)
@@ -275,6 +274,7 @@ local tanh = function(uhs)
 	return op
 end
 
+-- TODO: Update
 local sum = function(uhs)
 	local node = cgraph.uop(UnaryOperationType.SUM, uhs.node)
 	local op = {type='uop', opType=UnaryOperationType.SUM, node = node, uhs=uhs}
