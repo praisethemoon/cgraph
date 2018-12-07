@@ -263,7 +263,7 @@ static int lua_createUnaryOperation(lua_State* L){
 		CGUOT_COS,
 		CGUOT_TAN,
 		CGUOT_TANH,
-		CGUOT_SUM,
+		//CGUOT_SUM,
 	};
 	
 	uint8_t type = lua_tointeger(L, 1);
