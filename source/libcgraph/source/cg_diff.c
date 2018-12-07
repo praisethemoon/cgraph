@@ -141,11 +141,11 @@ CGNode* differentiateNodeWRTNode(CGNode* node, CGraph* graph, CGNode* wrtNode){
 				case CGUOT_MINUS:{
 					return makeUnaryOpNode(CGUOT_MINUS, diff_node(node->uop->uhs, graph, wrtNode));
 				}
-				
+				/*
 				case CGUOT_SUM: {
 					return makeUnaryOpNode(CGUOT_SUM, diff_node(node->uop->uhs, graph, wrtNode));
 				}
-				
+				*/
 				// TODO:
 				case CGUOT_TANH:
 				case CGUOT_INV:

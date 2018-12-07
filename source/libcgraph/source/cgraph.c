@@ -1605,7 +1605,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			}
 			break;
 		}
-		
+		/*
 		case CGUOT_SUM:{
 			if(uhsType == CGVT_DOUBLE){
 				newres = sumD((CGDouble*)uhsValue, graph, parentNode);
@@ -1621,6 +1621,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			
 			break;
 		}
+		*/
 		
 		case CGUOT_INV:{
 			char msg[MAX_ERR_FMT_LEN];
