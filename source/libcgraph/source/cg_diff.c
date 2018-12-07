@@ -163,6 +163,12 @@ CGNode* differentiateNodeWRTNode(CGNode* node, CGraph* graph, CGNode* wrtNode){
 	}
 }
 
+CGraph* partialDiffWRTNode(CGNode* node, CGGraph* graph, CGNode* rtNode) {
+	if(node == rtNode){
+		return 
+	}
+}
+
 CGraph* differentiateGraphWRTNode(CGraph* graph, char* newName, CGNode* rtNode){
 	CGraph* diff = makeGraph(newName);
 	diff->root = diff_node(graph->root, graph, rtNode);
