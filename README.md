@@ -6,7 +6,7 @@ CGraph
 > C Computation Graph Library
 
 ### Build Status:
-[![Build Status](https://travis-ci.org/praisethemoon/cgraph.svg?branch=master)](https://travis-ci.org/praisethemoon/cgraph)
+[![Build Status](https://travis-ci.org/praisethemoon/cgraph.svg?branch=v1.0.a)](https://travis-ci.org/praisethemoon/cgraph)
 
 ### About
 
