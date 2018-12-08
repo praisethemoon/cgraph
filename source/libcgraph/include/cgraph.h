@@ -2,10 +2,14 @@
 #define CCGRAPH_H
 
 #include "map.h"
+#include "vec.h"
 #include "cg_operation.h"
 #include "cg_types.h"
 #include "cg_variables.h"
 #include "cg_enums.h"
+
+/* Creates the type cgnode_vec_t for storing consumer nodes*/
+typedef vec_t(struct CGNode*) CGNode_Vec_t;
 
 typedef struct CGNode {
 	CGNodeType type;
@@ -16,6 +20,7 @@ typedef struct CGNode {
 		CGUnaryOperation* uop;
 		struct CGraph* graph;
 	};
+	CGNode_Vec_t consumers;
 }CGNode;
 
 typedef struct CGraph {
