@@ -27,6 +27,8 @@ CGNode* makeVarNode(char* name){
 	node->type = CGNT_VARIABLE;
 	node->var = var;
 	
+	node->result = NULL;
+	
 	return node;
 }
 
@@ -41,6 +43,8 @@ CGNode* makeDoubleConstantNode(double value){
 	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
+	
+	node->result = NULL;
 	
 	return node;
 }
@@ -57,6 +61,8 @@ CGNode* makeVectorConstantNode(uint64_t  len, double* value){
 	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
+	
+	node->result = NULL;
 	
 	return node;
 }
@@ -77,6 +83,8 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value){
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
 	
+	node->result = NULL;
+	
 	return node;
 }
 
@@ -91,6 +99,8 @@ CGNode* makeZeroDoubleConstantNode(){
 	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
+	
+	node->result = NULL;
 	
 	return node;
 }
@@ -107,6 +117,8 @@ CGNode* makeZeroVectorConstantNode(uint64_t  len){
 	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
+	
+	node->result = NULL;
 	
 	return node;
 }
@@ -127,6 +139,8 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	node->type = CGNT_CONSTANT;
 	node->constant = c;
 	
+	node->result = NULL;
+	
 	return node;
 }
 
@@ -134,6 +148,8 @@ CGNode* makeGraphNode(CGraph* graph){
 	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_GRAPH;
 	node->graph = graph;
+	
+	node->result = NULL;
 	
 	return node;
 }
@@ -147,6 +163,8 @@ CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
 	node->bop->lhs = lhs;
 	node->bop->rhs = rhs;
 	
+	node->result = NULL;
+	
 	return node;
 }
 
@@ -158,6 +176,8 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 	node->uop->type = type;
 	node->uop->uhs = uhs;
 	
+	node->result = NULL;
+	
 	return node;
 }
 
@@ -168,6 +188,8 @@ CGNode* makeSumNode(CGNode* uhs, uint8_t axis){
 	node->sum = calloc(1, sizeof(CGSumOperation));
 	node->sum->axis = axis;
 	node->sum->uhs = uhs;
+	
+	node->result = NULL;
 	
 	return node;
 }
