@@ -1425,6 +1425,10 @@ CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
 	return result;
 }
 
+/*
+ * Computational Graph traversing
+ */
+
 CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CGNode* uhs, CGNode* parentNode){
 	CGVarType uhsType = CGVT_DOUBLE;
 	void* uhsValue = NULL;
@@ -1432,7 +1436,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 	
 	if(uhs->type == CGNT_CONSTANT){
 		uhsType = uhs->constant->type;
-		uhsValue = copyNodeValue(uhs);
+		uhsValue = uhs->constant->value;
 	}
 	else
 	{
@@ -1440,26 +1444,25 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		CHECK_RESULT(lhsResult)
 		uhsType = lhsResult->type;
 		uhsValue = lhsResult->value;
-		free(lhsResult);
 	}
 	
 	switch(type){
 		case CGUOT_EXP:{
 			if(uhsType == CGVT_DOUBLE){
 				newres = expD((CGDouble*)uhsValue, graph, parentNode);
-				freeDoubleValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_VECTOR){
 				newres = expV((CGVector*)uhsValue, graph, parentNode);
-				freeVectorValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
 				newres = expM((CGMatrix*)uhsValue, graph, parentNode);
-				freeMatrixValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1469,19 +1472,19 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		case CGUOT_LOG:{
 			if(uhsType == CGVT_DOUBLE){
 				newres = logD((CGDouble*)uhsValue, graph, parentNode);
-				freeDoubleValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_VECTOR){
 				newres = logV((CGVector*)uhsValue, graph, parentNode);
-				freeVectorValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
 				newres = logM((CGMatrix*)uhsValue, graph, parentNode);
-				freeMatrixValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1493,9 +1496,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				rhs->value = -1;
 				
 				CGResultNode* res = mulDD((CGDouble*)uhsValue, rhs, graph, parentNode);
-				
-				freeDoubleValue(uhsValue);
-				freeDoubleValue(rhs);
+				parentNode->result = res;
 				return res;
 			}
 			
@@ -1504,9 +1505,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				lhs->value = -1;
 				
 				CGResultNode* res = mulDV(lhs, (CGVector*)uhsValue, graph, parentNode);
-				
-				freeVectorValue(uhsValue);
-				freeDoubleValue(lhs);
+				parentNode->result = res;
 				return res;
 			}
 			
@@ -1514,9 +1513,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				CGDouble* lhs = calloc(1, sizeof(CGDouble));
 				lhs->value = -1;
 				CGResultNode* res = mulDM(lhs, (CGMatrix*)uhsValue, graph, parentNode);
-				
-				freeMatrixValue(uhsValue);
-				freeDoubleValue(lhs);
+				parentNode->result = res;
 				return res;
 			}
 			break;
@@ -1525,19 +1522,19 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		case CGUOT_SIN:{
 			if(uhsType == CGVT_DOUBLE){
 				newres = sinD((CGDouble*)uhsValue, graph, parentNode);
-				freeDoubleValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_VECTOR){
 				newres = sinV((CGVector*)uhsValue, graph, parentNode);
-				freeVectorValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
 				newres = sinM((CGMatrix*)uhsValue, graph, parentNode);
-				freeMatrixValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1546,19 +1543,19 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		case CGUOT_COS:{
 			if(uhsType == CGVT_DOUBLE){
 				newres = cosD((CGDouble*)uhsValue, graph, parentNode);
-				freeDoubleValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_VECTOR){
 				newres = cosV((CGVector*)uhsValue, graph, parentNode);
-				freeVectorValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
 				newres = cosM((CGMatrix*)uhsValue, graph, parentNode);
-				freeMatrixValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1567,19 +1564,19 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		case CGUOT_TAN:{
 			if(uhsType == CGVT_DOUBLE){
 				newres = tanD((CGDouble*)uhsValue, graph, parentNode);
-				freeDoubleValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_VECTOR){
 				newres = tanV((CGVector*)uhsValue, graph, parentNode);
-				freeVectorValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
 				newres = tanM((CGMatrix*)uhsValue, graph, parentNode);
-				freeMatrixValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1588,19 +1585,19 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		case CGUOT_TANH:{
 			if(uhsType == CGVT_DOUBLE){
 				newres = tanhD((CGDouble*)uhsValue, graph, parentNode);
-				freeDoubleValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_VECTOR){
 				newres = tanhV((CGVector*)uhsValue, graph, parentNode);
-				freeVectorValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if(uhsType == CGVT_MATRIX){
 				newres = tanhM((CGMatrix*)uhsValue, graph, parentNode);
-				freeMatrixValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1615,7 +1612,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		case CGUOT_TRANSPOSE:{
 			if(uhsType == CGVT_MATRIX){
 				newres = transposeM((CGMatrix*)uhsValue, graph, parentNode);
-				freeMatrixValue(uhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1624,6 +1621,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 	char msg[MAX_ERR_FMT_LEN];
 	snprintf(msg, MAX_ERR_FMT_LEN, "Operation [%s %s] cannot be applied", getVariableTypeString(uhsType), getUnaryOperationTypeString(type));
 	newres = returnResultError(graph, CGET_INCOMPATIBLE_ARGS_EXCEPTION, parentNode, msg);
+	return newres;
 }
 
 CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, CGNode* lhs, CGNode* rhs, CGNode* parentNode){
@@ -1636,7 +1634,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 	// LHS
 	if(lhs->type == CGNT_CONSTANT){
 		lhsType = lhs->constant->type;
-		lhsValue = copyNodeValue(lhs);
+		lhsValue = lhs->constant->value;
 	}
 	else
 	{
@@ -1644,12 +1642,11 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		CHECK_RESULT(lhsResult)
 		lhsType = lhsResult->type;
 		lhsValue = lhsResult->value;
-		free(lhsResult);
 	}
 	// RHS
 	if(rhs->type == CGNT_CONSTANT){
 		rhsType = rhs->constant->type;
-		rhsValue = copyNodeValue(rhs);
+		rhsValue = rhs->constant->value;
 	}
 	else
 	{
@@ -1657,72 +1654,62 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		CHECK_RESULT(rhsResult)
 		rhsType = rhsResult->type;
 		rhsValue = rhsResult->value;
-		free(rhsResult);
 	}
 	
 	switch(type){
 		case CGBOT_ADD:{
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
 				newres = addDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
 				newres = addVD((CGVector*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
 				newres = addVD((CGVector*)rhsValue, (CGDouble*)lhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				newres = addMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
 				newres = addMD((CGMatrix*)rhsValue, (CGDouble*)lhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
 				newres = addVV((CGVector*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
 				newres = addMV((CGMatrix*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
 				newres = addMV((CGMatrix*)rhsValue, (CGVector*)lhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				newres = addMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1731,64 +1718,55 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		case CGBOT_SUB:{
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
 				newres = subDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
 				newres = subVD((CGVector*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
 				newres = subDV((CGDouble*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				newres = subMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
 				newres = subDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
 				newres = subVV((CGVector*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				newres = subMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
 				newres = subMV((CGMatrix*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
 				newres = subVM((CGVector*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1797,36 +1775,31 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		case CGBOT_DIV:{
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
 				newres = divDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
 				newres = divVD((CGVector*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
 				newres = divDV((CGDouble*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				newres = divMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
 				newres = divDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
@@ -1836,57 +1809,49 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		case CGBOT_MULT:{
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				newres = mulMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
 				newres = mulMV((CGMatrix*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
 				newres = mulDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
 				newres = mulDV((CGDouble*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
 				newres = mulDV((CGDouble*)rhsValue, (CGVector*)lhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
 				newres = mulDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeMatrixValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				newres = mulDM((CGDouble*)rhsValue, (CGMatrix*)lhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
 				newres = crossVV((CGVector*)rhsValue, (CGVector*)lhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1895,22 +1860,19 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		case CGBOT_POW:{
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
 				newres = powDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeDoubleValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
 				newres = powVD((CGVector*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				newres = powMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
-				freeMatrixValue(lhsValue);
-				freeDoubleValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 			}
 			break;
@@ -1920,8 +1882,7 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
 				newres = dotVV((CGVector*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
-				freeVectorValue(lhsValue);
-				freeVectorValue(rhsValue);
+				parentNode->result = newres;
 				return newres;
 				
 			}
@@ -1956,6 +1917,13 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			break;
 
 		case CGNT_VARIABLE:{
+			if(graph == NULL)
+			{
+				char msg[MAX_ERR_FMT_LEN];
+				snprintf(msg, MAX_ERR_FMT_LEN, "Cannot compute variable`%s` without the graph instance", node->var->name);
+				return returnResultError(graph, CGET_NO_GRAPH_INSTANCE, node, msg);
+			}
+			
 			result = calloc(1, sizeof(CGResultNode));
 			CGNode* constantNode = *map_get(&graph->vars, node->var->name);
 			
@@ -1968,9 +1936,11 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			
 			CGResultNode* rnode = computeCGNode(graph, constantNode);
 			CHECK_RESULT(rnode)
+			constantNode->result = rnode;
+			
 			result->type = rnode->type;
 			result->value = copyRNodeValue(rnode);
-			free(rnode);
+	
 			break;
 		}
 		case CGNT_BINARY_OPERATION:
@@ -1980,20 +1950,34 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			result = processUnaryOperation(graph, node->uop->type, node->uop->uhs, node);
 			break;
 		
+		/* 
+		 * TODO: add this test to unittest
+		 */
 		case CGNT_SUM_OPERATION:
-			if(node->sum->uhs->type == CGVT_DOUBLE){
-				newres = sumD((CGDouble*)uhsValue, graph, parentNode);
-				freeDoubleValue(uhsValue);
-				return newres;
+		{
+			CGResultNode* newres = computeCGNode(graph, node->sum->uhs);
+			CHECK_RESULT(newres)
+			node->sum->uhs->result = newres;
+			
+			if(newres->type == CGVT_DOUBLE){
+				result = sumD((CGDouble*)newres->value, graph, node);
 			}
 			
-			if(node->sum->uhs->type == CGVT_VECTOR){
-				newres = sumV((CGVector*)uhsValue, graph, parentNode);
-				freeVectorValue(uhsValue);
-				return newres;
+			if(newres->type == CGVT_VECTOR){
+				result = sumV((CGVector*)newres->value, graph, node);
+			}
+			
+			/*
+			 * TODO: Implement matrix sum
+			 */
+			if(newres->type == CGVT_MATRIX){
+				char msg[MAX_ERR_FMT_LEN];
+				snprintf(msg, MAX_ERR_FMT_LEN, "Operation [sum(Matrix)] is not implemented/supported");
+				result = returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node, msg);
 			}
 			
 			break;
+		}
 		case CGNT_GRAPH:{
 			result = computeGraph(node->graph);
 			/*
@@ -2004,6 +1988,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		}
 	}
 	
+	node->result = result;
 	return result;
 }
 

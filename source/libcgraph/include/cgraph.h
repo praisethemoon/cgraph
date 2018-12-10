@@ -22,6 +22,7 @@ typedef struct CGNode {
 		struct CGraph* graph;
 	};
 	CGNode_Vec_t consumers;
+	struct CGResultNode* result;
 }CGNode;
 
 typedef struct CGraph {

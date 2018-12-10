@@ -38,10 +38,14 @@ typedef enum CGErrorType {
 	CGET_MATRIX_NOT_INVERTIBLE,
 	
 	/**
-	 * \brief Did you just yourself in the foot?
+	 * \brief Did you just shoot yourself in the foot?
 	 */
 	CGET_DIVIDE_BY_ZERO,
 	
+	/**
+	 * \brief Attempting to compute a variable node value when the graph instance is NULL, usually when calling `computeRawNode`
+	 */
+	CGET_NO_GRAPH_INSTANCE,
 }CGErrorType;
 #define MAX_ERROR_TYPE CGET_DIVIDE_BY_ZERO
 
