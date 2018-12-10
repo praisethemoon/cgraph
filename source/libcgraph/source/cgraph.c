@@ -2011,6 +2011,9 @@ void freeMatrixValue(CGMatrix* data){
 }
 
 void freeNode(CGraph* graph, CGNode* node){
+	if(node->result != NULL){
+		// TODO
+	}
 	switch(node->type){
 		case CGNT_CONSTANT:
 			{
