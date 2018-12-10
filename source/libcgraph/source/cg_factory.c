@@ -161,6 +161,17 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 	return node;
 }
 
+CGNode* makeSumNode(CGNode* uhs, uint8_t axis){
+	CGNode* node = calloc(1, sizeof(CGNode));
+	node->type = CGNT_SUM_OPERATION;
+	
+	node->sum = calloc(1, sizeof(CGSumOperation));
+	node->sum->axis = axis;
+	node->sum->uhs = uhs;
+	
+	return node;
+}
+
 CGraph* makeGraph(char* name){
 	CGraph* graph = calloc(1, sizeof(CGraph));
 	graph->name = name;

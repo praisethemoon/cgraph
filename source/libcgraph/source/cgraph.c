@@ -1605,23 +1605,6 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			}
 			break;
 		}
-		/*
-		case CGUOT_SUM:{
-			if(uhsType == CGVT_DOUBLE){
-				newres = sumD((CGDouble*)uhsValue, graph, parentNode);
-				freeDoubleValue(uhsValue);
-				return newres;
-			}
-			
-			if(uhsType == CGVT_VECTOR){
-				newres = sumV((CGVector*)uhsValue, graph, parentNode);
-				freeVectorValue(uhsValue);
-				return newres;
-			}
-			
-			break;
-		}
-		*/
 		
 		case CGUOT_INV:{
 			char msg[MAX_ERR_FMT_LEN];
@@ -1996,7 +1979,21 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		case CGNT_UNARY_OPERATION:
 			result = processUnaryOperation(graph, node->uop->type, node->uop->uhs, node);
 			break;
+		
+		case CGNT_SUM_OPERATION:
+			if(node->sum->uhs->type == CGVT_DOUBLE){
+				newres = sumD((CGDouble*)uhsValue, graph, parentNode);
+				freeDoubleValue(uhsValue);
+				return newres;
+			}
 			
+			if(node->sum->uhs->type == CGVT_VECTOR){
+				newres = sumV((CGVector*)uhsValue, graph, parentNode);
+				freeVectorValue(uhsValue);
+				return newres;
+			}
+			
+			break;
 		case CGNT_GRAPH:{
 			result = computeGraph(node->graph);
 			/*

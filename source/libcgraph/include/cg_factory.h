@@ -22,6 +22,7 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols);
 CGNode* makeGraphNode(CGraph* graph);
 CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs);
 CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
+CGNode* makeSumNode(CGNode* uhs, uint8_t axis);
 
 CGraph* makeGraph(char* name);
 void graphSetVar(CGraph* graph, char* name, CGNode* value);
