@@ -28,6 +28,7 @@ CGNode* makeVarNode(char* name){
 	node->var = var;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -45,6 +46,7 @@ CGNode* makeDoubleConstantNode(double value){
 	node->constant = c;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -63,6 +65,7 @@ CGNode* makeVectorConstantNode(uint64_t  len, double* value){
 	node->constant = c;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -84,6 +87,7 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value){
 	node->constant = c;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -101,6 +105,7 @@ CGNode* makeZeroDoubleConstantNode(){
 	node->constant = c;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -119,6 +124,7 @@ CGNode* makeZeroVectorConstantNode(uint64_t  len){
 	node->constant = c;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -140,6 +146,7 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	node->constant = c;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -164,6 +171,7 @@ CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
 	node->bop->rhs = rhs;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -177,6 +185,7 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 	node->uop->uhs = uhs;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -190,6 +199,7 @@ CGNode* makeSumNode(CGNode* uhs, uint8_t axis){
 	node->sum->uhs = uhs;
 	
 	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }

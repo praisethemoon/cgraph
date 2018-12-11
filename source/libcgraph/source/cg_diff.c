@@ -275,3 +275,8 @@ CGNode* optimizeNode(CGNode* node, CGraph* graph){
 void optimizeGraph(CGraph* graph){
 	graph->root = optimizeNode(graph->root, graph);
 }
+
+
+void autoDifferenciateGraph(CGraph* graph){
+	
+}

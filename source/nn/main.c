@@ -40,6 +40,7 @@ int main(int argc, char* argv[]){
 	printf("%f\n", cg_getResultDoubleVal(res)->value);
 	
 	cg_freeGraph(graph);
+	free(graph);
 	
 	return 0;
 }

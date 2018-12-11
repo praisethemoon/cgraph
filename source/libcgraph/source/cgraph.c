@@ -1518,6 +1518,9 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				rhs->value = -1;
 				
 				CGResultNode* res = mulDD((CGDouble*)uhsValue, rhs, graph, parentNode);
+				
+				freeDoubleValue(rhs);
+				
 				parentNode->result = res;
 				return res;
 			}
@@ -1527,6 +1530,9 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				lhs->value = -1;
 				
 				CGResultNode* res = mulDV(lhs, (CGVector*)uhsValue, graph, parentNode);
+			
+				freeDoubleValue(lhs);
+				
 				parentNode->result = res;
 				return res;
 			}
@@ -1535,6 +1541,9 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				CGDouble* lhs = calloc(1, sizeof(CGDouble));
 				lhs->value = -1;
 				CGResultNode* res = mulDM(lhs, (CGMatrix*)uhsValue, graph, parentNode);
+				
+				freeDoubleValue(lhs);
+				
 				parentNode->result = res;
 				return res;
 			}
@@ -2039,7 +2048,18 @@ void freeNode(CGraph* graph, CGNode* node){
 	switch(node->type){
 		case CGNT_CONSTANT:
 			{
-				free(node->constant->value);
+				//printf("freeing constant type %s %f\n", getVariableTypeString(node->constant->type), node->constant->value);
+				switch(node->constant->type){
+					case CGVT_DOUBLE:
+						freeDoubleValue(node->constant->value);
+						break;
+					case CGVT_VECTOR:
+						freeVectorValue(node->constant->value);
+						break;
+					case CGVT_MATRIX:
+						freeMatrixValue(node->constant->value);
+						break;
+				}
 				free(node->constant);
 			}
 			break;
@@ -2047,6 +2067,7 @@ void freeNode(CGraph* graph, CGNode* node){
 		case CGNT_VARIABLE:{
 			CGNode** constantNode = map_get(&graph->vars, node->var->name);
 			if(constantNode != NULL){
+				printf("freeing variable %s\n", node->var->name);
 				freeNode(graph, *constantNode);
 				map_remove(&graph->vars, node->var->name);
 				free(node->var);
