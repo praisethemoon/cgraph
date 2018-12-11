@@ -1426,6 +1426,28 @@ CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
 }
 
 /*
+ * TODO:
+ * sum(M, axis=axis)
+ */
+
+CGResultNode* sumM(CGVector* V, CGraph* graph, CGNode* parentNode){
+	double y = 0;
+	CGDouble* Y = calloc(1, sizeof(CGDouble));
+	
+	uint64_t i = 0;
+	
+	for(;i<V->len;i++){
+		y += V->data[i];
+	}
+	
+	Y->value = y;
+	CGResultNode* result = calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_DOUBLE;
+	result->value = Y;
+	
+	return result;
+}
+/*
  * Computational Graph traversing
  */
 
@@ -1939,7 +1961,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			constantNode->result = rnode;
 			
 			result->type = rnode->type;
-			result->value = copyRNodeValue(rnode);
+			result->value = rnode->value;
 	
 			break;
 		}
@@ -2012,11 +2034,12 @@ void freeMatrixValue(CGMatrix* data){
 
 void freeNode(CGraph* graph, CGNode* node){
 	if(node->result != NULL){
-		// TODO
+		freeResultNode(node->result);
 	}
 	switch(node->type){
 		case CGNT_CONSTANT:
 			{
+				free(node->constant->value);
 				free(node->constant);
 			}
 			break;
@@ -2026,9 +2049,8 @@ void freeNode(CGraph* graph, CGNode* node){
 			if(constantNode != NULL){
 				freeNode(graph, *constantNode);
 				map_remove(&graph->vars, node->var->name);
+				free(node->var);
 			}
-			
-			free(node->var);
 			break;
 		}
 		case CGNT_BINARY_OPERATION:
@@ -2058,17 +2080,18 @@ void freeResultNode(CGResultNode* node){
 		return;
 	}
 	
-	switch(node->type){
-		case CGVT_DOUBLE:
-			freeDoubleValue(node->value);
-			break;
-		case CGVT_VECTOR:
-			freeVectorValue(node->value);
-			break;
-		case CGVT_MATRIX:
-			freeMatrixValue(node->value);
-			break;
-	}
+	if(node->value != NULL)
+		switch(node->type){
+			case CGVT_DOUBLE:
+				freeDoubleValue(node->value);
+				break;
+			case CGVT_VECTOR:
+				freeVectorValue(node->value);
+				break;
+			case CGVT_MATRIX:
+				freeMatrixValue(node->value);
+				break;
+		}
 	
 	free(node);
 }
@@ -2083,10 +2106,13 @@ void freeGraph(CGraph* graph){
 	
 	const char *key;
 	
+	//printf("%zu\n",  *map_get(&graph->vars, "Z"));
+	
 	map_iter_t iter = map_iter(&graph->vars);
 
 	while ((key = map_next(&graph->vars, &iter))) {
 		CGNode* node = *map_get(&graph->vars, key);
+		printf("freeing variable %s\n", key);
 		if(node != NULL){
 			freeNode(graph, node);
 		}

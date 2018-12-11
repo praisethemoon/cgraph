@@ -34,7 +34,12 @@ int main(int argc, char* argv[]){
 	struct CGNode* var = cg_newDoubleNode(value);
 	struct CGraph* graph = sigmoid();
 	cg_setVar(graph, "Z", var);
+
 	struct CGResultNode* res = cg_evalGraph(graph);
 	
 	printf("%f\n", cg_getResultDoubleVal(res)->value);
+	
+	cg_freeGraph(graph);
+	
+	return 0;
 }

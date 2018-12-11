@@ -203,7 +203,7 @@ CGraph* makeGraph(char* name){
 }
 
 void graphSetVar(CGraph* graph, char* name, CGNode* value){
-	map_set(&graph->vars, name, value);
+	int res = map_set(&graph->vars, name, value);
 }
 
 CGNode* graphGetVar(CGraph* graph, char* name){

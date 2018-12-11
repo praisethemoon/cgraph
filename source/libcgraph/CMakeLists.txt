@@ -15,7 +15,6 @@ set( EXTERNAL_DEPS
 	${PROJECT_SOURCE_DIR}/vendor/thread/tinycthread.c
 	${PROJECT_SOURCE_DIR}/vendor/container/vec.c
 	${PROJECT_SOURCE_DIR}/vendor/container/map.c
-	${PROJECT_SOURCE_DIR}/vendor/container/map.c
 )
 
 set (PROJECT_SRCS
