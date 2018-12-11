@@ -2067,7 +2067,7 @@ void freeNode(CGraph* graph, CGNode* node){
 		case CGNT_VARIABLE:{
 			CGNode** constantNode = map_get(&graph->vars, node->var->name);
 			if(constantNode != NULL){
-				printf("freeing variable %s\n", node->var->name);
+				//printf("freeing variable %s\n", node->var->name);
 				freeNode(graph, *constantNode);
 				map_remove(&graph->vars, node->var->name);
 				free(node->var);
@@ -2133,7 +2133,7 @@ void freeGraph(CGraph* graph){
 
 	while ((key = map_next(&graph->vars, &iter))) {
 		CGNode* node = *map_get(&graph->vars, key);
-		printf("freeing variable %s\n", key);
+		//printf("freeing variable %s\n", key);
 		if(node != NULL){
 			freeNode(graph, node);
 		}
