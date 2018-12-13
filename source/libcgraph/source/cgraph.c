@@ -28,6 +28,7 @@ if(node->error != NULL){\
 }
 /*
  * Helper function
+ * @Deprecated
  */
 
 void* copyNodeValue(CGNode* node){
@@ -71,7 +72,9 @@ void* copyNodeValue(CGNode* node){
 	}
 }
 
-
+/*
+ * @Deprecated
+ */
 void* copyRNodeValue(CGResultNode* node){
 	switch(node->type){
 		case CGVT_DOUBLE: {
@@ -1456,17 +1459,10 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 	void* uhsValue = NULL;
 	CGResultNode* newres = NULL;
 	
-	if(uhs->type == CGNT_CONSTANT){
-		uhsType = uhs->constant->type;
-		uhsValue = uhs->constant->value;
-	}
-	else
-	{
-		CGResultNode* lhsResult = computeCGNode(graph, uhs);
-		CHECK_RESULT(lhsResult)
-		uhsType = lhsResult->type;
-		uhsValue = lhsResult->value;
-	}
+	CGResultNode* lhsResult = computeCGNode(graph, uhs);
+	CHECK_RESULT(lhsResult)
+	uhsType = lhsResult->type;
+	uhsValue = lhsResult->value;
 	
 	switch(type){
 		case CGUOT_EXP:{
@@ -1662,30 +1658,15 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 	void* lhsValue = NULL;
 	void* rhsValue = NULL;
 	
-	// LHS
-	if(lhs->type == CGNT_CONSTANT){
-		lhsType = lhs->constant->type;
-		lhsValue = lhs->constant->value;
-	}
-	else
-	{
-		CGResultNode* lhsResult = computeCGNode(graph, lhs);
-		CHECK_RESULT(lhsResult)
-		lhsType = lhsResult->type;
-		lhsValue = lhsResult->value;
-	}
-	// RHS
-	if(rhs->type == CGNT_CONSTANT){
-		rhsType = rhs->constant->type;
-		rhsValue = rhs->constant->value;
-	}
-	else
-	{
-		CGResultNode* rhsResult = computeCGNode(graph, rhs);
-		CHECK_RESULT(rhsResult)
-		rhsType = rhsResult->type;
-		rhsValue = rhsResult->value;
-	}
+	CGResultNode* lhsResult = computeCGNode(graph, lhs);
+	CHECK_RESULT(lhsResult)
+	lhsType = lhsResult->type;
+	lhsValue = lhsResult->value;
+		
+	CGResultNode* rhsResult = computeCGNode(graph, rhs);
+	CHECK_RESULT(rhsResult)
+	rhsType = rhsResult->type;
+	rhsValue = rhsResult->value;
 	
 	switch(type){
 		case CGBOT_ADD:{
@@ -1968,6 +1949,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			CGResultNode* rnode = computeCGNode(graph, constantNode);
 			CHECK_RESULT(rnode)
 			constantNode->result = rnode;
+			node->result = rnode;
 			
 			result->type = rnode->type;
 			result->value = rnode->value;

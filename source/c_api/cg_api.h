@@ -243,6 +243,9 @@ CGRAPH_API CGMatrix* cg_getResultMatrixVal(struct CGResultNode* result);
  */
 CGRAPH_API struct CGraph* cg_diffGraph(struct CGraph* graph, char* newName, char* wrtVar);
 
+
+CGRAPH_API void cg_autoDiffGraph(struct CGraph* graph);
+
 #ifdef CG_USE_LIBCPUID
 struct CGCPUInfo* getCPUInformation();
 void printCPUInfo(struct CGCPUInfo* cpuInfo);

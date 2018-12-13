@@ -24,6 +24,12 @@ CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs);
 CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
 CGNode* makeSumNode(CGNode* uhs, uint8_t axis);
 
+CGNode* resultNodeToConstantNode(CGResultNode* result);
+
+CGResultNode* makeDoubleResultNode(double val);
+CGResultNode* makeVectorResultNode(uint64_t len, double* val);
+CGResultNode* makeMatrixResultNode(uint64_t rows, uint64_t cols, double* val);
+
 CGraph* makeGraph(char* name);
 void graphSetVar(CGraph* graph, char* name, CGNode* value);
 CGNode* graphGetVar(CGraph* graph, char* name);

@@ -29,18 +29,74 @@ struct CGraph* sigmoid(){
 	return graph;
 }
 
-int main(int argc, char* argv[]){
-	double value =0;
-	struct CGNode* var = cg_newDoubleNode(value);
+int main1(int argc, char* argv[]){
+	double value[] ={0.5, 1, 0.5};
+	struct CGNode* var = cg_newVectorNode(3, value);
 	struct CGraph* graph = sigmoid();
 	cg_setVar(graph, "Z", var);
 
 	struct CGResultNode* res = cg_evalGraph(graph);
 	
+	printf("%f\n", cg_getResultVectorVal(res)->data[0]);
+	
+	//cg_freeGraph(graph);
+	//free(graph);
+	
+	return 0;
+}
+
+int main2(int argc, char* argv[]){
+	struct CGNode* x = cg_newVariable("x");
+	struct CGNode* y = cg_newVariable("y");
+	struct CGNode* z = cg_newVariable("z");
+	
+	struct CGNode* add = cg_newBinOp(CGBOT_ADD, x, y);
+	struct CGNode* mult = cg_newBinOp(CGBOT_MULT, add, z);
+	
+	struct CGraph* graph = cg_newGraph("test", mult);
+	
+	struct CGNode* X = cg_newDoubleNode(-2.0);
+	struct CGNode* Y = cg_newDoubleNode( 5.0);
+	struct CGNode* Z = cg_newDoubleNode(-4.0);
+	
+	cg_setVar(graph, "x", X);
+	cg_setVar(graph, "y", Y);
+	cg_setVar(graph, "z", Z);
+	
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
 	printf("%f\n", cg_getResultDoubleVal(res)->value);
 	
-	cg_freeGraph(graph);
-	free(graph);
+	cg_autoDiffGraph(graph);
+	
+	//cg_freeGraph(graph);
+	//free(graph);
+	
+	return 0;
+}
+
+int main(int argc, char* argv[]){
+	struct CGNode* x = cg_newVariable("x");
+	
+	struct CGNode* add = cg_newBinOp(CGBOT_ADD, x, x);
+	struct CGNode* add2 = cg_newBinOp(CGBOT_DIV, add, cg_newDoubleNode(3.0));
+	
+	struct CGraph* graph = cg_newGraph("test", add2);
+	
+	struct CGNode* X = cg_newDoubleNode(-2.0);
+	
+	cg_setVar(graph, "x", X);
+	
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
+	printf("%f\n", cg_getResultDoubleVal(res)->value);
+	
+	cg_autoDiffGraph(graph);
+	
+	//cg_freeGraph(graph);
+	//free(graph);
 	
 	return 0;
 }
