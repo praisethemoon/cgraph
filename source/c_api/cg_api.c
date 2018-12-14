@@ -107,6 +107,7 @@ CGVarType cg_getResultType(CGResultNode* result){
 CGDouble* cg_getResultDoubleVal(CGResultNode* result){
 	return result->value;
 }
+
 CGVector* cg_getResultVectorVal(CGResultNode* result){
 	return result->value;
 }

@@ -76,7 +76,7 @@ int main2(int argc, char* argv[]){
 	return 0;
 }
 
-int main(int argc, char* argv[]){
+int main3(int argc, char* argv[]){
 	struct CGNode* x = cg_newVariable("x");
 	
 	struct CGNode* add = cg_newBinOp(CGBOT_ADD, x, x);
@@ -88,6 +88,51 @@ int main(int argc, char* argv[]){
 	
 	cg_setVar(graph, "x", X);
 	
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
+	printf("%f\n", cg_getResultDoubleVal(res)->value);
+	
+	cg_autoDiffGraph(graph);
+	
+	//cg_freeGraph(graph);
+	//free(graph);
+	
+	return 0;
+}
+
+int main4(int argc, char* argv[]){
+	struct CGNode* x = cg_newVariable("x");
+	
+	struct CGNode* add = cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_MULT, x, cg_newDoubleNode(3)), cg_newBinOp(CGBOT_POW, cg_newDoubleNode(3), x));
+	
+	struct CGraph* graph = cg_newGraph("test", add);
+	
+	struct CGNode* X = cg_newDoubleNode(2.0);
+	
+	cg_setVar(graph, "x", X);
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
+	printf("%f\n", cg_getResultDoubleVal(res)->value);
+	
+	cg_autoDiffGraph(graph);
+	
+	//cg_freeGraph(graph);
+	//free(graph);
+	
+	return 0;
+}
+int main(int argc, char* argv[]){
+	struct CGNode* x = cg_newVariable("x");
+	
+	struct CGNode* add = cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_MULT, cg_newUnOp(CGUOT_MINUS, x), cg_newDoubleNode(3)), cg_newBinOp(CGBOT_POW, cg_newDoubleNode(3), x));
+	
+	struct CGraph* graph = cg_newGraph("test", add);
+	
+	struct CGNode* X = cg_newDoubleNode(2.0);
+	
+	cg_setVar(graph, "x", X);
 	
 	struct CGResultNode* res = cg_evalGraph(graph);
 	

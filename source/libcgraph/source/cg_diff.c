@@ -326,6 +326,23 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 					break;
 				}
 				
+				
+				case CGBOT_SUB:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->bop->lhs->diff, node->diff);
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->bop->lhs->diff = resultNodeToConstantNode(res1);
+					
+					
+					CGNode* mult2 = makeBinaryOpNode(CGBOT_ADD, node->bop->rhs->diff, makeUnaryOpNode(CGUOT_MINUS, node->diff));
+					CGResultNode* res2 = computeRawNode(mult2);
+					node->bop->rhs->diff = resultNodeToConstantNode(res2);
+					
+					autoDifferenciateNode(graph, node->bop->lhs);
+					autoDifferenciateNode(graph, node->bop->rhs);
+					break;
+				}
+				
 				case CGBOT_DIV:
 				{
 					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->bop->lhs->diff, makeBinaryOpNode(CGBOT_MULT,node->diff, makeBinaryOpNode(CGBOT_DIV,  makeDoubleConstantNode(1.0), resultNodeToConstantNode(node->bop->rhs->result))));
@@ -340,7 +357,55 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 					autoDifferenciateNode(graph, node->bop->rhs);
 					break;
 				}
+				
+				case CGBOT_POW:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->bop->lhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeBinaryOpNode(CGBOT_MULT, resultNodeToConstantNode(node->bop->rhs->result), makeBinaryOpNode(CGBOT_POW, resultNodeToConstantNode(node->bop->lhs->result), makeBinaryOpNode(CGBOT_SUB, resultNodeToConstantNode(node->bop->rhs->result), makeDoubleConstantNode(1.0))))));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->bop->lhs->diff = resultNodeToConstantNode(res1);
+					
+					
+					CGNode* mult2 = makeBinaryOpNode(CGBOT_ADD, node->bop->rhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeBinaryOpNode(CGBOT_MULT, resultNodeToConstantNode(node->result), makeUnaryOpNode(CGUOT_LOG, resultNodeToConstantNode(node->bop->lhs->result)))));
+					CGResultNode* res2 = computeRawNode(mult2);
+					node->bop->rhs->diff = resultNodeToConstantNode(res2);
+					
+					autoDifferenciateNode(graph, node->bop->lhs);
+					autoDifferenciateNode(graph, node->bop->rhs);
+					break;
+				}
+				
+				
+				case CGBOT_TMULT:
+				case CGBOT_DOT:
+				{
+					// TODO: implement or throw error
+					break;
+				}
 			}
+		}
+		
+		case CGNT_UNARY_OPERATION:
+		{
+			switch(node->uop->type)
+			{
+				case CGUOT_MINUS:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeDoubleConstantNode(-1.0)));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					break;
+				}
+			}
+		}
+		
+		case CGNT_GRAPH: 
+		{
+			
+		}
+		
+		case CGNT_SUM_OPERATION: 
+		{
+			
 		}
 	}
 }
