@@ -280,14 +280,84 @@ void optimizeGraph(CGraph* graph){
 void autoDifferenciateNode(CGraph* graph, CGNode* node){
 	
 	if(node->type != CGNT_VARIABLE)
-		printf("current diff %f\n",  ((CGDouble*) node->diff->constant->value)->value);
+		switch(node->diff->constant->type){
+			case CGVT_DOUBLE:
+			{
+				printf("current diff %f\n",  ((CGDouble*) node->diff->constant->value)->value);
+				break;
+			}
+			
+			case CGVT_VECTOR:
+			{
+				CGVector* vec = (CGVector*)node->diff->constant->value;
+				uint64_t i = 0;
+				printf("(");
+				for(; i < vec->len; i++){
+					printf("%f, ", vec->data[i]);
+				}
+				printf(")\n");
+				break;
+			}
+			
+			case CGVT_MATRIX:
+			{
+				CGMatrix* m = (CGMatrix*) node->diff->constant->value;
+				uint64_t i = 0;
+				uint64_t j = 0;
+				printf("(");
+				for(; i < m->rows; i++){
+					printf("\n\t");
+					for(j = 0; j < m->cols; j++){
+						printf("%f, ", m->data[i*m->cols+j]);
+					}
+				}
+				printf(")\n");
+				break;
+			}
+		}
+		
 	
 	switch(node->type){
 		case CGNT_CONSTANT:
 			node->diff = makeDoubleConstantNode(0.0);
 			break;
 		case CGNT_VARIABLE:
-			printf("%s = %f\n", node->var->name, ((CGDouble*)node->diff->constant->value)->value);
+			printf("%s = ", node->var->name);
+			switch(node->diff->constant->type){
+				case CGVT_DOUBLE:
+				{
+					printf("%f\n",  ((CGDouble*) node->diff->constant->value)->value);
+					break;
+				}
+				
+				case CGVT_VECTOR:
+				{
+					CGVector* vec = (CGVector*)node->diff->constant->value;
+					uint64_t i = 0;
+					printf("(");
+					for(; i < vec->len; i++){
+						printf("%f, ", vec->data[i]);
+					}
+					printf(")\n");
+					break;
+				}
+				
+				case CGVT_MATRIX:
+				{
+					CGMatrix* m = (CGMatrix*) node->diff->constant->value;
+					uint64_t i = 0;
+					uint64_t j = 0;
+					printf("(");
+					for(; i < m->rows; i++){
+						printf("\n\t");
+						for(j = 0; j < m->cols; j++){
+							printf("%f, ", m->data[i*m->cols+j]);
+						}
+					}
+					printf(")\n");
+					break;
+				}
+			}
 			break;
 			
 		case CGNT_BINARY_OPERATION:
@@ -312,6 +382,7 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				
 				case CGBOT_ADD:
 				{
+					printf("transpose\n");
 					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->bop->lhs->diff, node->diff);
 					CGResultNode* res1 = computeRawNode(mult1);
 					node->bop->lhs->diff = resultNodeToConstantNode(res1);
@@ -365,7 +436,7 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 					node->bop->lhs->diff = resultNodeToConstantNode(res1);
 					
 					
-					CGNode* mult2 = makeBinaryOpNode(CGBOT_ADD, node->bop->rhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeBinaryOpNode(CGBOT_MULT, resultNodeToConstantNode(node->result), makeUnaryOpNode(CGUOT_LOG, resultNodeToConstantNode(node->bop->lhs->result)))));
+					CGNode* mult2 = makeBinaryOpNode(CGBOT_ADD, node->bop->rhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeBinaryOpNode(CGBOT_MULT,  resultNodeToConstantNode(node->result), makeUnaryOpNode(CGUOT_LOG, resultNodeToConstantNode(node->bop->lhs->result)))));
 					CGResultNode* res2 = computeRawNode(mult2);
 					node->bop->rhs->diff = resultNodeToConstantNode(res2);
 					
@@ -393,6 +464,77 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeDoubleConstantNode(-1.0)));
 					CGResultNode* res1 = computeRawNode(mult1);
 					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->uop->uhs);
+					break;
+				}
+				
+				case CGUOT_COS:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeUnaryOpNode(CGUOT_MINUS, makeUnaryOpNode(CGUOT_SIN , resultNodeToConstantNode(node->uop->uhs->result)))));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->uop->uhs);
+					break;
+				}
+				
+				case CGUOT_SIN:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeUnaryOpNode(CGUOT_COS, resultNodeToConstantNode(node->uop->uhs->result))));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->uop->uhs);
+					break;
+				}
+				
+				case CGUOT_EXP:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, resultNodeToConstantNode(node->result)));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->uop->uhs);
+					break;
+				}
+				
+				case CGUOT_LOG:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeBinaryOpNode(CGBOT_DIV, makeDoubleConstantNode(1.0), resultNodeToConstantNode(node->uop->uhs->result))));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->uop->uhs);
+					break;
+				}
+				
+				case CGUOT_TAN:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeBinaryOpNode(CGBOT_DIV, makeDoubleConstantNode(1.0), makeUnaryOpNode(CGUOT_COS, makeBinaryOpNode(CGBOT_MULT, makeDoubleConstantNode(2.0), resultNodeToConstantNode(node->uop->uhs->result))))));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->uop->uhs);
+					break;
+				}
+				
+				case CGUOT_TANH:
+				{
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeBinaryOpNode(CGBOT_MULT, node->diff, makeBinaryOpNode(CGBOT_DIV, makeDoubleConstantNode(1.0), makeBinaryOpNode(CGBOT_POW, resultNodeToConstantNode(node->uop->uhs->result), 2))));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->uop->uhs);
+					break;
+				}
+				
+				
+				case CGUOT_TRANSPOSE:
+				{
+					printf("transpose\n");
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, node->diff);
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->uop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->uop->uhs);
+					break;
+				}
+				
+				case CGUOT_INV:
+				{
 					break;
 				}
 			}

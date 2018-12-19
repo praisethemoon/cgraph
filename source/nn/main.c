@@ -123,7 +123,8 @@ int main4(int argc, char* argv[]){
 	
 	return 0;
 }
-int main(int argc, char* argv[]){
+
+int main5(int argc, char* argv[]){
 	struct CGNode* x = cg_newVariable("x");
 	
 	struct CGNode* add = cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_MULT, cg_newUnOp(CGUOT_MINUS, x), cg_newDoubleNode(3)), cg_newBinOp(CGBOT_POW, cg_newDoubleNode(3), x));
@@ -137,6 +138,113 @@ int main(int argc, char* argv[]){
 	struct CGResultNode* res = cg_evalGraph(graph);
 	
 	printf("%f\n", cg_getResultDoubleVal(res)->value);
+	
+	cg_autoDiffGraph(graph);
+	
+	//cg_freeGraph(graph);
+	//free(graph);
+	
+	return 0;
+}
+
+int main6(int argc, char* argv[]){
+	struct CGNode* x = cg_newVariable("x");
+	
+	struct CGNode* add = cg_newBinOp(CGBOT_POW, cg_newUnOp(CGUOT_TRANSPOSE, x), cg_newDoubleNode(3));
+	
+	struct CGraph* graph = cg_newGraph("test", add);
+	
+	double value[] = {1.0, 2.0, 3.0, 4.0};
+	
+	struct CGNode* X = cg_newMatrixNode(2, 2, value);
+	
+	cg_setVar(graph, "x", X);
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
+	printf("%f, %f\n%f, %f\n", cg_getResultMatrixVal(res)->data[0], cg_getResultMatrixVal(res)->data[1], cg_getResultMatrixVal(res)->data[2], cg_getResultMatrixVal(res)->data[3]);
+	
+	cg_autoDiffGraph(graph);
+	
+	//cg_freeGraph(graph);
+	//free(graph);
+	
+	return 0;
+}
+
+
+int main(int argc, char* argv[]){
+	
+	double value1[] = {
+		3, 1, 3,
+		1, 5, 9, 
+		2, 6, 5,
+		1, 1, 1
+	};
+	
+	double value2 []= {
+		-1.0, -1.0, 1.0,
+	};
+	
+	double value3[] = {
+		1.0, 1.0, 0.0
+	};
+	
+	
+	struct CGNode* x = cg_newVariable("x");
+	struct CGNode* rhsNode = cg_newVectorNode(3, value2);
+	struct CGNode* b = cg_newVectorNode(3, value3);
+
+	struct CGNode* node = cg_newBinOp(CGBOT_MULT, cg_newBinOp(CGBOT_POW, x, cg_newDoubleNode(2)), rhsNode);
+	struct CGNode* addNnode = cg_newBinOp(CGBOT_ADD, node, b);
+	struct CGraph* graph = cg_newGraph("runMult_MV", addNnode);
+	
+	struct CGNode* lhsNode = cg_newMatrixNode(4, 3, value1);
+		
+	struct CGNode* X = lhsNode;
+	
+	cg_setVar(graph, "x", X);
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
+	printf("Result type: %d\n", cg_getResultType(res));
+	
+	switch(cg_getResultType(res)){
+		case CGVT_DOUBLE:
+		{
+			CGDouble* d = cg_getResultDoubleVal(res);
+			printf("current diff %f\n",  d->value);
+			break;
+		}
+		
+		case CGVT_VECTOR:
+		{
+			CGVector* vec = cg_getResultVectorVal(res);
+			uint64_t i = 0;
+			printf("(");
+			for(; i < vec->len; i++){
+				printf("%f, ", vec->data[i]);
+			}
+			printf(")\n");
+			break;
+		}
+		
+		case CGVT_MATRIX:
+		{
+			CGMatrix* m = cg_getResultMatrixVal(res);
+			uint64_t i = 0;
+			uint64_t j = 0;
+			printf("(");
+			for(; i < m->rows; i++){
+				printf("\n\t");
+				for(j = 0; j < m->cols; j++){
+					printf("%f, ", m->data[i*m->cols+j]);
+				}
+			}
+			printf(")\n");
+			break;
+		}
+	}
 	
 	cg_autoDiffGraph(graph);
 	

@@ -12,6 +12,11 @@
 // utilities
 double* vcopy(uint64_t len, const double* data);
 
+
+CGNode* makeZeroDoubleConstantNodeNoDiff();
+CGNode* makeZeroVectorConstantNodeNoDiff(uint64_t  len);
+CGNode* makeZeroMatrixConstantNodeNoDiff(uint64_t  rows, uint64_t cols);
+
 CGNode* makeVarNode(char* name);
 CGNode* makeDoubleConstantNode(double value);
 CGNode* makeVectorConstantNode(uint64_t  len, double* value);

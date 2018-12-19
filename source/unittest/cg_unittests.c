@@ -445,11 +445,11 @@ MU_TEST(runAdd_MV){
 	};
 	
 	double value2 []= {
-		-1.0, 0.0, 1.0, 0.5
+		-1.0, 0.0, 1.0
 	};
 	
 	struct CGNode* lhsNode = cg_newMatrixNode(4, 3, value1);
-	struct CGNode* rhsNode = cg_newVectorNode(4, value2);
+	struct CGNode* rhsNode = cg_newVectorNode(3, value2);
 	struct CGNode* node = cg_newBinOp(CGBOT_ADD, lhsNode, rhsNode);
 	
 	struct CGraph* graph = cg_newGraph("runAdd_MV", node);
@@ -460,7 +460,12 @@ MU_TEST(runAdd_MV){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
-	double gt[] = {2, 0, 2, 1, 5, 9, 3, 7, 6, 1.5, 1.5, 1.5};
+	double gt[] = {
+		2, 1, 4,
+		0, 5, 10,
+		1, 6, 6,
+		0, 1, 2
+	};
 	
 	ASSERT_MATRIX_EQ(gt, M);
 }

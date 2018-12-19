@@ -15,6 +15,9 @@
 
 #include <malloc.h>
 
+/*
+ * These nodes are only used to store derivative values
+ */
 CGNode* makeZeroDoubleConstantNodeNoDiff(){
 	CGDouble* d = calloc(1, sizeof(CGDouble));
 	
@@ -33,6 +36,52 @@ CGNode* makeZeroDoubleConstantNodeNoDiff(){
 	return node;
 }
 
+
+
+CGNode* makeZeroVectorConstantNodeNoDiff(uint64_t  len){
+	CGVector* v = calloc(1, sizeof(CGVector));
+	v->len = len;
+	v->data = calloc(len, sizeof(double));
+	
+	CGPConstant* c = calloc(1, sizeof(CGPConstant));
+	c->type = CGVT_VECTOR;
+	c->value = v;
+	
+	CGNode* node = calloc(1, sizeof(CGNode));
+	node->type = CGNT_CONSTANT;
+	node->constant = c;
+	
+	node->result = NULL;
+	node->diff = NULL;
+	vec_init(&node->consumers);
+	
+	return node;
+}
+
+
+CGNode* makeZeroMatrixConstantNodeNoDiff(uint64_t  rows, uint64_t cols){
+	CGMatrix* m = calloc(1, sizeof(CGMatrix));
+	m->data = calloc(rows*cols, sizeof(double));
+	m->rows = rows;
+	m->cols = cols;
+	m->shape = CGMS_ROW_MAJOR;
+	
+	CGPConstant* c = calloc(1, sizeof(CGPConstant));
+	c->type = CGVT_MATRIX;
+	c->value = m;
+	
+	CGNode* node = calloc(1, sizeof(CGNode));
+	node->type = CGNT_CONSTANT;
+	node->constant = c;
+	
+	node->result = NULL;
+	node->diff = NULL;
+	vec_init(&node->consumers);
+	
+	return node;
+}
+
+
 double* vcopy(uint64_t len, const double* data){
 	double* newdata = calloc(len, sizeof(double));
 	memcpy(newdata, data, len*sizeof(double));
@@ -48,7 +97,7 @@ CGNode* makeVarNode(char* name){
 	node->var = var;
 	
 	node->result = NULL;
-	node->diff = makeZeroDoubleConstantNodeNoDiff();
+	node->diff = NULL;
 	vec_init(&node->consumers);
 	
 	return node;
@@ -87,7 +136,7 @@ CGNode* makeVectorConstantNode(uint64_t  len, double* value){
 	node->constant = c;
 	
 	node->result = NULL;
-	node->diff = makeZeroDoubleConstantNodeNoDiff();
+	node->diff = makeZeroVectorConstantNodeNoDiff(len);
 	vec_init(&node->consumers);
 	
 	return node;
@@ -110,7 +159,7 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value){
 	node->constant = c;
 	
 	node->result = NULL;
-	node->diff = makeZeroDoubleConstantNodeNoDiff();
+	node->diff = makeZeroMatrixConstantNodeNoDiff(rows, cols);
 	vec_init(&node->consumers);
 	
 	return node;
@@ -149,7 +198,7 @@ CGNode* makeZeroVectorConstantNode(uint64_t  len){
 	node->constant = c;
 	
 	node->result = NULL;
-	node->diff = makeZeroDoubleConstantNodeNoDiff();
+	node->diff = makeZeroVectorConstantNodeNoDiff(len);
 	vec_init(&node->consumers);
 	
 	return node;
@@ -172,7 +221,7 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	node->constant = c;
 	
 	node->result = NULL;
-	node->diff = makeZeroDoubleConstantNodeNoDiff();
+	node->diff = makeZeroMatrixConstantNodeNoDiff(rows, cols);
 	vec_init(&node->consumers);
 	
 	return node;
