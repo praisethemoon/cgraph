@@ -2054,6 +2054,41 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 		}
 		
 		case CGBOT_DOT: {
+			/*
+			 * The following are the same as MUL
+			 */
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_DOUBLE)){
+				newres = mulDD((CGDouble*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+			
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
+				newres = mulDV((CGDouble*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_DOUBLE)){
+				newres = mulDV((CGDouble*)rhsValue, (CGVector*)lhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+			
+			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_MATRIX)){
+				newres = mulDM((CGDouble*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+			
+			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
+				newres = mulDM((CGDouble*)rhsValue, (CGMatrix*)lhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+			
+			/* here starts dot specific impl */
+			
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_MATRIX)){
 				newres = dotMM((CGMatrix*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);

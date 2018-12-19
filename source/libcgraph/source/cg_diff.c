@@ -447,9 +447,24 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				
 				
 				case CGBOT_TMULT:
+				{
+					break;
+				}
+				
 				case CGBOT_DOT:
 				{
-					// TODO: implement or throw error
+					
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->bop->lhs->diff, makeBinaryOpNode(CGBOT_DOT, node->diff, makeUnaryOpNode(CGUOT_TRANSPOSE, resultNodeToConstantNode(node->bop->rhs->result))));
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->bop->lhs->diff = resultNodeToConstantNode(res1);
+					
+					
+					CGNode* mult2 = makeBinaryOpNode(CGBOT_ADD, node->bop->rhs->diff, makeBinaryOpNode(CGBOT_DOT, makeUnaryOpNode(CGUOT_TRANSPOSE,  resultNodeToConstantNode(node->bop->lhs->result)), node->diff));
+					CGResultNode* res2 = computeRawNode(mult2);
+					node->bop->rhs->diff = resultNodeToConstantNode(res2);
+					
+					autoDifferenciateNode(graph, node->bop->lhs);
+					autoDifferenciateNode(graph, node->bop->rhs);
 					break;
 				}
 			}
@@ -526,7 +541,7 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				case CGUOT_TRANSPOSE:
 				{
 					printf("transpose\n");
-					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, node->diff);
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeUnaryOpNode(CGUOT_TRANSPOSE, node->diff));
 					CGResultNode* res1 = computeRawNode(mult1);
 					node->uop->uhs->diff = resultNodeToConstantNode(res1);
 					autoDifferenciateNode(graph, node->uop->uhs);
