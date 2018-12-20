@@ -278,7 +278,7 @@ void optimizeGraph(CGraph* graph){
 
 
 void autoDifferenciateNode(CGraph* graph, CGNode* node){
-	
+	/*
 	if(node->type != CGNT_VARIABLE)
 		switch(node->diff->constant->type){
 			case CGVT_DOUBLE:
@@ -316,11 +316,17 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 			}
 		}
 		
-	
+	*/
 	switch(node->type){
 		case CGNT_CONSTANT:
 			break;
 		case CGNT_VARIABLE:
+		{
+			CGNode* original = graphGetVar(graph, node->var->name);
+			original->diff = node->diff;
+			break;
+		}
+			/*
 			printf("%s = ", node->var->name);
 			switch(node->diff->constant->type){
 				case CGVT_DOUBLE:
@@ -357,6 +363,7 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 					break;
 				}
 			}
+			*/
 			break;
 			
 		case CGNT_BINARY_OPERATION:

@@ -241,10 +241,15 @@ CGRAPH_API CGMatrix* cg_getResultMatrixVal(struct CGResultNode* result);
  * \param[in] wrtVar With respect to variable name
  * \return Graph, representing the derivative of the original
  */
-CGRAPH_API struct CGraph* cg_diffGraph(struct CGraph* graph, char* newName, char* wrtVar);
+CGRAPH_API struct CGraph* cg_diffGraph(struct CGraph* graph, const char* newName, char* wrtVar);
 
-
+/**
+ * \breif Derivates a graph with respect to final output, usually the loss
+ * \param[in,out] graph Graph to derive, fills in `diff` field of every node.
+ */
 CGRAPH_API void cg_autoDiffGraph(struct CGraph* graph);
+
+CGRAPH_API struct CGNode* cg_getVarDiff(struct CGraph* graph, const char*  name);
 
 #ifdef CG_USE_LIBCPUID
 struct CGCPUInfo* getCPUInformation();

@@ -302,6 +302,34 @@ CGResultNode* dotMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
 	return result;
 }
 
+
+/*
+ * v.M
+ */
+CGResultNode* dotVM(CGVector* V, CGMatrix* M, CGraph* graph, CGNode* parentNode){
+	if(M->rows != V->len){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot multiply M(%"PRIu64", %"PRIu64") by V(%"PRIu64")", M->rows, M->cols, V->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
+	}
+	
+	double* y = calloc(M->cols, sizeof(double));
+	CGVector* Y = calloc(1, sizeof(CGVector));
+	Y->len = M->rows;
+	Y->data = y;
+		
+	cblas_dgemm(M->shape == CGMS_ROW_MAJOR?CblasRowMajor:CblasColMajor,
+		    CblasNoTrans, CblasNoTrans, 1, M->cols, V->len,
+		    1.0, V->data, V->len, M->data, M->cols, 0, Y->data, Y->len);
+	
+	
+	CGResultNode* result = calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
 /*
  * M.N
  */
@@ -2118,6 +2146,12 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
 				newres = dotMV((CGMatrix*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
+				newres = dotVM((CGVector*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
 				parentNode->result = newres;
 				return newres;
 			}

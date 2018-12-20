@@ -9,7 +9,7 @@ local function sigmoid(Z)
 end
 
 local function softmax(Z)
-	return CGraph.exp(Z) / CGraph.sum(CGraph.exp(Z))
+	return CGraph.exp(Z) / CGraph.sum(CGraph.exp(Z), 0)
 end
 
 
@@ -18,17 +18,20 @@ local theta1 = CGraph.variable 'T_1'
 local b1 = CGraph.variable 'b_1'
 local theta2 = CGraph.variable 'T_2'
 local b2 = CGraph.variable 'b_2'
+local y = CGraph.variable 'y'
 
 
---[[
 
-]]
+local function crossEntropy(x, y)
+	return -y * CGraph.log(x) - (CGraph.double(1) - y)*CGraph.log(CGraph.double(1) - x)
+end
 
-local A2 = sigmoid(CGraph.tr(theta1) * X + b1)
-local A3 = sigmoid(CGraph.tr(theta2) * A2 + b2)
+
+local A2 = sigmoid(CGraph.dot(CGraph.tr(theta1), X ) + b1)
+local A3 = sigmoid(CGraph.dot(CGraph.tr(theta2), A2) + b2)
 local final = A3
 
-local g = CGraph.graph("nn", final)
+local g = CGraph.graph("nn", softmax(final))
 
 g:setVar('X', CGraph.vector(4, {5.1,7.5,0.4,1.2}))
 g:setVar('T_1', CGraph.matrix(4, 5, {0.21, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1}))
@@ -39,10 +42,14 @@ g:setVar('y', CGraph.vector(3, {1, 0, 0}))
 
 local output = g:eval()
 
-local function crossEntropy(x, y)
-    -- ? y?log(x)?(1?y)(log(1?x)), d/dx
-	return -y * CGraph.log(x) - (CGraph.double(1) - y)*CGraph.log(CGraph.double(1) - x)
-end
+print(output)
+
+
+g:backProp()
+n = g:getVarDiff('T_1')
+
+--[[
+
 
 local x  = CGraph.variable('x')
 local y  = CGraph.variable('y')
@@ -50,9 +57,5 @@ local y  = CGraph.variable('y')
 
 local cost = CGraph.graph("crossentropy", crossEntropy(output, CGraph.vector(3, {1, 0, 0})))
 
---g:plot()
-print(output)
-print("error:", cost:eval())
-
-local diff = cost:diff(b2, 'nn_diff')
-diff:plot()
+cost:eval()
+]]

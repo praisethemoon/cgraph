@@ -32,6 +32,7 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
 CGNode* makeSumNode(CGNode* uhs, uint8_t axis);
 
 CGNode* resultNodeToConstantNode(CGResultNode* result);
+CGResultNode* constantNodeToResultNode(CGNode* node);
 
 CGResultNode* makeDoubleResultNode(double val);
 CGResultNode* makeVectorResultNode(uint64_t len, double* val);

@@ -274,6 +274,15 @@ static int lua_createUnaryOperation(lua_State* L){
 	return 1;
 }
 
+static int lua_createSumOperation(lua_State* L){
+	CGNode* uhs = checkNode(L, 1);
+	uint8_t axis = lua_tointeger(L, 2);
+	CGNode* node = makeSumNode(uhs, axis);
+	
+	pushNode(L, node);
+	return 1;
+}
+
 static int lua_createGraph(lua_State* L){
 	const char* name = lua_tostring(L, 1);
 	CGNode* node = checkNode(L, 2);
@@ -313,10 +322,8 @@ static int lua_getGraphVar(lua_State* L){
 	return 1;
 }
 
-static int lua_computeGraph(lua_State* L){
-	CGraph* graph = checkGraph(L, 1);
-	CGResultNode* res = computeGraph(graph);
-	
+void pushResultNode(lua_State*L, CGResultNode* res){
+
 	if(res->error != NULL)
 	{
 		lua_newtable(L);
@@ -352,13 +359,13 @@ static int lua_computeGraph(lua_State* L){
 		case CGVT_VECTOR:{
 			CGVector* value = (CGVector*)res->value;
 			
-			/*
+			
 			uint64_t i = 0;
 			printf("Vector len: %d\n", value->len);
 			for(;i<value->len;i++){
 				printf("\t%d\t%lf\n", i, value->data[i]);
 			}
-			*/
+			
 			
 			lua_pushstring(L, "len");
 			lua_pushnumber(L, value->len);
@@ -403,6 +410,12 @@ static int lua_computeGraph(lua_State* L){
 			break;
 		}
 	}
+}
+
+static int lua_computeGraph(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	CGResultNode* res = computeGraph(graph);
+	pushResultNode(L, res);
 	
 	return 1;
 }
@@ -581,6 +594,33 @@ static int lua_diffGraph(lua_State* L){
 	return 1;
 }
 
+static int lua_backPropGraph(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	
+	autoDifferenciateGraph(graph);
+
+	return 1;
+}
+
+static int lua_getGraphVarDiff(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	const char* name = lua_tostring(L, 2);
+	
+	CGNode* node = graphGetVar(graph, name);
+	
+	if(node == NULL || node->diff == NULL)
+	{
+		lua_pushnil(L);
+	}
+	else {
+		pushResultNode(L, constantNodeToResultNode(node->diff));
+		//pushNode(L, node->diff);
+	}
+	
+	return 1;
+}
+
+
 static int lua_freeGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	
@@ -627,12 +667,15 @@ int luaopen_libcgraph(lua_State *L)
 		{"matrix", lua_createMatrixConstant},
 		{"bop", lua_createBinaryOperation},
 		{"uop", lua_createUnaryOperation},
+		{"sum", lua_createSumOperation},
 		{"graphNode", lua_createGraphNode},
 		{"graph", lua_createGraph},
 		{"setVar", lua_setGraphVar},
 		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
 		{"diff", lua_diffGraph},
+		{"backProp", lua_backPropGraph},
+		{"getVarDiff", lua_getGraphVarDiff},
 		{"optimizeGraph", lua_optimizeGraph},
 		{"freeGraph", lua_freeGraph},
 		{NULL, NULL}

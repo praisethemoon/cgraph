@@ -364,3 +364,25 @@ CGNode* resultNodeToConstantNode(CGResultNode* result){
 		}
 	}
 }
+
+
+CGResultNode* constantNodeToResultNode(CGNode* node){
+	switch(node->constant->type){
+		case CGVT_DOUBLE:
+		{
+			CGDouble* d = (CGDouble*)node->constant->value;
+			return makeDoubleResultNode(d->value);
+		}
+		case CGVT_VECTOR:
+		{
+			CGVector* v = (CGVector*)node->constant->value;
+			return makeVectorResultNode(v->len, v->data);
+		}
+		case CGVT_MATRIX:
+		{
+			CGMatrix* m = (CGMatrix*)node->constant->value;
+			return makeMatrixResultNode(m->rows, m->cols, m->data);
+		}
+	}
+}
+

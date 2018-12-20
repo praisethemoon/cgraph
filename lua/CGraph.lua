@@ -275,8 +275,8 @@ local tanh = function(uhs)
 end
 
 -- TODO: Update
-local sum = function(uhs)
-	local node = cgraph.uop(UnaryOperationType.SUM, uhs.node)
+local sum = function(uhs, axis)
+	local node = cgraph.sum(uhs.node, axis)
 	local op = {type='uop', opType=UnaryOperationType.SUM, node = node, uhs=uhs}
 	setmetatable(op, mt)
 			
@@ -433,6 +433,28 @@ local graph = function(name, rootNode)
 		setmetatable(graph, Graph)
 		
 		return graph
+	end
+	
+	function Graph:backProp()
+		cgraph.backProp(self.cdata)
+	end
+	
+	function Graph:getVarDiff(name)
+		local res= cgraph.getVarDiff(self.cdata, name)
+		if res.error then
+			print('error', errorTypeToString(res.error))
+			self.err = res
+			return res
+		end
+		if res.type == TensorType.DOUBLE then
+			return double(res.value)
+		elseif res.type == TensorType.VECTOR then
+			return vector(res.len, res.value)
+		elseif res.type == TensorType.MATRIX then
+			return matrix(res.rows, res.cols, res.value)
+		else
+			return {}
+		end
 	end
 	
 	function Graph:optimize()

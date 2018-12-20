@@ -33,7 +33,8 @@ const char* NodeTypeString[] = {
 	"CONSTANT",
 	"GRAPH",
 	"BINARY_OPERATION",
-	"UNARY_OPERATION"
+	"UNARY_OPERATION",
+	"SUM_OPERATION"
 };
 
 const char* VariableTypeString[] = {
