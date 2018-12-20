@@ -282,7 +282,7 @@ CGResultNode* mulMM(CGMatrix* M1, CGMatrix* M2, CGraph* graph, CGNode* parentNod
 CGResultNode* dotMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
 	if(M->cols != V->len){
 		char msg[MAX_ERR_FMT_LEN];
-		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot multiply M(%"PRIu64", %"PRIu64") by V(%"PRIu64")", M->rows, M->cols, V->len);
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot calculate M(%"PRIu64", %"PRIu64") DOT V(%"PRIu64")", M->rows, M->cols, V->len);
 		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	
@@ -309,7 +309,7 @@ CGResultNode* dotMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
 CGResultNode* dotVM(CGVector* V, CGMatrix* M, CGraph* graph, CGNode* parentNode){
 	if(M->rows != V->len){
 		char msg[MAX_ERR_FMT_LEN];
-		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot multiply M(%"PRIu64", %"PRIu64") by V(%"PRIu64")", M->rows, M->cols, V->len);
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot calculate V(%"PRIu64") DOT M(%"PRIu64", %"PRIu64")", V->len, M->rows, M->cols);
 		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
 	}
 	

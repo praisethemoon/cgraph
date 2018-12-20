@@ -3,7 +3,12 @@ local CGraph = require 'CGraph'
 local array = CGraph.array
 
 
-local function sigmoid(Z)
+local function sigmoid1(Z)
+	local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
+	return sigmoid
+end
+
+local function sigmoid2(Z)
 	local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
 	return sigmoid
 end
@@ -27,17 +32,17 @@ local function crossEntropy(x, y)
 end
 
 
-local A2 = sigmoid(CGraph.dot(CGraph.tr(theta1), X ) + b1)
-local A3 = sigmoid(CGraph.dot(CGraph.tr(theta2), A2) + b2)
+local A2 = sigmoid1(CGraph.dot(CGraph.tr(theta1), X ) + b1)
+local A3 = sigmoid2(CGraph.dot(CGraph.tr(theta2), A2) + b2)
 local final = A3
 
-local g = CGraph.graph("nn", softmax(final))
+local g = CGraph.graph("nn", A3)
 
 g:setVar('X', CGraph.vector(4, {5.1,7.5,0.4,1.2}))
 g:setVar('T_1', CGraph.matrix(4, 5, {0.21, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1}))
 g:setVar('b_1', CGraph.vector(5, {0.1, 0.1, 0.1, 0.1, 0.1}))
 g:setVar('T_2', CGraph.matrix(5, 3, {0.3, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1}))
-g:setVar('b_2', CGraph.vector(3, {0.1, 0.1, 0.1, 0.1, 0.1}))
+g:setVar('b_2', CGraph.vector(3, {0.1, 0.1, 0.1}))
 g:setVar('y', CGraph.vector(3, {1, 0, 0}))
 
 local output = g:eval()
@@ -46,7 +51,7 @@ print(output)
 
 
 g:backProp()
-n = g:getVarDiff('T_1')
+--n = g:getVarDiff('T_1')
 
 --[[
 

@@ -515,19 +515,17 @@ int main10(int argc, char* argv[]){
 
 int main(int argc, char* argv[]){
 	
-	double value1[] = {
-		1, 2,
-		3, 4,
-	};
+	double value1[] = {0.889043, 0.820538, 0.820538, 0.820538, 0.820538};
 	
-	double value2[] = {1, 2};
+	double Theta[] = {0.3, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
 	
+	double b[]  = {0.1, 0.1, 0.1};
 	
 	struct CGNode* x = cg_newVariable("x");
 
-	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newBinOp(CGBOT_DOT, x, cg_newVectorNode(2, value2)));
+	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newBinOp(CGBOT_DOT, cg_newUnOp(CGUOT_TRANSPOSE, cg_newMatrixNode(5, 3, Theta)), x));
 	
-	struct CGNode* lhsNode = cg_newMatrixNode(2, 2, value1);
+	struct CGNode* lhsNode = cg_newVectorNode(5, value1);
 		
 	struct CGNode* X = lhsNode;
 	
