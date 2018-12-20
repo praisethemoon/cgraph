@@ -319,7 +319,6 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 	
 	switch(node->type){
 		case CGNT_CONSTANT:
-			node->diff = makeDoubleConstantNode(0.0);
 			break;
 		case CGNT_VARIABLE:
 			printf("%s = ", node->var->name);
@@ -540,7 +539,6 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				
 				case CGUOT_TRANSPOSE:
 				{
-					printf("transpose\n");
 					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->uop->uhs->diff, makeUnaryOpNode(CGUOT_TRANSPOSE, node->diff));
 					CGResultNode* res1 = computeRawNode(mult1);
 					node->uop->uhs->diff = resultNodeToConstantNode(res1);
@@ -550,6 +548,7 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				
 				case CGUOT_INV:
 				{
+					
 					break;
 				}
 			}
@@ -557,17 +556,44 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 		
 		case CGNT_GRAPH: 
 		{
-			
+			break;
 		}
 		
 		case CGNT_SUM_OPERATION: 
 		{
-			
+			CGNode* mult1 = NULL;
+			if(node->sum->axis == 0){
+				mult1 = makeBinaryOpNode(CGBOT_ADD, node->sum->uhs->diff, node->diff);
+			}
+			else
+			{
+				mult1 = makeUnaryOpNode(CGUOT_TRANSPOSE, makeBinaryOpNode(CGBOT_ADD, makeUnaryOpNode(CGUOT_TRANSPOSE, node->sum->uhs->diff), node->diff));
+			}
+			CGResultNode* res1 = computeRawNode(mult1);
+			node->sum->uhs->diff = resultNodeToConstantNode(res1);
+			autoDifferenciateNode(graph, node->sum->uhs);
+			break;
 		}
 	}
 }
 
 void autoDifferenciateGraph(CGraph* graph){
-	graph->root->diff = makeDoubleConstantNode(1.0);
+	switch(graph->root->result->type){
+		case CGVT_DOUBLE:
+			graph->root->diff = makeOnesDoubleConstantNode();
+			break;
+			
+		case CGVT_VECTOR:{
+			CGVector* v = (CGVector*)graph->root->result->value;
+			graph->root->diff = makeOnesVectorConstantNode(v->len);
+			break;
+		}
+		
+		case CGVT_MATRIX:{
+			CGMatrix* v = (CGMatrix*)graph->root->result->value;
+			graph->root->diff = makeOnesMatrixConstantNode(v->rows, v->cols);
+			break;
+		}
+	}
 	autoDifferenciateNode(graph, graph->root);
 }

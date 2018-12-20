@@ -1572,20 +1572,40 @@ CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
  * sum(M, axis=axis)
  */
 
-CGResultNode* sumM(CGVector* V, CGraph* graph, CGNode* parentNode){
+CGResultNode* sumM(CGMatrix* M, CGraph* graph, CGNode* parentNode, uint8_t axis){
 	double y = 0;
-	CGDouble* Y = calloc(1, sizeof(CGDouble));
+	CGVector* V = calloc(1, sizeof(CGVector));
 	
-	uint64_t i = 0;
-	
-	for(;i<V->len;i++){
-		y += V->data[i];
+	if(axis == 0){
+		uint64_t len = M->cols;
+		double* y = calloc(len, sizeof(double));
+		
+		V->data = y;
+		V->len = len;
+		
+		uint64_t i = 0;
+		
+		for(;i<M->rows*M->cols;i++){
+			y[i%len] += M->data[i];
+		}
 	}
-	
-	Y->value = y;
+	else {
+		uint64_t len = M->rows;
+		double* y = calloc(len, sizeof(double));
+		
+		V->data = y;
+		V->len = len;
+		
+		uint64_t i = 0;
+		
+		for(;i<M->rows*M->cols;i++){
+			y[i/M->cols] += M->data[i];
+		}
+	}
+		
 	CGResultNode* result = calloc(1, sizeof(CGResultNode));
-	result->type = CGVT_DOUBLE;
-	result->value = Y;
+	result->type = CGVT_VECTOR;
+	result->value = V;
 	
 	return result;
 }
@@ -2170,20 +2190,6 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			
 			result->type = rnode->type;
 			result->value = rnode->value;
-			
-			if(node->diff == NULL)
-				switch(result->type){
-					case CGVT_DOUBLE:
-						node->diff = makeZeroDoubleConstantNodeNoDiff();
-						break;
-					case CGVT_VECTOR:
-						node->diff = makeZeroVectorConstantNodeNoDiff(((CGVector*)result->value)->len);
-						break;
-					case CGVT_MATRIX:
-						node->diff = makeZeroMatrixConstantNodeNoDiff(((CGMatrix*)result->value)->rows, ((CGMatrix*)result->value)->cols);
-						break;
-				}
-			
 			break;
 		}
 		case CGNT_BINARY_OPERATION:
@@ -2210,14 +2216,10 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 				result = sumV((CGVector*)newres->value, graph, node);
 			}
 			
-			/*
-			 * TODO: Implement matrix sum
-			 */
 			if(newres->type == CGVT_MATRIX){
-				char msg[MAX_ERR_FMT_LEN];
-				snprintf(msg, MAX_ERR_FMT_LEN, "Operation [sum(Matrix)] is not implemented/supported");
-				result = returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node, msg);
+				result = sumM((CGMatrix*)newres->value, graph, node, node->sum->axis);
 			}
+			
 			
 			break;
 		}
@@ -2232,6 +2234,24 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	}
 	
 	node->result = result;
+	
+	switch(result->type){
+		case CGVT_DOUBLE:
+			node->diff = makeZeroDoubleConstantNode();
+			break;
+		case CGVT_VECTOR:{
+			CGVector* v = (CGVector*)result->value;
+			node->diff = makeZeroVectorConstantNode(v->len);
+			break;
+		}
+		
+		case CGVT_MATRIX:{
+			CGMatrix* v = (CGMatrix*)result->value;
+			node->diff = makeZeroMatrixConstantNode(v->rows, v->cols);
+			break;
+		}
+	}
+	
 	return result;
 }
 

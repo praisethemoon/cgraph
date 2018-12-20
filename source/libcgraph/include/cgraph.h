@@ -39,7 +39,7 @@ typedef struct CGError {
 	char* message;
 }CGError;
 
-typedef struct  {
+typedef struct CGResultNode {
 	CGVarType type;
 	void* value;
 	CGError* error;

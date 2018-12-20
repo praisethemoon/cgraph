@@ -13,9 +13,6 @@
 double* vcopy(uint64_t len, const double* data);
 
 
-CGNode* makeZeroDoubleConstantNodeNoDiff();
-CGNode* makeZeroVectorConstantNodeNoDiff(uint64_t  len);
-CGNode* makeZeroMatrixConstantNodeNoDiff(uint64_t  rows, uint64_t cols);
 
 CGNode* makeVarNode(char* name);
 CGNode* makeDoubleConstantNode(double value);
@@ -24,6 +21,11 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value);
 CGNode* makeZeroDoubleConstantNode();
 CGNode* makeZeroVectorConstantNode(uint64_t  len);
 CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols);
+
+CGNode* makeOnesDoubleConstantNode();
+CGNode* makeOnesVectorConstantNode(uint64_t  len);
+CGNode* makeOnesMatrixConstantNode(uint64_t  rows, uint64_t cols);
+
 CGNode* makeGraphNode(CGraph* graph);
 CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs);
 CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
