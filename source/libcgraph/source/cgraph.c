@@ -112,6 +112,15 @@ void* copyRNodeValue(CGResultNode* node){
 	}
 }
 
+CGMatrix* vectorToMatrix(CGVector* v){
+	CGMatrix* m = calloc(1, sizeof(CGMatrix));
+	m->rows = v->len;
+	m->cols = 1;
+	m->data = v->data;
+	
+	return m;
+}
+
 /*
  * *********************
  * Multiplication
@@ -2151,7 +2160,8 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			}
 			
 			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_MATRIX)){
-				newres = dotVM((CGVector*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				//newres = dotVM((CGVector*)lhsValue, (CGMatrix*)rhsValue, graph, parentNode);
+				newres = dotMM(vectorToMatrix((CGVector*)lhsValue), (CGMatrix*)rhsValue, graph, parentNode);
 				parentNode->result = newres;
 				return newres;
 			}

@@ -70,7 +70,7 @@ local function _renderMatrix(rows, cols, value)
 	local strRep= ("Mat [rows: ".. rows.. ", cols: ".. cols.. ", value: ")
 	for i=1,rows do
 		strRep = strRep .. ("\n\t")
-		for j=1,rows do
+		for j=1,cols do
 			strRep = strRep .. ("\t".. value[(i-1)*cols +j])
 		end
 	end

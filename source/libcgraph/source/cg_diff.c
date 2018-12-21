@@ -496,9 +496,10 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				
 				case CGBOT_DOT:
 				{
-					printNode(node->diff);
-					printNode(node->bop->lhs->diff);
-					printNode(resultNodeToConstantNode(node->bop->rhs->result));
+					//printNode(node->diff);
+					//printNode(node->bop->lhs->diff);
+					//printNode(node->bop->rhs->diff);
+					//printNode(resultNodeToConstantNode(node->bop->rhs->result));
 					
 					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->bop->lhs->diff, makeBinaryOpNode(CGBOT_DOT, node->diff, makeUnaryOpNode(CGUOT_TRANSPOSE, resultNodeToConstantNode(node->bop->rhs->result))));
 					CGResultNode* res1 = computeRawNode(mult1);

@@ -572,7 +572,7 @@ int main(int argc, char* argv[]){
 		}
 	}
 	
-	//cg_autoDiffGraph(graph);
+	cg_autoDiffGraph(graph);
 	
 	//struct CGNode* dx = cg_getVarDiff(graph, "x");
 		
