@@ -539,6 +539,38 @@ CGResultNode* divMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode)
 }
 
 /*
+ * M/v
+ */
+CGResultNode* divMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
+	if(M->rows != V->len){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot calculate  M(%"PRIu64", %"PRIu64") DIV V(%"PRIu64")", M->rows, M->cols, V->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
+	}
+	
+	uint64_t size = M->rows*M->cols;
+	double* res = calloc(size, sizeof(double));
+	
+	CGMatrix* Y = calloc(1, sizeof(CGMatrix));
+	Y->rows = M->rows;
+	Y->cols = M->cols;
+	Y->data = res;
+	
+	uint64_t i = 0;
+	
+	for(; i < size;i++)
+	{
+		res[i] = M->data[i] / V->data[i/M->cols];
+	}
+
+	CGResultNode* result = calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_MATRIX;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
  *  d/M element-wise
  */
 CGResultNode* divDM(CGDouble* D, CGMatrix* M, CGraph* graph, CGNode* parentNode){
@@ -2016,6 +2048,12 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			
 			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_DOUBLE)){
 				newres = divMD((CGMatrix*)lhsValue, (CGDouble*)rhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+			
+			if((lhsType == CGVT_MATRIX) && (rhsType == CGVT_VECTOR)){
+				newres = divMV((CGMatrix*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
 				parentNode->result = newres;
 				return newres;
 			}
