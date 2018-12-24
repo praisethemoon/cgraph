@@ -336,8 +336,6 @@ void pushResultNode(lua_State*L, CGResultNode* res){
 		lua_pushstring(L, "node");
 		pushNode(L, res->error->faultyNode);
 		lua_settable(L, -3);
-		
-		return 1;
 	}
 	
 	lua_newtable(L);
