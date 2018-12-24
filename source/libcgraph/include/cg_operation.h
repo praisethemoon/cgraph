@@ -13,10 +13,12 @@ typedef struct CGBinaryOperation {
 	CGBinaryOperationType type;
 }CGBinaryOperation;
 
-typedef struct CGSumOperation{
+typedef struct CGAxisBoundOperation{
 	struct CGNode* uhs;
 	uint8_t axis;
-}CGSumOperation;
+	
+	CGAxisBoundOperationType type;
+}CGAxisBoundOperation;
 
 typedef struct CGUnaryOperation {
 	struct CGNode* uhs;

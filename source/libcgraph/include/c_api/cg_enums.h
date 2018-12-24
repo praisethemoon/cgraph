@@ -81,6 +81,19 @@ typedef enum CGUnaryOperationType {
 #define MAX_UNARY_OPERATION CGUOT_TANH
 
 /**
+ * \brief List of operations that apply mainly to a given axis of matrices
+ */
+typedef enum CGAxisBoundOperationType {
+	CGABOT_SUM = 0,
+	CGABOT_MIN,
+	CGABOT_MAX,
+	CGABOT_MEAN,
+	CGABOT_VARIANCE,
+}CGAxisBoundOperationType;
+
+#define MAX_AXIS_BOUND_OPERATION CGABOT_VARIANCE
+
+/**
  * \brief List of the available node types
  */
 typedef enum CGNodeType {
@@ -89,10 +102,10 @@ typedef enum CGNodeType {
 	CGNT_GRAPH,
 	CGNT_BINARY_OPERATION,
 	CGNT_UNARY_OPERATION,
-	CGNT_SUM_OPERATION
+	CGNT_AXIS_BOUND_OPERATION
 }CGNodeType;
 
-#define MAX_NODE_TYPE CGNT_SUM_OPERATION
+#define MAX_NODE_TYPE CGNT_AXIS_BOUND_OPERATION
 
 /**
  * \brief List of the available tensor types

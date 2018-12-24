@@ -2284,24 +2284,29 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		/* 
 		 * TODO: add this test to unittest
 		 */
-		case CGNT_SUM_OPERATION:
+		case CGNT_AXIS_BOUND_OPERATION:
 		{
-			CGResultNode* newres = computeCGNode(graph, node->sum->uhs);
-			CHECK_RESULT(newres)
-			node->sum->uhs->result = newres;
-			
-			if(newres->type == CGVT_DOUBLE){
-				result = sumD((CGDouble*)newres->value, graph, node);
+			switch(node->axop->type){
+				case CGABOT_SUM:{
+					CGResultNode* newres = computeCGNode(graph, node->axop->uhs);
+					CHECK_RESULT(newres)
+					node->axop->uhs->result = newres;
+					
+					if(newres->type == CGVT_DOUBLE){
+						result = sumD((CGDouble*)newres->value, graph, node);
+					}
+					
+					if(newres->type == CGVT_VECTOR){
+						result = sumV((CGVector*)newres->value, graph, node);
+					}
+					
+					if(newres->type == CGVT_MATRIX){
+						result = sumM((CGMatrix*)newres->value, graph, node, node->axop->axis);
+					}
+				
+					break;
+				}
 			}
-			
-			if(newres->type == CGVT_VECTOR){
-				result = sumV((CGVector*)newres->value, graph, node);
-			}
-			
-			if(newres->type == CGVT_MATRIX){
-				result = sumM((CGMatrix*)newres->value, graph, node, node->sum->axis);
-			}
-			
 			
 			break;
 		}

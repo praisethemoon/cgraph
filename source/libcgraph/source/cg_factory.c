@@ -278,11 +278,12 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 
 CGNode* makeSumNode(CGNode* uhs, uint8_t axis){
 	CGNode* node = calloc(1, sizeof(CGNode));
-	node->type = CGNT_SUM_OPERATION;
+	node->type = CGNT_AXIS_BOUND_OPERATION;
+	node->axop = calloc(1, sizeof(CGAxisBoundOperation));
 	
-	node->sum = calloc(1, sizeof(CGSumOperation));
-	node->sum->axis = axis;
-	node->sum->uhs = uhs;
+	node->axop->type = CGABOT_SUM;
+	node->axop->axis = axis;
+	node->axop->uhs = uhs;
 	
 	node->result = NULL;
 	node->diff = NULL;

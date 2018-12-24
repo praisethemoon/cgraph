@@ -18,7 +18,7 @@ typedef struct CGNode {
 		CGPConstant* constant;
 		CGBinaryOperation* bop;
 		CGUnaryOperation* uop;
-		CGSumOperation* sum;
+		CGAxisBoundOperation* axop;
 		struct CGraph* graph;
 	};
 	CGNode_Vec_t consumers;

@@ -607,20 +607,25 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 			break;
 		}
 		
-		case CGNT_SUM_OPERATION: 
+		case CGNT_AXIS_BOUND_OPERATION: 
 		{
-			CGNode* mult1 = NULL;
-			if(node->sum->axis == 0){
-				mult1 = makeBinaryOpNode(CGBOT_ADD, node->sum->uhs->diff, node->diff);
+			switch(node->axop->type){
+				case CGABOT_SUM: {
+					CGNode* mult1 = NULL;
+					if(node->axop->axis == 0){
+						mult1 = makeBinaryOpNode(CGBOT_ADD, node->axop->uhs->diff, node->diff);
+					}
+					else
+					{
+						mult1 = makeUnaryOpNode(CGUOT_TRANSPOSE, makeBinaryOpNode(CGBOT_ADD, makeUnaryOpNode(CGUOT_TRANSPOSE, node->axop->uhs->diff), node->diff));
+					}
+					CGResultNode* res1 = computeRawNode(mult1);
+					node->axop->uhs->diff = resultNodeToConstantNode(res1);
+					autoDifferenciateNode(graph, node->axop->uhs);
+					break;
+				}
+				break;
 			}
-			else
-			{
-				mult1 = makeUnaryOpNode(CGUOT_TRANSPOSE, makeBinaryOpNode(CGBOT_ADD, makeUnaryOpNode(CGUOT_TRANSPOSE, node->sum->uhs->diff), node->diff));
-			}
-			CGResultNode* res1 = computeRawNode(mult1);
-			node->sum->uhs->diff = resultNodeToConstantNode(res1);
-			autoDifferenciateNode(graph, node->sum->uhs);
-			break;
 		}
 	}
 }
