@@ -277,7 +277,7 @@ end
 -- TODO: Update
 local sum = function(uhs, axis)
 	local node = cgraph.sum(uhs.node, axis)
-	local op = {type='uop', opType=UnaryOperationType.SUM, node = node, uhs=uhs}
+	local op = {type='sum', opType=nil, node = node, uhs=uhs,axis=axis}
 	setmetatable(op, mt)
 			
 	return op
@@ -328,6 +328,11 @@ local function nodeToDot(graph, uhs, str)
 		elseif uhs.type == 'graph' then
 			str = str .. "\t" .. idCounter ..' [label="graph '..(uhs.graph.name)..'"'..fillAttribute..', shape=record];\n';
 			str, idCounter= listNodeToString(uhs.graph.root, str, idCounter)
+			--print('returning graph', str)
+			return str, idCounter
+		elseif uhs.type == 'sum' then
+			str = str .. "\t" .. idCounter ..' [label="sum axis'..(uhs.axis)..'"'..fillAttribute..', shape=record];\n';
+			str, idCounter= listNodeToString(uhs.uhs, str, idCounter)
 			--print('returning graph', str)
 			return str, idCounter
 		else

@@ -486,6 +486,34 @@ CGResultNode* divVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode)
 }
 
 /*
+ *  V/V
+ */
+CGResultNode* divVV(CGVector* V, CGVector* D, CGraph* graph, CGNode* parentNode){
+	if(V->len != D->len){
+		char msg[MAX_ERR_FMT_LEN];
+		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot calculate  V(%"PRIu64") DIV V(%"PRIu64")", V->len, D->len);
+		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
+	}
+	
+	double* res = calloc(V->len, sizeof(double));
+	
+	CGVector* Y = calloc(1, sizeof(CGVector));
+	Y->data = res;
+	Y->len = V->len;
+	
+	uint64_t i = 0;
+	for(;i<V->len;i++){
+		res[i] = V->data[i]/D->data[i];
+	}
+	
+	CGResultNode* result = calloc(1, sizeof(CGResultNode));
+	result->type = CGVT_VECTOR;
+	result->value = Y;
+	
+	return result;
+}
+
+/*
  *  d/V element-wise
  */
 CGResultNode* divDV(CGDouble* D, CGVector* V, CGraph* graph, CGNode* parentNode){
@@ -2042,6 +2070,12 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 			
 			if((lhsType == CGVT_DOUBLE) && (rhsType == CGVT_VECTOR)){
 				newres = divDV((CGDouble*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+			
+			if((lhsType == CGVT_VECTOR) && (rhsType == CGVT_VECTOR)){
+				newres = divVV((CGVector*)lhsValue, (CGVector*)rhsValue, graph, parentNode);
 				parentNode->result = newres;
 				return newres;
 			}

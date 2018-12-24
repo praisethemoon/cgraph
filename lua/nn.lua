@@ -36,9 +36,9 @@ local A2 = sigmoid1(CGraph.dot(CGraph.tr(theta1), X ) + b1)
 local A3 = sigmoid2(CGraph.dot(CGraph.tr(theta2), A2) + b2)
 local final = A3
 
-local g = CGraph.graph("nn", crossEntropy(final, y))
+local g = CGraph.graph("nn", softmax(X))
 
-g:setVar('X', CGraph.vector(4, {5.1,7.5,0.4,1.2}))
+g:setVar('X', CGraph.vector(3, {1, 2,3}))
 g:setVar('T_1', CGraph.matrix(4, 5, {0.21, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1}))
 g:setVar('b_1', CGraph.vector(5, {0.1, 0.1, 0.1, 0.1, 0.1}))
 g:setVar('T_2', CGraph.matrix(5, 3, {0.3, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1}))
@@ -51,13 +51,11 @@ print(output)
 
 
 g:backProp()
+dx = g:getVarDiff('X')
+print 'X'
+print(dx)
 
-print 'T_1'
-print(g:getVarDiff('T_1'))
 
-
-print 'T_2'
-print(g:getVarDiff('T_2'))
 
 --[[
 

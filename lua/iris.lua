@@ -3,6 +3,8 @@ local array = CGraph.array
 
 local FileReader = require 'FileReader'
 
+local cg = CGraph
+
 local function sigmoid(Z)
 	local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
 	return sigmoid
@@ -48,4 +50,4 @@ end
 
 
 local output = g:eval()
-print(output)
+--print(output)
