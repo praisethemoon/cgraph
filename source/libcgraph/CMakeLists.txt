@@ -23,6 +23,7 @@ set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/source/cg_constants.c
 	${PROJECT_SOURCE_DIR}/source/cg_errors.c
 	${PROJECT_SOURCE_DIR}/source/cg_diff.c
+	${PROJECT_SOURCE_DIR}/source/cg_math.c
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})

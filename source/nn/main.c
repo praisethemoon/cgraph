@@ -590,7 +590,7 @@ int main(int argc, char* argv[]){
 	
 	struct CGNode* x = cg_newVariable("x");
 
-	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newAxisBoundOp(CGABOT_MAX, cg_newMatrixNode(5, 3, Theta), 0));
+	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newAxisBoundOp(CGABOT_MEAN, cg_newMatrixNode(5, 3, Theta), 1));
 	
 	struct CGNode* lhsNode = cg_newVectorNode(5, value1);
 		

@@ -1939,12 +1939,12 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
 					
 					uint64_t i = 0;
 					
-					for(i=0;i<M->rows*M->cols;i++){
-						y[i%len] = M->data[i];
+					for(;i<M->rows*M->cols;i++){
+						y[i%len] += M->data[i];
 					}
 					
 					
-					for(;i<M->cols;i++){
+					for(i=0;i<M->cols;i++){
 						y[i] /= M->rows;
 					}
 				}
@@ -1957,11 +1957,11 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
 					
 					uint64_t i = 0;
 					
-					for(i=0;i<M->rows*M->cols;i++){
+					for(;i<M->rows*M->cols;i++){
 						y[i/M->cols] += M->data[i];
 					}
 					
-					for(;i<M->rows;i++){
+					for(i=0;i<M->rows;i++){
 						y[i] /= M->cols;
 					}
 				}

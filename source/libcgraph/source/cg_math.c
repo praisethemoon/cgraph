@@ -21,9 +21,11 @@ CGNode* sigmoid(CGNode* x){
 
 
 /*
- * A computationally stable version of softmax
+ * A numerical stable version of softmax
  */
 CGNode* softmax(CGNode* x){
+	CGNode* lhs = makeUnaryOpNode(CGUOT_EXP, makeBinaryOpNode(CGUOT_MINUS, x, makeAxisBoundNode(CGABOT_MAX, x, 0)));
+	CGNode* rhs = makeAxisBoundNode(CGABOT_SUM, x, 0);
 	return NULL;
 }
 
