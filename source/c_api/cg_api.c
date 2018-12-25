@@ -64,8 +64,8 @@ CGNode* cg_newUnOp(CGUnaryOperationType type, CGNode* uhs){
 }
 
 
-CGNode* cg_newSumOp(struct CGNode* uhs, uint8_t axis){
-	return makeSumNode(uhs, axis);
+CGNode* cg_newAxisBoundOp(CGAxisBoundOperationType type, struct CGNode* uhs, uint8_t axis){
+	return makeAxisBoundNode(type, uhs, axis);
 }
 
 CGNode* cg_newGraphNode(CGraph* graph){

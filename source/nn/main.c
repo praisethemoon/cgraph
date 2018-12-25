@@ -456,7 +456,7 @@ int main10(int argc, char* argv[]){
 	
 	struct CGNode* x = cg_newVariable("x");
 
-	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newSumOp(cg_newBinOp(CGBOT_POW, x, cg_newDoubleNode(2)), 1));
+	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newAxisBoundOp(CGABOT_SUM, cg_newBinOp(CGBOT_POW, x, cg_newDoubleNode(2)), 1));
 	
 	struct CGNode* lhsNode = cg_newMatrixNode(2, 3, value1);
 		
@@ -513,7 +513,7 @@ int main10(int argc, char* argv[]){
 }
 
 
-int main(int argc, char* argv[]){
+int main11(int argc, char* argv[]){
 	
 	double value1[] = {0.889043, 0.820538, 0.820538, 0.820538, 0.820538};
 	
@@ -523,7 +523,7 @@ int main(int argc, char* argv[]){
 	
 	struct CGNode* x = cg_newVariable("x");
 
-	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newBinOp(CGBOT_DOT, cg_newUnOp(CGUOT_TRANSPOSE, cg_newMatrixNode(5, 3, Theta)), x));
+	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newAxisBoundOp(CGABOT_MAX, cg_newBinOp(CGBOT_DOT, cg_newUnOp(CGUOT_TRANSPOSE, cg_newMatrixNode(5, 3, Theta)), x), 0));
 	
 	struct CGNode* lhsNode = cg_newVectorNode(5, value1);
 		
@@ -572,9 +572,77 @@ int main(int argc, char* argv[]){
 		}
 	}
 	
-	cg_autoDiffGraph(graph);
+	//cg_autoDiffGraph(graph);
 	
 	//struct CGNode* dx = cg_getVarDiff(graph, "x");
 		
 	return 0;
 }
+
+
+int main(int argc, char* argv[]){
+	
+	double value1[] = {0.889043, 0.820538, 0.820538, 0.820538, 0.820538};
+	
+	double Theta[] = {0.3, 0.1, 0.1, 0.1, 0.5, 0.1, 0.8, 0.1, 0.1, 0.1, 0.1, 0.7, 0.0, 0.1, 0.1};
+	
+	double b[]  = {0.1, 0.1, 0.1};
+	
+	struct CGNode* x = cg_newVariable("x");
+
+	struct CGraph* graph = cg_newGraph("runMult_MV", cg_newAxisBoundOp(CGABOT_MAX, cg_newMatrixNode(5, 3, Theta), 0));
+	
+	struct CGNode* lhsNode = cg_newVectorNode(5, value1);
+		
+	struct CGNode* X = lhsNode;
+	
+	cg_setVar(graph, "x", X);
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
+	printf("Result type: %d\n", cg_getResultType(res));
+	
+	switch(cg_getResultType(res)){
+		case CGVT_DOUBLE:
+		{
+			CGDouble* d = cg_getResultDoubleVal(res);
+			printf("current diff %f\n",  d->value);
+			break;
+		}
+		
+		case CGVT_VECTOR:
+		{
+			CGVector* vec = cg_getResultVectorVal(res);
+			uint64_t i = 0;
+			printf("(");
+			for(; i < vec->len; i++){
+				printf("%f, ", vec->data[i]);
+			}
+			printf(")\n");
+			break;
+		}
+		
+		case CGVT_MATRIX:
+		{
+			CGMatrix* m = cg_getResultMatrixVal(res);
+			uint64_t i = 0;
+			uint64_t j = 0;
+			printf("(");
+			for(; i < m->rows; i++){
+				printf("\n\t");
+				for(j = 0; j < m->cols; j++){
+					printf("%f, ", m->data[i*m->cols+j]);
+				}
+			}
+			printf(")\n");
+			break;
+		}
+	}
+	
+	//cg_autoDiffGraph(graph);
+	
+	//struct CGNode* dx = cg_getVarDiff(graph, "x");
+		
+	return 0;
+}
+

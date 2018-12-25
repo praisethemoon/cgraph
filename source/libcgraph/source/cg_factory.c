@@ -276,12 +276,12 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 	return node;
 }
 
-CGNode* makeSumNode(CGNode* uhs, uint8_t axis){
+CGNode* makeAxisBoundNode(CGAxisBoundOperationType type, CGNode* uhs, uint8_t axis){
 	CGNode* node = calloc(1, sizeof(CGNode));
 	node->type = CGNT_AXIS_BOUND_OPERATION;
 	node->axop = calloc(1, sizeof(CGAxisBoundOperation));
 	
-	node->axop->type = CGABOT_SUM;
+	node->axop->type = type;
 	node->axop->axis = axis;
 	node->axop->uhs = uhs;
 	

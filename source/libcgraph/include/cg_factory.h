@@ -29,7 +29,8 @@ CGNode* makeOnesMatrixConstantNode(uint64_t  rows, uint64_t cols);
 CGNode* makeGraphNode(CGraph* graph);
 CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs);
 CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
-CGNode* makeSumNode(CGNode* uhs, uint8_t axis);
+CGNode* makeAxisBoundNode(CGAxisBoundOperationType type, CGNode* uhs, uint8_t axis);
+
 
 CGNode* resultNodeToConstantNode(CGResultNode* result);
 CGResultNode* constantNodeToResultNode(CGNode* node);

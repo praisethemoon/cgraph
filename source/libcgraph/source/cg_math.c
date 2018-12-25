@@ -18,3 +18,15 @@
 CGNode* sigmoid(CGNode* x){
 	return NULL;
 }
+
+
+/*
+ * A computationally stable version of softmax
+ */
+CGNode* softmax(CGNode* x){
+	return NULL;
+}
+
+CGNode* crossEntropy(CGNode* x, CGNode* y){
+	return NULL;
+}

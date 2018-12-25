@@ -17,6 +17,7 @@
 
 CGNode* sigmoid(CGNode* x);
 CGNode* softmax(CGNode* x);
+CGNode* crossEntropy(CGNode* x, CGNode* y);
 CGNode* relu(CGNode* x);
 
 // log(1+ e^x)
@@ -25,8 +26,5 @@ CGNode* smoothRelu(CGNode* x);
 CGNode* mean(CGNode* X, uint8_t axis);
 CGNode* variance(CGNode* X, uint8_t axis);
 
-
-CGNode* max(CGNode* X, uint8_t axis);
-CGNode* min(CGNode* X, uint8_t axis);
 
 #endif

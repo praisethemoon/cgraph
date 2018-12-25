@@ -277,7 +277,7 @@ static int lua_createUnaryOperation(lua_State* L){
 static int lua_createSumOperation(lua_State* L){
 	CGNode* uhs = checkNode(L, 1);
 	uint8_t axis = lua_tointeger(L, 2);
-	CGNode* node = makeSumNode(uhs, axis);
+	CGNode* node = makeAxisBoundNode(CGABOT_SUM, uhs, axis);
 	
 	pushNode(L, node);
 	return 1;

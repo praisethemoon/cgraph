@@ -1670,7 +1670,6 @@ CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
  */
 
 CGResultNode* sumM(CGMatrix* M, CGraph* graph, CGNode* parentNode, uint8_t axis){
-	double y = 0;
 	CGVector* V = calloc(1, sizeof(CGVector));
 	
 	if(axis == 0){
@@ -1706,6 +1705,277 @@ CGResultNode* sumM(CGMatrix* M, CGraph* graph, CGNode* parentNode, uint8_t axis)
 	
 	return result;
 }
+
+
+CGResultNode* max(CGNode* X, CGraph* graph){
+	CGResultNode* res = computeCGNode(graph, X->axop->uhs);
+	
+	switch(res->type){
+		case CGVT_DOUBLE:
+		{
+				double y = 0;
+				CGDouble* Y = calloc(1, sizeof(CGDouble));
+				
+				Y->value = ((CGDouble*)res->value)->value;
+				CGResultNode* result = calloc(1, sizeof(CGResultNode));
+				result->type = CGVT_DOUBLE;
+				result->value = Y;
+				
+				return result;
+		}
+		
+		case CGVT_VECTOR:
+		{
+			CGVector* v = (CGVector*)res->value;
+			CGDouble* Y = calloc(1, sizeof(CGDouble));
+			
+			uint64_t i = 1;
+			double m = v->data[0];
+			
+			for (;i < v->len; i++){
+				if(v->data[i] > m)
+					m = v->data[i];
+			}
+			
+			Y->value = m;
+			CGResultNode* result = calloc(1, sizeof(CGResultNode));
+			result->type = CGVT_DOUBLE;
+			result->value = Y;
+			
+			return result;
+		}
+		
+		case CGVT_MATRIX: {
+				CGMatrix* M = (CGMatrix*)res->value;
+				CGVector* V = calloc(1, sizeof(CGVector));
+	
+				if(X->axop->axis == 0){
+					uint64_t len = M->cols;
+					double* y = calloc(len, sizeof(double));
+					
+					V->data = y;
+					V->len = len;
+					
+					uint64_t i = 0;
+					
+					for(;i<M->cols;i++){
+						y[i] = M->data[i];
+					}
+					
+					for(i=0;i<M->rows*M->cols;i++){
+						if(y[i%len] < M->data[i])
+							y[i%len] = M->data[i];
+					}
+				}
+				else {
+					uint64_t len = M->rows;
+					double* y = calloc(len, sizeof(double));
+					
+					V->data = y;
+					V->len = len;
+					
+					uint64_t i = 0;
+					
+					for(;i<M->rows;i++){
+						y[i] = M->data[i*M->cols];
+					}
+					
+					for(i=0;i<M->rows*M->cols;i++){
+						if(y[i/M->cols] < M->data[i])
+							y[i/M->cols] = M->data[i];
+					}
+				}
+					
+				CGResultNode* result = calloc(1, sizeof(CGResultNode));
+				result->type = CGVT_VECTOR;
+				result->value = V;
+				
+				return result;
+			
+		}
+	}
+}
+
+
+CGResultNode* min(CGNode* X, CGraph* graph){
+	CGResultNode* res = computeCGNode(graph, X->axop->uhs);
+	
+	switch(res->type){
+		case CGVT_DOUBLE:
+		{
+				double y = 0;
+				CGDouble* Y = calloc(1, sizeof(CGDouble));
+				
+				Y->value = ((CGDouble*)res->value)->value;
+				CGResultNode* result = calloc(1, sizeof(CGResultNode));
+				result->type = CGVT_DOUBLE;
+				result->value = Y;
+				
+				return result;
+		}
+		
+		case CGVT_VECTOR:
+		{
+			CGVector* v = (CGVector*)res->value;
+			CGDouble* Y = calloc(1, sizeof(CGDouble));
+			
+			uint64_t i = 1;
+			double m = v->data[0];
+			
+			for (;i < v->len; i++){
+				if(v->data[i] > m)
+					m = v->data[i];
+			}
+			
+			Y->value = m;
+			CGResultNode* result = calloc(1, sizeof(CGResultNode));
+			result->type = CGVT_DOUBLE;
+			result->value = Y;
+			
+			return result;
+		}
+		
+		case CGVT_MATRIX: {
+				CGMatrix* M = (CGMatrix*)res->value;
+				CGVector* V = calloc(1, sizeof(CGVector));
+	
+				if(X->axop->axis == 0){
+					uint64_t len = M->cols;
+					double* y = calloc(len, sizeof(double));
+					
+					V->data = y;
+					V->len = len;
+					
+					uint64_t i = 0;
+					
+					for(;i<M->cols;i++){
+						y[i] = M->data[i];
+					}
+					
+					for(i=0;i<M->rows*M->cols;i++){
+						if(y[i%len] > M->data[i])
+							y[i%len] = M->data[i];
+					}
+				}
+				else {
+					uint64_t len = M->rows;
+					double* y = calloc(len, sizeof(double));
+					
+					V->data = y;
+					V->len = len;
+					
+					uint64_t i = 0;
+					
+					for(;i<M->rows;i++){
+						y[i] = M->data[i*M->cols];
+					}
+					
+					for(i=0;i<M->rows*M->cols;i++){
+						if(y[i/M->cols] > M->data[i])
+							y[i/M->cols] = M->data[i];
+					}
+				}
+					
+				CGResultNode* result = calloc(1, sizeof(CGResultNode));
+				result->type = CGVT_VECTOR;
+				result->value = V;
+				
+				return result;
+			
+		}
+	}
+}
+
+
+CGResultNode* mean(CGNode* X, CGraph* graph){
+	CGResultNode* res = computeCGNode(graph, X->axop->uhs);
+	
+	switch(res->type){
+		case CGVT_DOUBLE:
+		{
+				double y = 0;
+				CGDouble* Y = calloc(1, sizeof(CGDouble));
+				
+				Y->value = ((CGDouble*)res->value)->value;
+				CGResultNode* result = calloc(1, sizeof(CGResultNode));
+				result->type = CGVT_DOUBLE;
+				result->value = Y;
+				
+				return result;
+		}
+		
+		case CGVT_VECTOR:
+		{
+			CGVector* v = (CGVector*)res->value;
+			CGDouble* Y = calloc(1, sizeof(CGDouble));
+			
+			uint64_t i = 0;
+			double m = v->data[0];
+			
+			for (;i < v->len; i++){
+				m += v->data[i];
+			}
+			
+			m /= v->len;
+			
+			Y->value = m;
+			CGResultNode* result = calloc(1, sizeof(CGResultNode));
+			result->type = CGVT_DOUBLE;
+			result->value = Y;
+			
+			return result;
+		}
+		
+		case CGVT_MATRIX: {
+				CGMatrix* M = (CGMatrix*)res->value;
+				CGVector* V = calloc(1, sizeof(CGVector));
+	
+				if(X->axop->axis == 0){
+					uint64_t len = M->cols;
+					double* y = calloc(len, sizeof(double));
+					
+					V->data = y;
+					V->len = len;
+					
+					uint64_t i = 0;
+					
+					for(i=0;i<M->rows*M->cols;i++){
+						y[i%len] = M->data[i];
+					}
+					
+					
+					for(;i<M->cols;i++){
+						y[i] /= M->rows;
+					}
+				}
+				else {
+					uint64_t len = M->rows;
+					double* y = calloc(len, sizeof(double));
+					
+					V->data = y;
+					V->len = len;
+					
+					uint64_t i = 0;
+					
+					for(i=0;i<M->rows*M->cols;i++){
+						y[i/M->cols] += M->data[i];
+					}
+					
+					for(;i<M->rows;i++){
+						y[i] /= M->cols;
+					}
+				}
+					
+				CGResultNode* result = calloc(1, sizeof(CGResultNode));
+				result->type = CGVT_VECTOR;
+				result->value = V;
+				
+				return result;
+			
+		}
+	}
+}
+
 /*
  * Computational Graph traversing
  */
@@ -2339,6 +2609,18 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 					}
 				
 					break;
+				}
+				
+				case CGABOT_MAX:{
+					return max(node, graph);
+				}
+				
+				case CGABOT_MIN:{
+					return min(node, graph);
+				}
+				
+				case CGABOT_MEAN:{
+					return mean(node, graph);
 				}
 			}
 			

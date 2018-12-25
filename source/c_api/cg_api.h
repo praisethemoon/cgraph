@@ -125,12 +125,14 @@ CGRAPH_API struct CGNode* cg_newBinOp(CGBinaryOperationType type, struct CGNode*
 CGRAPH_API struct CGNode* cg_newUnOp(CGUnaryOperationType type, struct CGNode* uhs);
 
 /**
- * \brief Creates a sum operator along the specified axis, note that axis starts from 0 for the first dimension
+ * \brief Creates an axis bound operator that performs operations along the specified axis, 
+ * note that axis starts from 0 for the first dimension
+ * \param[in] type Operation type
  * \param[in] uhs Unary hand side to sum
  * \param[in] axis axis to sum
  * \return Graph node
  */
-CGRAPH_API struct CGNode* cg_newSumOp(struct CGNode* uhs, uint8_t axis);
+CGRAPH_API struct CGNode* cg_newAxisBoundOp(CGAxisBoundOperationType type, struct CGNode* uhs, uint8_t axis);
 
 /**
  * \brief Creates a node that is actually an entire graph.
