@@ -89,6 +89,7 @@ typedef enum CGAxisBoundOperationType {
 	CGABOT_MAX,
 	CGABOT_MEAN,
 	CGABOT_VARIANCE,
+	CGABOT_SOFTMAX,
 }CGAxisBoundOperationType;
 
 #define MAX_AXIS_BOUND_OPERATION CGABOT_VARIANCE

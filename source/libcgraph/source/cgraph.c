@@ -20,6 +20,7 @@
 #include "cg_constants.h"
 #include "cg_enums.h"
 #include "cg_factory.h"
+#include "cg_math.h"
 
 #include <malloc.h>
 
@@ -2621,6 +2622,11 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 				
 				case CGABOT_MEAN:{
 					return mean(node, graph);
+				}
+
+				case CGABOT_SOFTMAX:{
+					//CGResultNode* res = computeCGNode(graph, node.)
+					break;
 				}
 			}
 			

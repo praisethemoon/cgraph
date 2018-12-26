@@ -16,7 +16,7 @@
 #include "cg_factory.h"
 
 CGNode* sigmoid(CGNode* x);
-CGNode* softmax(CGNode* x);
+CGNode* softmax(CGNode* x, uint8_t axis);
 CGNode* crossEntropy(CGNode* x, CGNode* y);
 CGNode* relu(CGNode* x);
 
