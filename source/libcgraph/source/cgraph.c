@@ -2625,8 +2625,8 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 				}
 
 				case CGABOT_SOFTMAX:{
-					//CGResultNode* res = computeCGNode(graph, node.)
-					break;
+					CGResultNode* res = computeCGNode(graph, node->axop->uhs);
+					
 				}
 			}
 			

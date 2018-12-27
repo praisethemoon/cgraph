@@ -25,11 +25,7 @@ CGNode* sigmoid(CGNode* x){
  * https://deepnotes.io/softmax-crossentropy
  */
 CGNode* softmax(CGNode* x, uint8_t axis){
-	CGNode* lhs = makeUnaryOpNode(CGUOT_EXP, makeBinaryOpNode(CGUOT_MINUS, x, makeAxisBoundNode(CGABOT_MAX, x, axis)));
-	CGNode* rhs = makeAxisBoundNode(CGABOT_SUM, lhs, axis);
-	CGNode* ns_softmax = makeBinaryOpNode(CGBOT_DIV, lhs, rhs);
-
-	return ns_softmax;
+	return NULL;
 }
 
 CGNode* crossEntropy(CGNode* x, CGNode* y){

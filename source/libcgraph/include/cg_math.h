@@ -23,7 +23,7 @@ CGNode* relu(CGNode* x);
 // log(1+ e^x)
 CGNode* smoothRelu(CGNode* x);
 
-CGNode* mean(CGNode* X, uint8_t axis);
+
 CGNode* variance(CGNode* X, uint8_t axis);
 
 
