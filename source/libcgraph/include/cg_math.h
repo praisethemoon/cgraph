@@ -17,14 +17,13 @@
 
 CGNode* sigmoid(CGNode* x);
 CGNode* softmax(CGNode* x, uint8_t axis);
-CGNode* crossEntropy(CGNode* x, CGNode* y);
 CGNode* relu(CGNode* x);
 
 // log(1+ e^x)
 CGNode* smoothRelu(CGNode* x);
-
-
 CGNode* variance(CGNode* X, uint8_t axis);
 
+
+CGResultNode* crossEntropy(CGraph* graph, CGNode* x, CGNode* y, uint64_t num_classes);
 
 #endif

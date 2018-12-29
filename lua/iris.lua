@@ -33,7 +33,7 @@ local A2 = sigmoid(CGraph.dot(X, theta1) + b1)
 local A3 = sigmoid(CGraph.dot(A2, theta2) + b2)
 local final = A3
 
-local g = CGraph.graph("nn", crossEntropy(softmax(final), y))
+local g = CGraph.graph("nn", (softmax(final)))
 
 g:setVar('X', CGraph.matrix(2, 4, {5.1,7.5,0.4,1.2, 0, 1, 5.2, 3.33, 0.01}))
 g:setVar('T_1', CGraph.matrix(4, 5, {0.21, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1}))
@@ -50,4 +50,4 @@ end
 
 
 local output = g:eval()
---print(output)
+print(output)

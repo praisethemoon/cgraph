@@ -2625,8 +2625,11 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 				}
 
 				case CGABOT_SOFTMAX:{
-					CGResultNode* res = computeCGNode(graph, node->axop->uhs);
-					
+					char msg[MAX_ERR_FMT_LEN];
+					snprintf(msg, MAX_ERR_FMT_LEN, "Operation [CGABOT_SOFTMAX] is not implemented/supported");
+					return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node, msg);
+					//CGResultNode* res = computeCGNode(graph, node->axop->uhs);
+					//break;
 				}
 			}
 			
@@ -2634,11 +2637,18 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		}
 		case CGNT_GRAPH:{
 			result = computeGraph(node->graph);
+			break;
 			/*
 			char msg[MAX_ERR_FMT_LEN];
 			snprintf(msg, MAX_ERR_FMT_LEN, "Operation [GRAPH] is not implemented/supported");
 			return returnResultError(graph, CGET_OPERATION_NOT_IMPLEMENTED, node, msg);
 			*/
+		}
+		
+		case CGNT_CROSS_ENTROPY_LOSS_FUNC:
+		{
+			crossEntropy(graph, node->crossEntropyLoss->x, node->crossEntropyLoss->y, node->crossEntropyLoss->num_classes);
+			break;
 		}
 	}
 	

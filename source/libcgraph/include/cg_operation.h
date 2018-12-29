@@ -25,5 +25,10 @@ typedef struct CGUnaryOperation {
 	CGUnaryOperationType type;
 }CGUnaryOperation;
 
+typedef struct CGCrossEntropyLoss {
+	struct CGNode* x;
+	struct CGNode* y;
+	uint64_t num_classes;
+}CGCrossEntropyLoss;
 
 #endif

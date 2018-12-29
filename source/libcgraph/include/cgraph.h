@@ -19,6 +19,7 @@ typedef struct CGNode {
 		CGBinaryOperation* bop;
 		CGUnaryOperation* uop;
 		CGAxisBoundOperation* axop;
+		CGCrossEntropyLoss* crossEntropyLoss;
 		struct CGraph* graph;
 	};
 	CGNode_Vec_t consumers;

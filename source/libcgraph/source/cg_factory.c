@@ -292,6 +292,18 @@ CGNode* makeAxisBoundNode(CGAxisBoundOperationType type, CGNode* uhs, uint8_t ax
 	return node;
 }
 
+
+CGNode* makeCrossEntropyLossFunc(CGNode* x, CGNode* y, uint64_t num_classes){
+	CGNode* node = calloc(1, sizeof(CGNode));
+	node->type = CGNT_CROSS_ENTROPY_LOSS_FUNC;
+	node->crossEntropyLoss = calloc(1, sizeof(CGCrossEntropyLoss));
+	node->crossEntropyLoss->x = x;
+	node->crossEntropyLoss->y = y;
+	node->crossEntropyLoss->num_classes = num_classes;
+	
+	return node;
+}
+
 CGResultNode* makeDoubleResultNode(double val){
 	CGDouble* Y = calloc(1, sizeof(CGDouble));
 	Y->value = val;

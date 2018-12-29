@@ -28,6 +28,21 @@ CGNode* softmax(CGNode* x, uint8_t axis){
 	return NULL;
 }
 
-CGNode* crossEntropy(CGNode* x, CGNode* y){
+CGResultNode* crossEntropy(CGraph* graph, CGNode* X, CGNode* Y, uint64_t num_classes){
+	CGResultNode* x = computeCGNode(graph, x);
+	CGResultNode* y = computeCGNode(graph, y);
+	
+	if(X->constant->type != CGVT_MATRIX){
+		exit(-1);
+	}
+	
+	double* res = calloc(num_classes, sizeof(double));
+	
+	uint64_t i = 0;
+	
+	for(;i<num_classes;i++){
+		//res[i]
+	}
+	
 	return NULL;
 }
