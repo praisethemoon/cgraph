@@ -11,12 +11,12 @@ struct CGNode* sigmoid_node(struct CGNode* x){
 }
 
 struct CGNode* softmax_node(struct CGNode* x){
-	return cg_newUnOp(CGUOT_TRANSPOSE, cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_TRANSPOSE, cg_newUnOp(CGUOT_EXP, x)), cg_newAxisBoundOp(CGABOT_SUM, cg_newUnOp(CGUOT_EXP, x), 0)));
+	return cg_newUnOp(CGUOT_TRANSPOSE, cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_TRANSPOSE, cg_newUnOp(CGUOT_EXP, x)), cg_newAxisBoundOp(CGABOT_SUM,cg_newUnOp(CGUOT_EXP, x), 0)));
 }
 
 int main(int argc, char* argv[]){
 	
-	double x_val[] = {5.1,7.5,0.4,1.2, 0, 1, 5.2, 3.33, 0.01};
+	double x_val[] = {5.1,7.5,0.4,1.2, 0, 1, 5.2, 3.33};
 	double T1_val[] = {0.21, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
 	double b1_val[] = {0.1, 0.1, 0.1, 0.1, 0.1};
 	double T2_val[] = {0.3, 0.4, 0.12, 0.14, 0.1};
@@ -86,10 +86,12 @@ int main(int argc, char* argv[]){
 		}
 	}
 	
-	//cg_autoDiffGraph(graph);
+	cg_autoDiffGraph(graph);
 	
-	//struct CGNode* dx = cg_getVarDiff(graph, "T_2");
-		
+	struct CGNode* dx = cg_getVarDiff(graph, "T_1");
+	
+	cg_printNodeValue(dx);
+	
 	return 0;
 }
 

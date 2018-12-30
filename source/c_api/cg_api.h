@@ -253,6 +253,8 @@ CGRAPH_API void cg_autoDiffGraph(struct CGraph* graph);
 
 CGRAPH_API struct CGNode* cg_getVarDiff(struct CGraph* graph, const char*  name);
 
+CGRAPH_API struct CGNode* cg_printNodeValue(struct CGNode* node);
+
 #ifdef CG_USE_LIBCPUID
 struct CGCPUInfo* getCPUInformation();
 void printCPUInfo(struct CGCPUInfo* cpuInfo);

@@ -11,4 +11,6 @@ CGNode* optimizeNode(CGNode* node, CGraph* graph);
 void optimizeGraph(CGraph* graph);
 void autoDifferenciateGraph(CGraph* graph);
 
+void printNode(CGNode* node);
+
 #endif

@@ -613,7 +613,8 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				case CGABOT_SUM: {
 					CGNode* mult1 = NULL;
 					if(node->axop->axis == 0){
-						mult1 = makeBinaryOpNode(CGBOT_ADD, node->axop->uhs->diff, node->diff);
+						//printNode(node->axop->uhs->diff);
+						mult1 = makeBinaryOpNode(CGBOT_ADD, node->axop->uhs->diff, makeUnaryOpNode(CGUOT_TRANSPOSE, node->diff));
 					}
 					else
 					{

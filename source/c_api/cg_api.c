@@ -127,3 +127,7 @@ void cg_autoDiffGraph(CGraph* graph){
 CGNode* cg_getVarDiff(CGraph* graph, const char*  name){
 	return graphGetVar(graph, name)->diff;
 }
+
+CGNode* cg_printNodeValue(CGNode* node){
+	printNode(node);
+}

@@ -46,6 +46,11 @@ typedef struct CGResultNode {
 	CGError* error;
 }CGResultNode;
 
+/*
+ * Reduces the dimension of a result if necessary, i.e vector of length 1 to double
+ */
+CGResultNode* reduceDim(CGResultNode* result);
+
 CGResultNode* computeRawNode(CGNode* node);
 CGResultNode* computeCGNode(CGraph* graph, CGNode* node);
 CGResultNode* computeGraph(CGraph* graph);

@@ -42,6 +42,9 @@
 	}\
 }
 
+/*
+ * Test Matrix vector multiplication broadcast
+ */
 MU_TEST(runMult_MV){
 	double value1[] = {
 		3, 1, 3,
@@ -63,18 +66,52 @@ MU_TEST(runMult_MV){
 	struct CGResultNode* result = cg_evalGraph(graph);
 	
 	CHECK_ERROR(result);
-	ASSERT_VECTOR(result);
+	ASSERT_MATRIX(result);
 	
-	CGVector* v = cg_getResultVectorVal(result);
-	ASSERT_VECTOR_DIM(v, 4);
+	CGMatrix* m = cg_getResultMatrixVal(result);
+	ASSERT_MATRIX_DIM(m, 4, 3);
 	
-	double gt[] = {-1, 3, -3, -1};
+	double gt[] = {-3, -1,  3,
+       -1, -5,  9,
+       -2, -6,  5,
+       -1, -1,  1
+	};
 	
-	ASSERT_VECTOR_EQ(gt, v);
+	ASSERT_MATRIX_EQ(gt, m);
+}
+
+/*
+ * Test matrix-matrix multiplication broadcast
+ */
+MU_TEST(runMult_MM){
+	double value1[] = {
+		1, 2, 3,
+		4, 5, 6
+	};
+	
+	double value2 []= {
+		1, 2, 3,
+		4, 5, 6
+	};
+	
+	struct CGNode* lhsNode = cg_newMatrixNode(2, 3, value1);
+	struct CGNode* rhsNode = cg_newMatrixNode(2, 3, value2);
+
+	struct CGNode* node = cg_newBinOp(CGBOT_MULT, lhsNode, rhsNode);
+	struct CGraph* graph = cg_newGraph("runMult_MM", node);
+	struct CGResultNode* result = cg_evalGraph(graph);
+	
+	CHECK_ERROR(result);
+	ASSERT_MATRIX(result);
+	
+	CGMatrix* m = cg_getResultMatrixVal(result);
+	ASSERT_MATRIX_DIM(m, 2, 3);
+	double gt[] = {1, 4, 9, 16, 25, 36};
+	ASSERT_MATRIX_EQ(gt, m);
 }
 
 
-MU_TEST(runMult_MM){
+MU_TEST(runDot_MM){
 	double value1[] = {
 		1, 2, 3,
 		4, 5, 6
@@ -89,8 +126,8 @@ MU_TEST(runMult_MM){
 	struct CGNode* lhsNode = cg_newMatrixNode(2, 3, value1);
 	struct CGNode* rhsNode = cg_newMatrixNode(3, 2, value2);
 
-	struct CGNode* node = cg_newBinOp(CGBOT_MULT, lhsNode, rhsNode);
-	struct CGraph* graph = cg_newGraph("runMult_MM", node);
+	struct CGNode* node = cg_newBinOp(CGBOT_DOT, lhsNode, rhsNode);
+	struct CGraph* graph = cg_newGraph("runDot_MM", node);
 	struct CGResultNode* result = cg_evalGraph(graph);
 	
 	CHECK_ERROR(result);
@@ -102,6 +139,7 @@ MU_TEST(runMult_MM){
 	ASSERT_MATRIX_EQ(gt, m);
 	
 }
+
 
 MU_TEST(runMult_Md){
 	double value1[] = {
@@ -189,6 +227,7 @@ MU_TEST(runMult_MvM){
 	};
 	double value3[] = {
 		1, 2, 3, -1,
+		4, 5, 6, 0.5,
 		4, 5, 6, 0.5
 	};
 	
@@ -197,21 +236,24 @@ MU_TEST(runMult_MvM){
 	struct CGNode* rhsNode1 = cg_newVectorNode(3, value2);
 
 	struct CGNode* rhsNode2 = cg_newBinOp(CGBOT_MULT, lhsNode1, rhsNode1);
-	struct CGNode* lhsNode2 = cg_newMatrixNode(2, 4, value3);
+	struct CGNode* lhsNode2 = cg_newMatrixNode(3, 4, value3);
 	
-	struct CGNode* node = cg_newBinOp(CGBOT_MULT, lhsNode2, rhsNode2);
+	struct CGNode* node = cg_newBinOp(CGBOT_DOT, lhsNode2, rhsNode2);
 	
 	struct CGraph* graph = cg_newGraph("runMult_MvM", node);
 	struct CGResultNode* result = cg_evalGraph(graph);
 	
 	CHECK_ERROR(result);
-	ASSERT_VECTOR(result);
+	ASSERT_MATRIX(result);
 	
-	CGVector* v = cg_getResultVectorVal(result);
-	ASSERT_VECTOR_DIM(v, 2);
-	double gt[] = {-3.0, -7.5};
+	CGMatrix* m = cg_getResultMatrixVal(result);
+	ASSERT_MATRIX_DIM(m, 3, 3);
+	double gt[] = { -10. , -28. ,  35. ,
+       -29.5, -65.5,  87.5,
+       -29.5, -65.5,  87.5 };
 	
-	ASSERT_VECTOR_EQ(gt, v);
+	ASSERT_MATRIX_EQ(gt, m);
+	
 }
 
 MU_TEST(runCross_VV){
@@ -802,6 +844,7 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runMult_dd);
 	MU_RUN_TEST(runMult_dV);
 	MU_RUN_TEST(runMult_MvM);
+	MU_RUN_TEST(runDot_MM);
 	MU_RUN_TEST(runCross_VV);
 	MU_RUN_TEST(runDot_VV);
 	MU_RUN_TEST(runDiv_dd);
@@ -823,7 +866,7 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runExpLog_M);
 	MU_RUN_TEST(runT_M);
 	
-	MU_RUN_TEST(runDiv_MV_FAIL);
+	//MU_RUN_TEST(runDiv_MV_FAIL);
 }
 
 void runAllTests(){
