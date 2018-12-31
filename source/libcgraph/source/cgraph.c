@@ -302,12 +302,20 @@ CGResultNode* dotMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
 	Y->cols  = V->len;
 	Y->data = y;
 	
+	/*
 	cblas_dgemv(M->shape == CGMS_ROW_MAJOR?CblasRowMajor:CblasColMajor,
 		    CblasNoTrans, M->rows, M->cols, 1.0, M->data,
 		    M->cols, V->data, 1, 0.0, Y->data, 1);
+	*/
+	
+	
+	cblas_dgemm(M->shape == CGMS_ROW_MAJOR?CblasRowMajor:CblasColMajor,
+		    CblasNoTrans, CblasNoTrans, M->rows, V->len, M->cols,
+		    1.0, M->data, M->cols, V->data, V->len, 0, y, Y->cols);
+	
 	
 	CGResultNode* result = calloc(1, sizeof(CGResultNode));
-	result->type = CGVT_VECTOR;
+	result->type = CGVT_MATRIX;
 	result->value = Y;
 	
 	return result;
