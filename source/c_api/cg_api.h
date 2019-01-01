@@ -246,14 +246,40 @@ CGRAPH_API CGMatrix* cg_getResultMatrixVal(struct CGResultNode* result);
 CGRAPH_API struct CGraph* cg_diffGraph(struct CGraph* graph, const char* newName, char* wrtVar);
 
 /**
- * \breif Derivates a graph with respect to final output, usually the loss
+ * \brief Derivates a graph with respect to final output, usually the loss
  * \param[in,out] graph Graph to derive, fills in `diff` field of every node.
  */
 CGRAPH_API void cg_autoDiffGraph(struct CGraph* graph);
 
+/**
+ * \brief Returns the derivative of a given node variable's name with respect to the parent node, must have already called `cg_diffGraph` before usage
+ * \param[in] graph Original graph
+ * \param[in] name variable name to return
+ * \return CGNode*, a constant node representing the derivative. Unlike forward mode which returns a CGResultNode, this one returns a node.
+ */
 CGRAPH_API struct CGNode* cg_getVarDiff(struct CGraph* graph, const char*  name);
 
+/**
+ * \brief Prints a given node, or rather, dumps it. Works only with constant node values.
+ * \param[in] node node to print.
+ */
 CGRAPH_API struct CGNode* cg_printNodeValue(struct CGNode* node);
+
+/**
+ * \brief Converts a CGResultNode to a constant CGNode
+ * \param[in] result CGResultNode to convert
+ * \return CGNode version of the given result
+ */
+CGRAPH_API struct CGNode* cg_resultToConstantNode(struct CGResultNode* result);
+
+
+/**
+ * \brief Converts a constant CGNode to a CGResultNode
+ * \param[in] node CGNode to convert
+ * \return CGResultNode version of the result
+ */
+CGRAPH_API struct CGResultNode* cg_constantToResult(struct CGNode* node);
+
 
 #ifdef CG_USE_LIBCPUID
 struct CGCPUInfo* getCPUInformation();

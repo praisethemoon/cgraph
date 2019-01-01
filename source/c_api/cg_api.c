@@ -131,3 +131,11 @@ CGNode* cg_getVarDiff(CGraph* graph, const char*  name){
 CGNode* cg_printNodeValue(CGNode* node){
 	printNode(node);
 }
+
+CGNode* cg_resultToConstantNode(CGResultNode* result){
+	return resultNodeToConstantNode(result);
+}
+
+CGResultNode* cg_constantToResult(CGNode* node){
+	return constantNodeToResultNode(node);
+}

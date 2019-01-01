@@ -837,6 +837,53 @@ MU_TEST(runDiv_MV_FAIL){
 	mu_assert_int_eq(CGET_INCOMPATIBLE_ARGS_EXCEPTION, cg_getErrorType(error));
 }
 
+MU_TEST(diffSimpleNN){
+	double x_val[] = {0.2, 0.4};
+	double T1_val[] = {0.1, 0.5, -0.3, 0.8};
+	
+	
+	
+	struct CGNode* x = cg_newVariable("x");
+	struct CGNode* T_1 = cg_newVariable("T_1");
+	
+	struct CGNode* L2 = cg_newAxisBoundOp(CGABOT_SUM, cg_newBinOp(CGBOT_POW, cg_newBinOp(CGBOT_DOT, x, cg_newUnOp(CGUOT_TRANSPOSE, T_1)), cg_newDoubleNode(2.0)), 0);
+	
+	
+	struct CGraph* graph = cg_newGraph("nn", (L2));
+	
+	cg_setVar(graph, "x", cg_newVectorNode(2, x_val));
+	cg_setVar(graph, "T_1", cg_newMatrixNode(2, 2, T1_val));
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
+	CHECK_ERROR(res);
+	ASSERT_DOUBLE(res);
+	
+	CGDouble* r = cg_getResultDoubleVal(res);
+	mu_assert_double_eq(0.116, r->value);
+	
+	cg_autoDiffGraph(graph);
+	
+	struct CGNode* dT_1 = cg_getVarDiff(graph, "T_1");
+	struct CGResultNode* res1 = cg_constantToResult(dT_1);
+	ASSERT_MATRIX(res1);
+	CGMatrix* M = cg_getResultMatrixVal(res1);
+	
+	double gt[] = {	0.088000, 0.176000, 0.104000, 0.208000};
+	
+	ASSERT_MATRIX_DIM(M, 2, 2);
+	ASSERT_MATRIX_EQ(gt, M);
+	
+	struct CGNode* dx = cg_getVarDiff(graph, "x");
+	struct CGResultNode* res2 = cg_constantToResult(dx);
+	ASSERT_VECTOR(res2);
+	CGVector* V = cg_getResultVectorVal(res2);
+	
+	double gt2[] = {-0.112000, 0.636000};
+	
+	ASSERT_VECTOR_DIM(V, 2);
+	ASSERT_VECTOR_EQ(gt2, V);
+}
+
 MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runMult_MV);
 	MU_RUN_TEST(runMult_MM);
@@ -865,6 +912,7 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runExp_M);
 	MU_RUN_TEST(runExpLog_M);
 	MU_RUN_TEST(runT_M);
+	MU_RUN_TEST(diffSimpleNN);
 	
 	//MU_RUN_TEST(runDiv_MV_FAIL);
 }

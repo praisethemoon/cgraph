@@ -316,7 +316,7 @@ void printNode(CGNode* node){
 }
 
 void autoDifferenciateNode(CGraph* graph, CGNode* node){
-	
+	/*
 	//if(node->type != CGNT_VARIABLE)
 		switch(node->diff->constant->type){
 			case CGVT_DOUBLE:
@@ -353,7 +353,7 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				break;
 			}
 		}
-		
+		*/
 	
 	switch(node->type){
 		case CGNT_CONSTANT:
@@ -496,29 +496,29 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 				
 				case CGBOT_DOT:
 				{
-					printf("Node Diff\n");
-					printNode(node->diff);
-					printf("LHS Diff\n");
-					printNode(node->bop->lhs->diff);
-					printf("RHS DIFF\n");
-					printNode(node->bop->rhs->diff);
+					//printf("Node Diff\n");
+					//printNode(node->diff);
+					//printf("LHS Diff\n");
+					//printNode(node->bop->lhs->diff);
+					//printf("RHS DIFF\n");
+					//printNode(node->bop->rhs->diff);
 					
-					printf("LHS Res\n");
-					printNode(resultNodeToConstantNode(node->bop->lhs->result));
-					printf("RHS Res\n");
-					printNode(resultNodeToConstantNode(node->bop->rhs->result));
+					//printf("LHS Res\n");
+					//printNode(resultNodeToConstantNode(node->bop->lhs->result));
+					//printf("RHS Res\n");
+					//printNode(resultNodeToConstantNode(node->bop->rhs->result));
 					
 					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, node->bop->lhs->diff, makeBinaryOpNode(CGBOT_DOT, node->diff, makeUnaryOpNode(CGUOT_TRANSPOSE, resultNodeToConstantNode(node->bop->rhs->result))));
 					CGResultNode* res1 = computeRawNode(mult1);
 					node->bop->lhs->diff = resultNodeToConstantNode(res1);
-					printf("LHS\n");
-					printNode(node->bop->lhs->diff);
+					//printf("LHS\n");
+					//printNode(node->bop->lhs->diff);
 					
 					CGNode* mult2 = makeBinaryOpNode(CGBOT_ADD, node->bop->rhs->diff, makeBinaryOpNode(CGBOT_DOT, makeUnaryOpNode(CGUOT_TRANSPOSE,  resultNodeToConstantNode(node->bop->lhs->result)), node->diff));
 					CGResultNode* res2 = computeRawNode(mult2);
 					node->bop->rhs->diff = resultNodeToConstantNode(res2);
-					printf("RHS\n");
-					printNode(node->bop->rhs->diff);
+					//printf("RHS\n");
+					//printNode(node->bop->rhs->diff);
 					
 					autoDifferenciateNode(graph, node->bop->lhs);
 					autoDifferenciateNode(graph, node->bop->rhs);
