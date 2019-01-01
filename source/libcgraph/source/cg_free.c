@@ -129,7 +129,7 @@ void freeGraph(CGraph* graph){
 
 	while ((key = map_next(&graph->vars, &iter))) {
 		CGNode* node = *map_get(&graph->vars, key);
-		printf("freeing variable %s\n", key);
+		//printf("freeing variable %s\n", key);
 		if(node != NULL){
 			freeNode(graph, node);
 			free(node);

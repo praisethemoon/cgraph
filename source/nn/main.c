@@ -37,7 +37,7 @@ int main(int argc, char* argv[]){
 	
 	
 	struct CGNode* x = cg_newVariable("x");
-	struct CGNode* y = cg_newVariable("y");
+	//struct CGNode* y = cg_newVariable("y");
 	struct CGNode* T_1 = cg_newVariable("T_1");
 	struct CGNode* b_1 = cg_newVariable("b_1");
 	struct CGNode* T_2 = cg_newVariable("T_2");
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
 	struct CGraph* graph = cg_newGraph("nn", H);
 	
 	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, raw_copy(x_val, 3)));
-	cg_setVar(graph, "y", cg_newVectorNode(2, raw_copy(y_val, 2)));
+	//cg_setVar(graph, "y", cg_newVectorNode(2, raw_copy(y_val, 2)));
 	cg_setVar(graph, "T_1", cg_newMatrixNode(3, 3, raw_copy(T1_val, 9)));
 	cg_setVar(graph, "b_1", cg_newVectorNode(3, raw_copy(b1_val, 3)));
 	cg_setVar(graph, "T_2", cg_newMatrixNode(3, 3, raw_copy(T2_val, 9)));

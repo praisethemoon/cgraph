@@ -2656,6 +2656,11 @@ CGResultNode* computeRawNode(CGNode* node){
 CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	CGResultNode* result = NULL;
 	
+	
+	if(node->result != NULL){
+		return node->result;
+	}
+	
 	switch(node->type){
 		case CGNT_CONSTANT:{
 			result = constantNodeToResultNodeCopy(node);
@@ -2672,7 +2677,6 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			
 			
 			CGNode* constantNode = *map_get(&graph->vars, node->var->name);
-			
 			if(constantNode == NULL)
 			{
 				char msg[MAX_ERR_FMT_LEN];
