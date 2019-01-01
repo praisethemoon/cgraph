@@ -28,10 +28,60 @@
 if(node->error != NULL){\
 	return node;\
 }
+
 /*
- * Helper function
- * @Deprecated
+ * Works only with constant types
  */
+void* copyNode(CGNode* node){
+	CGNode* n = calloc(1, sizeof(CGNode));
+	if(node->type != CGNT_CONSTANT){
+		fprintf(stderr, "Call to copyNodeValue with a non-constant node.\n... This should not happen, but who knows these days.");
+		exit(-1);
+	}
+	
+	n->type = CGNT_CONSTANT;
+	n->constant = calloc(1, sizeof(CGPConstant));
+	n->constant->type = node->constant->type;
+	
+	switch(node->constant->type){
+		case CGVT_DOUBLE: {
+			CGDouble* d = calloc(1, sizeof(CGDouble));
+			d->value = ((CGDouble*)node->constant->value)->value;
+			
+			n->constant->value = d;
+			break;
+		}
+		
+		case CGVT_VECTOR: {
+			CGVector* V = calloc(1, sizeof(CGVector));
+			CGVector* src = (CGVector*)node->constant->value;
+			
+			V->len = src->len;
+			V->data = calloc(V->len, sizeof(double));
+			
+			memcpy(V->data, src->data, V->len*sizeof(double));
+			
+			n->constant->value = V;
+			break;
+		}
+		
+		case CGVT_MATRIX: {
+			CGMatrix* M = calloc(1, sizeof(CGMatrix));
+			CGMatrix* src = (CGMatrix*)node->constant->value;
+			
+			uint64_t size = src->cols * src->rows;
+			
+			M->rows = src->rows;
+			M->cols = src->cols;
+			M->data = calloc(size, sizeof(double));
+			
+			memcpy(M->data, src->data, size*sizeof(double));
+			
+			n->constant->value = M;
+			break;
+		}
+	}
+}
 
 void* copyNodeValue(CGNode* node){
 	if(node->type != CGNT_CONSTANT){
@@ -111,6 +161,54 @@ void* copyRNodeValue(CGResultNode* node){
 			return M;
 		}
 	}
+}
+
+
+CGResultNode* copyResultNode(CGResultNode* node){
+	CGResultNode* res = calloc(1, sizeof(CGResultNode));
+	
+	switch(node->type){
+		case CGVT_DOUBLE: {
+			CGDouble* d = calloc(1, sizeof(CGDouble));
+			CGDouble* d2 = (CGDouble*)node->value;
+			d->value = d2->value;
+			
+			res->value = d;
+			break;
+		}
+		
+		case CGVT_VECTOR: {
+			CGVector* V = calloc(1, sizeof(CGVector));
+			CGVector* src = (CGVector*)node->value;
+			
+			V->len = src->len;
+			V->data = calloc(V->len, sizeof(double));
+			
+			memcpy(V->data, src->data, V->len*sizeof(double));
+			
+			res->value = V;
+			break;
+		}
+		
+		case CGVT_MATRIX: {
+			CGMatrix* M = calloc(1, sizeof(CGMatrix));
+			CGMatrix* src = (CGMatrix*)node->value;
+			
+			uint64_t size = src->cols * src->rows;
+			
+			M->rows = src->rows;
+			M->cols = src->cols;
+			M->data = calloc(size, sizeof(double));
+			
+			memcpy(M->data, src->data, size*sizeof(double));
+			
+			res->value = M;
+			break;
+		}
+	}
+	res->type = node->type;
+	
+	return res;
 }
 
 CGMatrix* vectorToMatrix(CGVector* v){
@@ -2050,7 +2148,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				
 				CGResultNode* res = mulDD((CGDouble*)uhsValue, rhs, graph, parentNode);
 				
-				freeDoubleValue(rhs);
+				freeDoubleValue(&rhs);
 				
 				parentNode->result = res;
 				return res;
@@ -2062,8 +2160,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				
 				CGResultNode* res = mulDV(lhs, (CGVector*)uhsValue, graph, parentNode);
 			
-				freeDoubleValue(lhs);
-				
+				free(lhs);
 				parentNode->result = res;
 				return res;
 			}
@@ -2073,7 +2170,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				lhs->value = -1;
 				CGResultNode* res = mulDM(lhs, (CGMatrix*)uhsValue, graph, parentNode);
 				
-				freeDoubleValue(lhs);
+				freeDoubleValue(&lhs);
 				
 				parentNode->result = res;
 				return res;
@@ -2560,11 +2657,10 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	CGResultNode* result = NULL;
 	
 	switch(node->type){
-		case CGNT_CONSTANT:
-			result = calloc(1, sizeof(CGResultNode));
-			result->type = node->constant->type;
-			result->value = node->constant->value;
+		case CGNT_CONSTANT:{
+			result = constantNodeToResultNodeCopy(node);
 			break;
+		}
 
 		case CGNT_VARIABLE:{
 			if(graph == NULL)
@@ -2574,7 +2670,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 				return returnResultError(graph, CGET_NO_GRAPH_INSTANCE, node, msg);
 			}
 			
-			result = calloc(1, sizeof(CGResultNode));
+			
 			CGNode* constantNode = *map_get(&graph->vars, node->var->name);
 			
 			if(constantNode == NULL)
@@ -2587,10 +2683,9 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 			CGResultNode* rnode = computeCGNode(graph, constantNode);
 			CHECK_RESULT(rnode)
 			constantNode->result = rnode;
-			node->result = rnode;
+			node->result = copyResultNode(rnode);
 			
-			result->type = rnode->type;
-			result->value = rnode->value;
+			result = node->result;
 			break;
 		}
 		case CGNT_BINARY_OPERATION:
@@ -2627,15 +2722,18 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 				}
 				
 				case CGABOT_MAX:{
-					return max(node, graph);
+					result = max(node, graph);
+					break;
 				}
 				
 				case CGABOT_MIN:{
-					return min(node, graph);
+					result = min(node, graph);
+					break;
 				}
 				
 				case CGABOT_MEAN:{
-					return mean(node, graph);
+					result = mean(node, graph);
+					break;
 				}
 
 				case CGABOT_SOFTMAX:{
@@ -2666,11 +2764,12 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		}
 	}
 	
-	node->result = result;
+	node->result = reduceDim(result);
 	
 	switch(result->type){
 		case CGVT_DOUBLE:
 			node->diff = makeZeroDoubleConstantNode();
+			node->diff->diff = NULL;
 			break;
 		case CGVT_VECTOR:{
 			CGVector* v = (CGVector*)result->value;
@@ -2685,7 +2784,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		}
 	}
 	
-	return reduceDim(result);
+	return node->result;
 }
 
 CGResultNode* reduceDim(CGResultNode* result){
@@ -2699,11 +2798,12 @@ CGResultNode* reduceDim(CGResultNode* result){
 			if (vec->len > 1)
 				return result;
 			
-			/*
-			 * TODO: free vector data
-			 */
 			CGDouble* d = calloc(1, sizeof(CGDouble));
 			d->value = vec->data[0];
+			
+			freeVectorValue(result->value);
+			free(result->value);
+			
 			result->type = CGVT_DOUBLE;
 			result->value = d;
 			
@@ -2716,12 +2816,15 @@ CGResultNode* reduceDim(CGResultNode* result){
 			if((mat->rows>1) &&(mat->cols>1))
 				return result;
 			
-			if((mat->rows == 1) &&(mat->cols == 1)){
-				/*
-				* TODO: free vector data
-				*/
+			if((mat->rows == 1) && (mat->cols == 1)){
+				
 				CGDouble* d = calloc(1, sizeof(CGDouble));
 				d->value = mat->data[0];
+				
+				
+				freeMatrixValue(result->value);
+				free(result->value);
+				
 				result->type = CGVT_DOUBLE;
 				result->value = d;
 				
@@ -2729,13 +2832,16 @@ CGResultNode* reduceDim(CGResultNode* result){
 			}
 			
 			if(mat->rows == 1){
-				/*
-				* TODO: free vector data
-				*/
+				
 				CGVector* vec = calloc(1, sizeof(CGVector));
 				vec->len = mat->cols;
 				vec->data = mat->data;
+				
+				//freeMatrixValue(result->value);
+				free(result->value);
+				
 				result->type = CGVT_VECTOR;
+				result->value = vec;
 				
 				return result;
 			}
@@ -2749,119 +2855,38 @@ CGResultNode* computeGraph(CGraph* graph){
 	return computeCGNode(graph, graph->root);
 }
 
-void freeDoubleValue(CGDouble* v){
-	free(v);
-}
-
-void freeVectorValue(CGVector* data){
-	free(data->data);
-	free(data);
-}
-
-void freeMatrixValue(CGMatrix* data){
-	free(data->data);
-	free(data);
-}
-
-void freeNode(CGraph* graph, CGNode* node){
-	if(node->result != NULL){
-		freeResultNode(node->result);
+void storeNodesInGraph(CGraph* graph, CGNode* node){
+	int idx = -1;
+	
+	vec_find(&graph->nodes, node, idx);
+	
+	if(idx == -1){
+		vec_push(&graph->nodes, node);
 	}
+	
 	switch(node->type){
 		case CGNT_CONSTANT:
-			{
-				//printf("freeing constant type %s %f\n", getVariableTypeString(node->constant->type), node->constant->value);
-				switch(node->constant->type){
-					case CGVT_DOUBLE:
-						freeDoubleValue(node->constant->value);
-						break;
-					case CGVT_VECTOR:
-						freeVectorValue(node->constant->value);
-						break;
-					case CGVT_MATRIX:
-						freeMatrixValue(node->constant->value);
-						break;
-				}
-				free(node->constant);
-			}
 			break;
-
-		case CGNT_VARIABLE:{
-			CGNode** constantNode = map_get(&graph->vars, node->var->name);
-			if(constantNode != NULL){
-				//printf("freeing variable %s\n", node->var->name);
-				freeNode(graph, *constantNode);
-				map_remove(&graph->vars, node->var->name);
-				free(node->var);
-			}
+		case CGNT_VARIABLE:
 			break;
-		}
 		case CGNT_BINARY_OPERATION:
-			freeNode(graph, node->bop->lhs);
-			freeNode(graph, node->bop->rhs);
-			
-			free(node->bop);
+			storeNodesInGraph(graph, node->bop->lhs);
+			storeNodesInGraph(graph, node->bop->rhs);
 			break;
-			
 		case CGNT_UNARY_OPERATION:
-			freeNode(graph, node->uop->uhs);
-			free(node->uop);
+			storeNodesInGraph(graph, node->uop->uhs);
 			break;
-			
-		case CGNT_GRAPH:{
+		case CGNT_AXIS_BOUND_OPERATION:
+			storeNodesInGraph(graph, node->axop->uhs);
 			break;
-		}
+		case CGNT_GRAPH:
+			storeNodesInGraph(graph, node->graph->root);
+			break;
+		case CGNT_CROSS_ENTROPY_LOSS_FUNC:
+			storeNodesInGraph(graph, node->crossEntropyLoss->x);
+			storeNodesInGraph(graph, node->crossEntropyLoss->y);
+			break;
 	}
 	
-	free(node);
 }
 
-void freeResultNode(CGResultNode* node){
-	if(node->error){
-		free(node->error);
-		free(node);
-		return;
-	}
-	
-	if(node->value != NULL)
-		switch(node->type){
-			case CGVT_DOUBLE:
-				freeDoubleValue(node->value);
-				break;
-			case CGVT_VECTOR:
-				freeVectorValue(node->value);
-				break;
-			case CGVT_MATRIX:
-				freeMatrixValue(node->value);
-				break;
-		}
-	
-	free(node);
-}
-
-void freeGraph(CGraph* graph){
-	if(graph == NULL)
-		return;
-	
-	if(graph->root != NULL){
-		freeNode(graph, graph->root);
-	}
-	
-	const char *key;
-	
-	//printf("%zu\n",  *map_get(&graph->vars, "Z"));
-	
-	map_iter_t iter = map_iter(&graph->vars);
-
-	while ((key = map_next(&graph->vars, &iter))) {
-		CGNode* node = *map_get(&graph->vars, key);
-		//printf("freeing variable %s\n", key);
-		if(node != NULL){
-			freeNode(graph, node);
-		}
-	}
-	
-	map_deinit(&graph->vars);
-	
-	// graph pointer must be freed elsewhere. in lua API we create a copy so we cannot free the parameter of this function.
-}

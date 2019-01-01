@@ -12,6 +12,7 @@
 #include "cg_enums.h"
 
 #include "vec.h"
+#include "map.h"
 
 #include <malloc.h>
 
@@ -31,7 +32,6 @@ CGNode* makeVarNode(char* name){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -50,7 +50,6 @@ CGNode* makeDoubleConstantNode(double value){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -70,7 +69,6 @@ CGNode* makeVectorConstantNode(uint64_t  len, double* value){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -93,7 +91,6 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -112,7 +109,6 @@ CGNode* makeZeroDoubleConstantNode(){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -132,7 +128,6 @@ CGNode* makeZeroVectorConstantNode(uint64_t  len){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -155,7 +150,6 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -175,7 +169,6 @@ CGNode* makeOnesDoubleConstantNode(){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -198,7 +191,6 @@ CGNode* makeOnesVectorConstantNode(uint64_t  len){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -225,7 +217,6 @@ CGNode* makeOnesMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -237,7 +228,6 @@ CGNode* makeGraphNode(CGraph* graph){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
 	
 	return node;
 }
@@ -253,10 +243,6 @@ CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_init(&node->consumers);
-	
-	vec_push(&node->consumers, lhs);
-	vec_push(&node->consumers, rhs);
 	
 	return node;
 }
@@ -271,7 +257,6 @@ CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs){
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_push(&node->consumers, uhs);
 	
 	return node;
 }
@@ -287,7 +272,6 @@ CGNode* makeAxisBoundNode(CGAxisBoundOperationType type, CGNode* uhs, uint8_t ax
 	
 	node->result = NULL;
 	node->diff = NULL;
-	vec_push(&node->consumers, uhs);
 	
 	return node;
 }
@@ -300,6 +284,9 @@ CGNode* makeCrossEntropyLossFunc(CGNode* x, CGNode* y, uint64_t num_classes){
 	node->crossEntropyLoss->x = x;
 	node->crossEntropyLoss->y = y;
 	node->crossEntropyLoss->num_classes = num_classes;
+	
+	node->result = NULL;
+	node->diff = NULL;
 	
 	return node;
 }
@@ -345,11 +332,12 @@ CGraph* makeGraph(char* name){
 	CGraph* graph = calloc(1, sizeof(CGraph));
 	graph->name = name;
 	map_init(&graph->vars);
+	vec_init(&graph->nodes);
 	
 	return graph;
 }
 
-void graphSetVar(CGraph* graph, char* name, CGNode* value){
+void graphSetVar(CGraph* graph, const char* name, CGNode* value){
 	int res = map_set(&graph->vars, name, value);
 }
 
@@ -398,4 +386,31 @@ CGResultNode* constantNodeToResultNode(CGNode* node){
 		}
 	}
 }
+
+double* cg_raw_copy(double* src, uint64_t len){
+	double* dest = calloc(len, sizeof(double));
+	memcpy(dest, src, len*sizeof(double));
+	return dest;
+}
+
+CGResultNode* constantNodeToResultNodeCopy(CGNode* node){
+	switch(node->constant->type){
+		case CGVT_DOUBLE:
+		{
+			CGDouble* d = (CGDouble*)node->constant->value;
+			return makeDoubleResultNode(d->value);
+		}
+		case CGVT_VECTOR:
+		{
+			CGVector* v = (CGVector*)node->constant->value;
+			return makeVectorResultNode(v->len, cg_raw_copy(v->data, v->len));
+		}
+		case CGVT_MATRIX:
+		{
+			CGMatrix* m = (CGMatrix*)node->constant->value;
+			return makeMatrixResultNode(m->rows, m->cols, cg_raw_copy(m->data, m->rows*m->cols));
+		}
+	}
+}
+
 

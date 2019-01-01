@@ -1,6 +1,9 @@
 
 #include <stdio.h>
 #include <inttypes.h>
+#include <string.h> 
+#include <memory.h>
+#include <stdlib.h>
 
 #include "cg_api.h"
 #include "cg_enums.h"
@@ -12,6 +15,12 @@ struct CGNode* sigmoid_node(struct CGNode* x){
 
 struct CGNode* softmax_node(struct CGNode* x){
 	return cg_newUnOp(CGUOT_TRANSPOSE, cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_TRANSPOSE, cg_newUnOp(CGUOT_EXP, x)), cg_newAxisBoundOp(CGABOT_SUM,cg_newUnOp(CGUOT_EXP, x), 0)));
+}
+
+double* raw_copy(double* src, uint64_t len){
+	double* dest = calloc(len, sizeof(double));
+	memcpy(dest, src, len*sizeof(double));
+	return dest;
 }
 
 int main(int argc, char* argv[]){
@@ -43,14 +52,14 @@ int main(int argc, char* argv[]){
 	
 	struct CGraph* graph = cg_newGraph("nn", H);
 	
-	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, x_val));
-	cg_setVar(graph, "y", cg_newVectorNode(2, y_val));
-	cg_setVar(graph, "T_1", cg_newMatrixNode(3, 3, T1_val));
-	cg_setVar(graph, "b_1", cg_newVectorNode(3, b1_val));
-	cg_setVar(graph, "T_2", cg_newMatrixNode(3, 3, T2_val));
-	cg_setVar(graph, "b_2", cg_newVectorNode(3, b2_val));
-	cg_setVar(graph, "T_3", cg_newMatrixNode(3, 3, T3_val));
-	cg_setVar(graph, "b_3", cg_newVectorNode(3, b3_val));
+	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, raw_copy(x_val, 3)));
+	cg_setVar(graph, "y", cg_newVectorNode(2, raw_copy(y_val, 2)));
+	cg_setVar(graph, "T_1", cg_newMatrixNode(3, 3, raw_copy(T1_val, 9)));
+	cg_setVar(graph, "b_1", cg_newVectorNode(3, raw_copy(b1_val, 3)));
+	cg_setVar(graph, "T_2", cg_newMatrixNode(3, 3, raw_copy(T2_val, 9)));
+	cg_setVar(graph, "b_2", cg_newVectorNode(3, raw_copy(b2_val, 3)));
+	cg_setVar(graph, "T_3", cg_newMatrixNode(3, 3, raw_copy(T3_val, 9)));
+	cg_setVar(graph, "b_3", cg_newVectorNode(3, raw_copy(b3_val, 3)));
 	
 	struct CGResultNode* res = cg_evalGraph(graph);
 	
@@ -93,12 +102,14 @@ int main(int argc, char* argv[]){
 		}
 	}
 	
-	/*
-	cg_autoDiffGraph(graph);
 	
-	struct CGNode* dx = cg_getVarDiff(graph, "b_2");
+	//cg_autoDiffGraph(graph);
 	
-	cg_printNodeValue(dx);
-	*/
+	//struct CGNode* dx = cg_getVarDiff(graph, "b_2");
+	
+	//cg_printNodeValue(dx);
+	
+	
+	cg_freeGraph(graph);
 	return 0;
 }

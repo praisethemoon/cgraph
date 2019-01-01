@@ -8,8 +8,8 @@
 #include "cg_variables.h"
 #include "cg_enums.h"
 
-/* Creates the type cgnode_vec_t for storing consumer nodes*/
-typedef vec_t(struct CGNode*) CGNode_Vec_t;
+/* Creates the type cgnode_vec_t for storing all nodes in a graph*/
+typedef vec_t(void*) CGNode_Vec;
 
 typedef struct CGNode {
 	CGNodeType type;
@@ -22,7 +22,6 @@ typedef struct CGNode {
 		CGCrossEntropyLoss* crossEntropyLoss;
 		struct CGraph* graph;
 	};
-	CGNode_Vec_t consumers;
 	struct CGResultNode* result;
 	struct CGNode* diff;
 }CGNode;
@@ -31,6 +30,7 @@ typedef struct CGraph {
 	char* name;
 	CGNode* root;
 	map_t(CGNode*) vars;
+	CGNode_Vec nodes;
 }CGraph;
 
 
@@ -54,6 +54,7 @@ CGResultNode* reduceDim(CGResultNode* result);
 CGResultNode* computeRawNode(CGNode* node);
 CGResultNode* computeCGNode(CGraph* graph, CGNode* node);
 CGResultNode* computeGraph(CGraph* graph);
+void storeNodesInGraph(CGraph* graph, CGNode* node);
 
 void freeDoubleValue(CGDouble* v);
 void freeVectorValue(CGVector* data);
@@ -62,4 +63,8 @@ void freeResultNode(CGResultNode* node);
 void freeNode(CGraph* graph, CGNode* node);
 void freeGraph(CGraph* graph);
 
+void* copyNode(CGNode* node);
+void* copyNodeValue(CGNode* node);
+void* copyRNodeValue(CGResultNode* node);
+CGResultNode* copyResultNode(CGResultNode* node);
 #endif

@@ -202,7 +202,7 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 		case CGNT_VARIABLE:
 		{
 			CGNode* original = graphGetVar(graph, node->var->name);
-			original->diff = node->diff;
+			original->diff = copyNode(node->diff);
 			break;
 		}
 			/*

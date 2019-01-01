@@ -20,6 +20,8 @@ CGraph* cg_newGraph(char* name, CGNode* root){
 	CGraph* graph = makeGraph(name);
 	graph->root = root;
 	
+	storeNodesInGraph(graph, graph->root);
+	
 	return graph;
 }
 

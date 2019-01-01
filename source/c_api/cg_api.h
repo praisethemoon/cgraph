@@ -154,7 +154,7 @@ CGRAPH_API struct CGNode* cg_newGraphNode(struct CGraph* graph);
  * \param[in] var Variable name to update/set
  * \param[in] value Value to bind with the variable
  */
-CGRAPH_API void cg_setVar(struct CGraph* graph, char* var, struct CGNode* value);
+CGRAPH_API void cg_setVar(struct CGraph* graph, const char* var, struct CGNode* value);
 
 
 /**
