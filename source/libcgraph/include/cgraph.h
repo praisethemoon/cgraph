@@ -63,7 +63,7 @@ void freeResultNode(CGResultNode* node);
 void freeNode(CGraph* graph, CGNode* node);
 void freeGraph(CGraph* graph);
 
-void* copyNode(CGNode* node);
+CGNode* copyNode(CGNode* node);
 void* copyNodeValue(CGNode* node);
 void* copyRNodeValue(CGResultNode* node);
 CGResultNode* copyResultNode(CGResultNode* node);

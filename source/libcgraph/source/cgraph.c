@@ -32,7 +32,7 @@ if(node->error != NULL){\
 /*
  * Works only with constant types
  */
-void* copyNode(CGNode* node){
+CGNode* copyNode(CGNode* node){
 	CGNode* n = calloc(1, sizeof(CGNode));
 	if(node->type != CGNT_CONSTANT){
 		fprintf(stderr, "Call to copyNodeValue with a non-constant node.\n... This should not happen, but who knows these days.");
@@ -81,6 +81,8 @@ void* copyNode(CGNode* node){
 			break;
 		}
 	}
+	
+	return n;
 }
 
 void* copyNodeValue(CGNode* node){
@@ -2655,7 +2657,6 @@ CGResultNode* computeRawNode(CGNode* node){
 
 CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	CGResultNode* result = NULL;
-	
 	
 	if(node->result != NULL){
 		return node->result;
