@@ -2022,7 +2022,6 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			break;
 		}
 		
-		
 		case CGUOT_LOG:{
 			if(uhsType == CGVT_DOUBLE){
 				newres = logD((CGDouble*)uhsValue, graph, parentNode);
@@ -2194,6 +2193,12 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			}
 			
 			break;
+		}
+	
+		case CGUOT_RELU:{
+			newres = relu(lhsResult);
+			parentNode->result = newres;
+			return newres;
 		}
 	}
 	char msg[MAX_ERR_FMT_LEN];
@@ -2656,7 +2661,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		
 		case CGNT_CROSS_ENTROPY_LOSS_FUNC:
 		{
-			crossEntropy(graph, node->crossEntropyLoss->x, node->crossEntropyLoss->y, node->crossEntropyLoss->num_classes);
+			result = crossEntropy(graph, node->crossEntropyLoss->x, node->crossEntropyLoss->y, node->crossEntropyLoss->num_classes);
 			break;
 		}
 	}

@@ -283,6 +283,17 @@ static int lua_createSumOperation(lua_State* L){
 	return 1;
 }
 
+
+static int lua_createCrossEntropyLoss(lua_State* L){
+	CGNode* x = checkNode(L, 1);
+	CGNode* y = checkNode(L, 2);
+	uint64_t num_classes = lua_tointeger(L, 3);
+	CGNode* node = makeCrossEntropyLossFunc(x, y, num_classes);
+	
+	pushNode(L, node);
+	return 1;
+}
+
 static int lua_createGraph(lua_State* L){
 	const char* name = lua_tostring(L, 1);
 	CGNode* node = checkNode(L, 2);
@@ -573,25 +584,6 @@ void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 	}
 }
 
-static int lua_diffGraph(lua_State* L){
-	CGraph* graph = checkGraph(L, 1);
-	char* newName = lua_tostring(L, 2);
-	CGNode* wrtNode = checkNode(L, 3);
-	
-	CGraph* newGraph = differentiateGraphWRTNode(graph, newName, wrtNode);
-	
-	lua_newtable(L);
-	
-	lua_pushstring(L, "graph");
-	pushGraph(L, newGraph);
-	lua_settable(L, -3);
-	lua_pushstring(L, "root");
-	nodeToLuaTable(newGraph->root, L, newGraph);
-	lua_settable(L, -3);
-	
-	return 1;
-}
-
 static int lua_backPropGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	
@@ -671,7 +663,7 @@ int luaopen_libcgraph(lua_State *L)
 		{"setVar", lua_setGraphVar},
 		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
-		{"diff", lua_diffGraph},
+		{"crossEntropy", lua_createCrossEntropyLoss},
 		{"backProp", lua_backPropGraph},
 		{"getVarDiff", lua_getGraphVarDiff},
 		{"optimizeGraph", lua_optimizeGraph},

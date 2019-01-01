@@ -3,15 +3,11 @@ local CGraph = require 'CGraph'
 local array = CGraph.array
 
 
-local function sigmoid1(Z)
+local function sigmoid(Z)
 	local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
 	return sigmoid
 end
 
-local function sigmoid2(Z)
-	local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
-	return sigmoid
-end
 
 local function softmax(Z)
 	return CGraph.exp(Z) / CGraph.sum(CGraph.exp(Z), 0)
@@ -32,8 +28,8 @@ local function crossEntropy(x, y)
 end
 
 
-local A2 = sigmoid1(CGraph.dot(CGraph.tr(theta1), X ) + b1)
-local A3 = sigmoid2(CGraph.dot(CGraph.tr(theta2), A2) + b2)
+local A2 = sigmoid(CGraph.dot(CGraph.tr(theta1), X ) + b1)
+local A3 = sigmoid(CGraph.dot(CGraph.tr(theta2), A2) + b2)
 local final = A3
 
 local g = CGraph.graph("nn", softmax(final))

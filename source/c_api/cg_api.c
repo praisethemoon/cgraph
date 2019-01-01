@@ -68,6 +68,10 @@ CGNode* cg_newAxisBoundOp(CGAxisBoundOperationType type, struct CGNode* uhs, uin
 	return makeAxisBoundNode(type, uhs, axis);
 }
 
+CGNode* cg_newCrossEntropyLoss(struct CGNode* x, struct CGNode* y, uint64_t num_classes){
+	return makeCrossEntropyLossFunc(x, y, num_classes);
+}
+
 CGNode* cg_newGraphNode(CGraph* graph){
 	return makeGraphNode(graph);
 }
@@ -114,10 +118,6 @@ CGVector* cg_getResultVectorVal(CGResultNode* result){
 
 CGMatrix* cg_getResultMatrixVal(CGResultNode* result){
 	return result->value;
-}
-
-CGraph* cg_diffGraph(CGraph* graph, const char* newName, CGNode* wrtVar){
-	return differentiateGraphWRTNode(graph, newName, wrtVar);
 }
 
 void cg_autoDiffGraph(CGraph* graph){

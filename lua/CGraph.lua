@@ -29,7 +29,8 @@ local UnaryOperationType = {
 	SIN=5,
 	COS=6,
 	TAN=7,
-	TANH=8
+	TANH=8,
+	RELU=9
 }
 
 local function bopToString(bop)
@@ -283,6 +284,13 @@ local sum = function(uhs, axis)
 	return op
 end
 
+local crossEntropyLoss = function(x, y, num_classes)
+	local node = cgraph.crossEntropy(x, y, num_classes)
+	local op = {type='cross_entropy', opType=nil, node = node, x=x, y=y,num_classes=num_classes}
+	setmetatable(op, mt)
+end
+
+
 local function nodeToDot(graph, uhs, str)
 	function listNodeToString(uhs, str, idCounter)
 		local idCounter = idCounter + 1
@@ -432,14 +440,6 @@ local graph = function(name, rootNode)
 		end
 	end
 	
-	function Graph:diff(var, newName)
-		local res = cgraph.diff(self.cdata, newName, var.node)
-		local graph = {name= newName, root=res.root, cdata=res.graph, vars=self.vars}
-		setmetatable(graph, Graph)
-		
-		return graph
-	end
-	
 	function Graph:backProp()
 		cgraph.backProp(self.cdata)
 	end
@@ -491,6 +491,7 @@ local CGraph = {
 	tan=tan,
 	tanh=tanh,
 	sum=sum,
+	crossEntropyLoss=crossEntropyLoss,
 	dot=dot,
 	inv=inv,
 	tr=tr,

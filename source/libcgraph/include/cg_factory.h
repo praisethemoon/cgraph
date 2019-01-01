@@ -30,7 +30,7 @@ CGNode* makeGraphNode(CGraph* graph);
 CGNode* makeBinaryOpNode(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs);
 CGNode* makeUnaryOpNode(CGUnaryOperationType type, CGNode* uhs);
 CGNode* makeAxisBoundNode(CGAxisBoundOperationType type, CGNode* uhs, uint8_t axis);
-
+CGNode* makeCrossEntropyLossFunc(CGNode* x, CGNode* y, uint64_t num_classes);
 
 CGNode* resultNodeToConstantNode(CGResultNode* result);
 CGResultNode* constantNodeToResultNode(CGNode* node);

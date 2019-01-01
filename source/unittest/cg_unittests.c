@@ -884,6 +884,83 @@ MU_TEST(diffSimpleNN){
 	ASSERT_VECTOR_EQ(gt2, V);
 }
 
+
+MU_TEST(runCrossEntropyLossVec){
+	double y_val[] = {0};
+	double y_hat_val[] = {0.26980, 0.32235, 0.40784};
+	
+	
+	struct CGNode* y = cg_newVariable("y");
+	struct CGNode* y_hat = cg_newVariable("y_hat");
+	struct CGNode* CE_LOSS = cg_newCrossEntropyLoss(y_hat, y, 3);
+	
+	struct CGraph* graph = cg_newGraph("nn", CE_LOSS);
+
+	
+	cg_setVar(graph, "y", cg_newVectorNode(1, y_val));
+	cg_setVar(graph, "y_hat", cg_newVectorNode(3, y_hat_val));
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+	
+	ASSERT_DOUBLE(res);
+	
+	mu_assert_double_eq(-2.223177, cg_getResultDoubleVal(res)->value);
+}
+	
+struct CGNode* sigmoid_node(struct CGNode* x){
+	return cg_newBinOp(CGBOT_DIV, cg_newDoubleNode(1.0), cg_newBinOp(CGBOT_ADD, cg_newDoubleNode(1.0), cg_newUnOp(CGUOT_EXP, cg_newUnOp(CGUOT_MINUS, x))));
+}
+
+struct CGNode* softmax_node(struct CGNode* x){
+	return cg_newUnOp(CGUOT_TRANSPOSE, cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_TRANSPOSE, cg_newUnOp(CGUOT_EXP, x)), cg_newAxisBoundOp(CGABOT_SUM,cg_newUnOp(CGUOT_EXP, x), 0)));
+}
+
+MU_TEST(runReluSigmoidSoftmax){
+	double x_val[] = {0.1, 0.2, 0.7};
+	double T1_val[] = {0.1, 0.4, 0.3, 0.3, 0.7, 0.7,0.5,0.2,0.9 };
+	double b1_val[] = {1.0, 1.0, 1.0};
+	double T2_val[] =  {0.2, 0.3, 0.5, 0.3, 0.5, 0.7,0.6,0.4,0.8 };
+	double b2_val[] = {1.0, 1.0, 1.0};
+	double T3_val[] =  {0.1,0.4,0.8,0.3,0.7,0.2,0.5,0.2,0.9 };
+	double b3_val[] = {1.0, 1.0, 1.0};
+	double y_val[] = {0, 1};
+	
+	struct CGNode* x = cg_newVariable("x");
+	struct CGNode* y = cg_newVariable("y");
+	struct CGNode* T_1 = cg_newVariable("T_1");
+	struct CGNode* b_1 = cg_newVariable("b_1");
+	struct CGNode* T_2 = cg_newVariable("T_2");
+	struct CGNode* b_2 = cg_newVariable("b_2");
+	struct CGNode* T_3 = cg_newVariable("T_3");
+	struct CGNode* b_3 = cg_newVariable("b_3");
+	
+	struct CGNode* L1 = cg_newUnOp(CGUOT_RELU, cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, x, T_1), b_1));
+	struct CGNode* L2 = sigmoid_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L1, T_2), b_2));
+	struct CGNode* H  = softmax_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3));
+	
+	struct CGraph* graph = cg_newGraph("nn", H);
+	
+	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, x_val));
+	cg_setVar(graph, "y", cg_newVectorNode(2, y_val));
+	cg_setVar(graph, "T_1", cg_newMatrixNode(3, 3, T1_val));
+	cg_setVar(graph, "b_1", cg_newVectorNode(3, b1_val));
+	cg_setVar(graph, "T_2", cg_newMatrixNode(3, 3, T2_val));
+	cg_setVar(graph, "b_2", cg_newVectorNode(3, b2_val));
+	cg_setVar(graph, "T_3", cg_newMatrixNode(3, 3, T3_val));
+	cg_setVar(graph, "b_3", cg_newVectorNode(3, b3_val));
+	
+	struct CGResultNode* res = cg_evalGraph(graph);
+		
+	ASSERT_VECTOR(res);
+	
+	CGVector* vec = cg_getResultVectorVal(res);
+	
+	ASSERT_VECTOR_DIM(vec, 3);
+	
+	double gt[] = {0.198241, 0.285387, 0.516372};
+	
+	ASSERT_VECTOR_EQ(gt, vec);
+}
 MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runMult_MV);
 	MU_RUN_TEST(runMult_MM);
@@ -913,6 +990,8 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runExpLog_M);
 	MU_RUN_TEST(runT_M);
 	MU_RUN_TEST(diffSimpleNN);
+	MU_RUN_TEST(runCrossEntropyLossVec);
+	MU_RUN_TEST(runReluSigmoidSoftmax);
 	
 	//MU_RUN_TEST(runDiv_MV_FAIL);
 }

@@ -76,9 +76,10 @@ typedef enum CGUnaryOperationType {
 	CGUOT_COS,
 	CGUOT_TAN,
 	CGUOT_TANH,
+	CGUOT_RELU,
 } CGUnaryOperationType;
 
-#define MAX_UNARY_OPERATION CGUOT_TANH
+#define MAX_UNARY_OPERATION CGNT_RELU
 
 /**
  * \brief List of operations that apply mainly to a given axis of matrices
@@ -105,7 +106,6 @@ typedef enum CGNodeType {
 	CGNT_UNARY_OPERATION,
 	CGNT_AXIS_BOUND_OPERATION,
 	CGNT_CROSS_ENTROPY_LOSS_FUNC,
-	CGNT_RELU
 }CGNodeType;
 
 #define MAX_NODE_TYPE CGNT_CROSS_ENTROPY_LOSS_FUNC

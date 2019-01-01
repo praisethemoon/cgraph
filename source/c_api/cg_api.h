@@ -134,6 +134,8 @@ CGRAPH_API struct CGNode* cg_newUnOp(CGUnaryOperationType type, struct CGNode* u
  */
 CGRAPH_API struct CGNode* cg_newAxisBoundOp(CGAxisBoundOperationType type, struct CGNode* uhs, uint8_t axis);
 
+CGRAPH_API struct CGNode* cg_newCrossEntropyLoss(struct CGNode* x, struct CGNode* y, uint64_t num_classes);
+
 /**
  * \brief Creates a node that is actually an entire graph.
  * \param[in] graph Subgraph, must already have its variable setup.
@@ -234,16 +236,6 @@ CGRAPH_API CGVector* cg_getResultVectorVal(struct CGResultNode* result);
  * \return Matrix tensor (not opaque, you better keep mutable however)
  */
 CGRAPH_API CGMatrix* cg_getResultMatrixVal(struct CGResultNode* result);
-
-
-/**
- * \brief  Derivates a graph with respect to a variable
- * \param[in] graph graph to compute its derivative
- * \param[in] newName Resulting graph's name
- * \param[in] wrtVar With respect to variable name
- * \return Graph, representing the derivative of the original
- */
-CGRAPH_API struct CGraph* cg_diffGraph(struct CGraph* graph, const char* newName, char* wrtVar);
 
 /**
  * \brief Derivates a graph with respect to final output, usually the loss
