@@ -27,6 +27,6 @@ CGResultNode* relu(CGResultNode* x);
 CGNode* dx_relu(CGResultNode* x);
 
 
-CGResultNode* crossEntropy(CGraph* graph, CGNode* x, CGNode* y, uint64_t num_classes);
-
+CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes);
+CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes);
 #endif

@@ -596,6 +596,17 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 					break;
 				}
 			}
+			break;
+		}
+		
+		case CGNT_CROSS_ENTROPY_LOSS_FUNC:
+		{
+			CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, copyNode(node->crossEntropyLoss->x->diff), dx_crossEntropy(node->crossEntropyLoss->x->result, node->crossEntropyLoss->y->result, node->crossEntropyLoss->num_classes));
+			CGResultNode* res1 = computeRawNode(mult1);
+			freeNodeDiff(node->crossEntropyLoss->x->diff);
+			node->crossEntropyLoss->x->diff = resultNodeToConstantNodeCopy(res1);
+			autoDifferenciateNode(graph, node->crossEntropyLoss->x);
+			break;
 		}
 	}
 }

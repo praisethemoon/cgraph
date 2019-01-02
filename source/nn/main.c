@@ -32,12 +32,12 @@ int main(int argc, char* argv[]){
 	double b2_val[] = {1.0, 1.0, 1.0};
 	double T3_val[] =  {0.1,0.4,0.8,0.3,0.7,0.2,0.5,0.2,0.9 };
 	double b3_val[] = {1.0, 1.0, 1.0};
-	double y_val[] = {0, 1};
+	double y_val[] = {0};
 	
 	
 	
 	struct CGNode* x = cg_newVariable("x");
-	//struct CGNode* y = cg_newVariable("y");
+	struct CGNode* y = cg_newVariable("y");
 	struct CGNode* T_1 = cg_newVariable("T_1");
 	struct CGNode* b_1 = cg_newVariable("b_1");
 	struct CGNode* T_2 = cg_newVariable("T_2");
@@ -47,13 +47,13 @@ int main(int argc, char* argv[]){
 	
 	struct CGNode* L1 = cg_newUnOp(CGUOT_RELU, cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, x, T_1), b_1));
 	struct CGNode* L2 = sigmoid_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L1, T_2), b_2));
-	struct CGNode* H  = softmax_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3));
+	struct CGNode* H  = cg_newCrossEntropyLoss(softmax_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3)), y, 3);
 	
 	
 	struct CGraph* graph = cg_newGraph("nn", H);
 	
 	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, x_val));
-	//cg_setVar(graph, "y", cg_newVectorNode(2, y_val));
+	cg_setVar(graph, "y", cg_newVectorNode(1, y_val));
 	cg_setVar(graph, "T_1", cg_newMatrixNode(3, 3, T1_val));
 	cg_setVar(graph, "b_1", cg_newVectorNode(3, b1_val));
 	cg_setVar(graph, "T_2", cg_newMatrixNode(3, 3, T2_val));
@@ -105,15 +105,11 @@ int main(int argc, char* argv[]){
 	
 	cg_autoDiffGraph(graph);
 	
-	//struct CGNode* dx = cg_getVarDiff(graph, "b_2");
+	struct CGNode* dx = cg_getVarDiff(graph, "b_2");
 	
-	//cg_printNodeValue(dx);
+	cg_printNodeValue(dx);
 	
-	res = cg_evalGraph(graph);
-	res = cg_evalGraph(graph);
-	res = cg_evalGraph(graph);
-	
-	cg_freeGraph(graph);
-	free(graph);
+	//cg_freeGraph(graph);
+	//free(graph);
 	return 0;
 }

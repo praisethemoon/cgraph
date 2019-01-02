@@ -45,10 +45,8 @@ CGNode* softmax(CGNode* x, uint8_t axis){
 /*
  * TODO: Test this highly unoptimized crap
  */
-CGResultNode* crossEntropy(CGraph* graph, CGNode* X, CGNode* Y, uint64_t num_classes){
-	CGResultNode* x = computeCGNode(graph, X);
-	CGResultNode* y = computeCGNode(graph, Y);
-	
+CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
+	// TODO: ASSERT
 	CGVector* y_vec = NULL;
 	if(y->type == CGVT_DOUBLE){
 		CGDouble* raw_val = (CGDouble*)y->value;
@@ -62,7 +60,7 @@ CGResultNode* crossEntropy(CGraph* graph, CGNode* X, CGNode* Y, uint64_t num_cla
 	double* x_val = NULL;
 	double* y_val = y_vec->data;
 	
-	if(X->constant->type == CGVT_MATRIX){
+	if(x->type == CGVT_MATRIX){
 		CGMatrix* m = (CGMatrix*)x->value;
 		num_samples = m->rows;
 		x_val = m->data;
@@ -84,11 +82,11 @@ CGResultNode* crossEntropy(CGraph* graph, CGNode* X, CGNode* Y, uint64_t num_cla
 			//printf("%lu vs %f\n", j, y_val[i]);
 			if(y_val[i] == j){
 				//printf("true %f => %f\n", x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
-				sum -= log(x_val[i*num_classes+j]);
+				sum += log10(x_val[i*num_classes+j]);
 			}
 			else{
 				//printf("false %f => %f\n", 1.0-x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
-				sum -= log(1.0-x_val[i*num_classes+j]);
+				sum += log10(1.0-x_val[i*num_classes+j]);
 			}
 		}
 	}
@@ -96,6 +94,60 @@ CGResultNode* crossEntropy(CGraph* graph, CGNode* X, CGNode* Y, uint64_t num_cla
 	sum = -sum/num_samples;
 	
 	return makeDoubleResultNode(sum);
+}
+
+
+CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
+	// TODO: ASSERT
+	CGVector* y_vec = (CGVector*)y->value;
+	if(y->type == CGVT_DOUBLE){
+		CGDouble* raw_val = (CGDouble*)y->value;
+		y_vec = (CGVector*)makeVectorConstantNode(1, &raw_val->value)->constant->value;
+	}
+	else
+	 
+		y_vec= (CGVector*)y->value;
+	
+	uint64_t num_samples = 1;
+	double* x_val = NULL;
+	double* y_val = y_vec->data;
+	
+	if(x->type == CGVT_MATRIX){
+		CGMatrix* m = (CGMatrix*)x->value;
+		num_samples = m->rows;
+		x_val = m->data;
+	}
+	else{
+		CGVector* m = (CGVector*)x->value;
+		num_samples = 1;
+		x_val = m->data;
+	}
+	
+	double* out = calloc(num_samples*num_classes, sizeof(double));
+	
+	uint64_t i = 0;
+	uint64_t j = 0;
+	
+	for(;i<num_samples;i++){
+		for(j=0;j<num_classes;j++){
+			if(y_val[i] == j)
+				out[i*num_classes+j] = -(1/x_val[i*num_classes+j]);
+			else
+				out[i*num_classes+j] = -(1/(1 - x_val[i*num_classes+j]));
+		}
+	}
+	
+	CGNode* res = makeMatrixConstantNode(num_samples, num_classes, out);
+	CGMatrix* m = (CGMatrix*)res->constant->value;
+	printf("diff CE(");
+	for(i=0; i < m->rows; i++){
+		printf("\n\t");
+		for(j = 0; j < m->cols; j++){
+			printf("%f, ", m->data[i*m->cols+j]);
+		}
+	}
+	printf(")\n");
+	return res;
 }
 
 CGResultNode* relu(CGResultNode* x){
