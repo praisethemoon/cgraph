@@ -96,6 +96,14 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value){
 }
 
 
+CGNode* makeVectorConstantNodeCopy(uint64_t  len, double* value){
+	return makeVectorConstantNode(len, cg_raw_copy(value, len));
+}
+
+CGNode* makeMatrixConstantNodeCopy(uint64_t  rows, uint64_t cols, double* value){
+	return makeMatrixConstantNode(rows, cols, cg_raw_copy(value, cols*rows));
+}
+
 CGNode* makeZeroDoubleConstantNode(){
 	CGDouble* d = calloc(1, sizeof(CGDouble));
 	
@@ -341,7 +349,7 @@ void graphSetVar(CGraph* graph, const char* name, CGNode* value){
 	int res = map_set(&graph->vars, name, value);
 }
 
-CGNode* graphGetVar(CGraph* graph, char* name){
+CGNode* graphGetVar(CGraph* graph, const char* name){
 	return *map_get(&graph->vars, name);
 }
 

@@ -52,14 +52,14 @@ int main(int argc, char* argv[]){
 	
 	struct CGraph* graph = cg_newGraph("nn", H);
 	
-	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, raw_copy(x_val, 3)));
-	//cg_setVar(graph, "y", cg_newVectorNode(2, raw_copy(y_val, 2)));
-	cg_setVar(graph, "T_1", cg_newMatrixNode(3, 3, raw_copy(T1_val, 9)));
-	cg_setVar(graph, "b_1", cg_newVectorNode(3, raw_copy(b1_val, 3)));
-	cg_setVar(graph, "T_2", cg_newMatrixNode(3, 3, raw_copy(T2_val, 9)));
-	cg_setVar(graph, "b_2", cg_newVectorNode(3, raw_copy(b2_val, 3)));
-	cg_setVar(graph, "T_3", cg_newMatrixNode(3, 3, raw_copy(T3_val, 9)));
-	cg_setVar(graph, "b_3", cg_newVectorNode(3, raw_copy(b3_val, 3)));
+	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, x_val));
+	//cg_setVar(graph, "y", cg_newVectorNode(2, y_val));
+	cg_setVar(graph, "T_1", cg_newMatrixNode(3, 3, T1_val));
+	cg_setVar(graph, "b_1", cg_newVectorNode(3, b1_val));
+	cg_setVar(graph, "T_2", cg_newMatrixNode(3, 3, T2_val));
+	cg_setVar(graph, "b_2", cg_newVectorNode(3, b2_val));
+	cg_setVar(graph, "T_3", cg_newMatrixNode(3, 3, T3_val));
+	cg_setVar(graph, "b_3", cg_newVectorNode(3, b3_val));
 	
 	struct CGResultNode* res = cg_evalGraph(graph);
 	
@@ -109,6 +109,9 @@ int main(int argc, char* argv[]){
 	
 	//cg_printNodeValue(dx);
 	
+	res = cg_evalGraph(graph);
+	res = cg_evalGraph(graph);
+	res = cg_evalGraph(graph);
 	
 	cg_freeGraph(graph);
 	free(graph);

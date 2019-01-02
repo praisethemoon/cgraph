@@ -41,10 +41,14 @@ CGRAPH_API struct CGraph* cg_newGraph(char* name, struct CGNode* root);
 
 /**
  * \brief Deallocates graph memory
- * \param[in,out] graph graph to free, should be NULL after deallocation
+ * \param[in,out] graph graph to free, should be set freed manually after calling this function (cg_freeGraph(g); free(g))
  */
 CGRAPH_API void cg_freeGraph(struct CGraph* graph);
 
+/**
+ * \brief Frees a result node. Currently not used.
+ * \param[in,out] result result node to deallocate, should be set freed manually after calling this function (cg_freeResultNode(r); free(r))
+ */
 CGRAPH_API void cg_freeResultNode(struct CGResultNode* result);
 
 
@@ -138,6 +142,13 @@ CGRAPH_API struct CGNode* cg_newUnOp(CGUnaryOperationType type, struct CGNode* u
  */
 CGRAPH_API struct CGNode* cg_newAxisBoundOp(CGAxisBoundOperationType type, struct CGNode* uhs, uint8_t axis);
 
+/**
+ * \brief Create a cross entropy loss function
+ * \param[in] x output of softmax
+ * \param[in] y classes, should *not* be one hot vectors, but rather integers from 0 to num_classes-1
+ * \param[in] num_classes number of classes to consider.
+ * \return Graph node
+ */
 CGRAPH_API struct CGNode* cg_newCrossEntropyLoss(struct CGNode* x, struct CGNode* y, uint64_t num_classes);
 
 /**

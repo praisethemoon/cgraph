@@ -78,6 +78,8 @@ MU_TEST(runMult_MV){
 	};
 	
 	ASSERT_MATRIX_EQ(gt, m);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 /*
@@ -108,6 +110,8 @@ MU_TEST(runMult_MM){
 	ASSERT_MATRIX_DIM(m, 2, 3);
 	double gt[] = {1, 4, 9, 16, 25, 36};
 	ASSERT_MATRIX_EQ(gt, m);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -138,6 +142,7 @@ MU_TEST(runDot_MM){
 	double gt[] = {58, 64, 139, 154};
 	ASSERT_MATRIX_EQ(gt, m);
 	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -164,6 +169,8 @@ MU_TEST(runMult_Md){
 	ASSERT_MATRIX_DIM(m, 2, 3);
 	double gt[] = {-0.5, -1, -1.5, -2, -2.5, -3};
 	ASSERT_MATRIX_EQ(gt, m);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -186,6 +193,8 @@ MU_TEST(runMult_dd){
 	CGDouble* d = cg_getResultDoubleVal(result);
 	
 	mu_assert_double_eq(3.14*0.5, d->value);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runMult_dV){
@@ -212,6 +221,8 @@ MU_TEST(runMult_dV){
 	double gt[] = {-3.14, -3.14, 3.14};
 	
 	ASSERT_VECTOR_EQ(gt, v);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runMult_MvM){
@@ -254,6 +265,7 @@ MU_TEST(runMult_MvM){
 	
 	ASSERT_MATRIX_EQ(gt, m);
 	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runCross_VV){
@@ -286,6 +298,8 @@ MU_TEST(runCross_VV){
 	double gt[] = {-9, -1, 2.5};
 	
 	ASSERT_VECTOR_EQ(gt, v);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runDot_VV){
@@ -315,6 +329,8 @@ MU_TEST(runDot_VV){
 	CGDouble* d = cg_getResultDoubleVal(result);
 	
 	mu_assert_double_eq(3*-3+1*-1+5*0.5, d->value);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -339,6 +355,8 @@ MU_TEST(runDiv_dd){
 	double gt = 0.5;
 	
 	mu_assert_double_eq(gt, Y->value);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runDiv_Vd){
@@ -366,6 +384,8 @@ MU_TEST(runDiv_Vd){
 	double gt[] = {1.5, 0.5, 2.5};
 	
 	ASSERT_VECTOR_EQ(gt, Y);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -395,6 +415,8 @@ MU_TEST(runDiv_Md){
 	double gt[] = {6, 2, 6, 2, 10, 18, 4, 12, 10, 2, 2, 2};
 	
 	ASSERT_MATRIX_EQ(gt, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -418,6 +440,8 @@ MU_TEST(runAdd_dd){
 	double gt = 5;
 	
 	mu_assert_double_eq(5, Y->value);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runAdd_Vd){
@@ -445,6 +469,8 @@ MU_TEST(runAdd_Vd){
 	double gt[] = {5, 3, 7};
 	
 	ASSERT_VECTOR_EQ(gt, Y);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runAdd_Md){
@@ -475,6 +501,8 @@ MU_TEST(runAdd_Md){
 	double gt[] = {3.5, 1.5, 3.5, 1.5, 5.5, 9.5, 2.5, 6.5, 5.5, 1.5, 1.5, 1.5};
 	
 	ASSERT_MATRIX_EQ(gt, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -510,6 +538,8 @@ MU_TEST(runAdd_MV){
 	};
 	
 	ASSERT_MATRIX_EQ(gt, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runAdd_VV){
@@ -542,6 +572,8 @@ MU_TEST(runAdd_VV){
 	double gt[] = {0, 0, 6};
 	
 	ASSERT_VECTOR_EQ(gt, V);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runAdd_MM){
@@ -576,6 +608,8 @@ MU_TEST(runAdd_MM){
 	double gt[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 	
 	ASSERT_MATRIX_EQ(gt, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runSub_dd){
@@ -599,6 +633,8 @@ MU_TEST(runSub_dd){
 	double gt = 1;
 	
 	mu_assert_double_eq(gt, D->value);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runSub_Vd){
@@ -626,6 +662,8 @@ MU_TEST(runSub_Vd){
 	double gt[] = {1, -1, 3};
 	
 	ASSERT_VECTOR_EQ(gt, V);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runSub_Md){
@@ -654,6 +692,8 @@ MU_TEST(runSub_Md){
 	double gt[] = {2.5, 0.5, 2.5, 0.5, 4.5, 8.5, 1.5, 5.5, 4.5, 0.5, 0.5, 0.5};
 	
 	ASSERT_MATRIX_EQ(gt, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -686,6 +726,8 @@ MU_TEST(runSub_VV){
 	double gt[] = {6, 2, 4};
 	
 	ASSERT_VECTOR_EQ(gt, V);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runSub_MM){
@@ -721,6 +763,8 @@ MU_TEST(runSub_MM){
 	double gt[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	
 	ASSERT_MATRIX_EQ(gt, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runExp_M){
@@ -751,6 +795,8 @@ MU_TEST(runExp_M){
 	}
 	
 	ASSERT_MATRIX_EQ(gt, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -777,6 +823,8 @@ MU_TEST(runExpLog_M){
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
 	ASSERT_MATRIX_EQ(value1, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(runT_M){
@@ -806,6 +854,8 @@ MU_TEST(runT_M){
 	mu_assert_int_eq(5, M->rows);
 	mu_assert_int_eq(4, M->cols);
 	ASSERT_MATRIX_EQ(gt, M);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 /*
@@ -835,6 +885,8 @@ MU_TEST(runDiv_MV_FAIL){
 	struct CGError* error = cg_getResultError(result);
 	
 	mu_assert_int_eq(CGET_INCOMPATIBLE_ARGS_EXCEPTION, cg_getErrorType(error));
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 MU_TEST(diffSimpleNN){
@@ -882,6 +934,8 @@ MU_TEST(diffSimpleNN){
 	
 	ASSERT_VECTOR_DIM(V, 2);
 	ASSERT_VECTOR_EQ(gt2, V);
+	
+	cg_freeGraph(graph); free(graph);
 }
 
 
@@ -905,6 +959,8 @@ MU_TEST(runCrossEntropyLossVec){
 	ASSERT_DOUBLE(res);
 	
 	mu_assert_double_eq(-2.223177, cg_getResultDoubleVal(res)->value);
+	
+	cg_freeGraph(graph); free(graph);
 }
 	
 struct CGNode* sigmoid_node(struct CGNode* x){
@@ -926,7 +982,7 @@ MU_TEST(runReluSigmoidSoftmax){
 	double y_val[] = {0, 1};
 	
 	struct CGNode* x = cg_newVariable("x");
-	struct CGNode* y = cg_newVariable("y");
+	//struct CGNode* y = cg_newVariable("y");
 	struct CGNode* T_1 = cg_newVariable("T_1");
 	struct CGNode* b_1 = cg_newVariable("b_1");
 	struct CGNode* T_2 = cg_newVariable("T_2");
@@ -941,7 +997,7 @@ MU_TEST(runReluSigmoidSoftmax){
 	struct CGraph* graph = cg_newGraph("nn", H);
 	
 	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, x_val));
-	cg_setVar(graph, "y", cg_newVectorNode(2, y_val));
+	//cg_setVar(graph, "y", cg_newVectorNode(2, y_val));
 	cg_setVar(graph, "T_1", cg_newMatrixNode(3, 3, T1_val));
 	cg_setVar(graph, "b_1", cg_newVectorNode(3, b1_val));
 	cg_setVar(graph, "T_2", cg_newMatrixNode(3, 3, T2_val));
@@ -960,6 +1016,8 @@ MU_TEST(runReluSigmoidSoftmax){
 	double gt[] = {0.198241, 0.285387, 0.516372};
 	
 	ASSERT_VECTOR_EQ(gt, vec);
+	
+	cg_freeGraph(graph); free(graph);
 }
 MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runMult_MV);

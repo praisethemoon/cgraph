@@ -42,7 +42,7 @@ CGNode* cg_newDouble0Node(){
 }
 
 CGNode* cg_newVectorNode(uint64_t len, double* v){
-	return makeVectorConstantNode(len, v);
+	return makeVectorConstantNodeCopy(len, v);
 }
 
 CGNode* cg_newVector0Node(uint64_t len){
@@ -50,7 +50,7 @@ CGNode* cg_newVector0Node(uint64_t len){
 }
 
 CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, double* v){
-	return makeMatrixConstantNode(rows, cols, v);
+	return makeMatrixConstantNodeCopy(rows, cols, v);
 }
 
 CGNode* cg_newMatrix0Node(uint64_t rows, uint64_t cols){
