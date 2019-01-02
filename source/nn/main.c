@@ -105,9 +105,9 @@ int main(int argc, char* argv[]){
 	
 	cg_autoDiffGraph(graph);
 	
-	struct CGNode* dx = cg_getVarDiff(graph, "b_2");
+	//struct CGNode* dx = cg_getVarDiff(graph, "b_2");
 	
-	cg_printNodeValue(dx);
+	//cg_printNodeValue(dx);
 	
 	
 	cg_freeGraph(graph);

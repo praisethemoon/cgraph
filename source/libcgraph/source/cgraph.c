@@ -2172,7 +2172,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				lhs->value = -1;
 				CGResultNode* res = mulDM(lhs, (CGMatrix*)uhsValue, graph, parentNode);
 				
-				freeDoubleValue(&lhs);
+				free(lhs);
 				
 				parentNode->result = res;
 				return res;
@@ -2651,7 +2651,17 @@ CGResultNode* processBinaryOperation(CGraph* graph, CGBinaryOperationType type, 
 }
 
 CGResultNode* computeRawNode(CGNode* node){
-	return computeCGNode(NULL, node);
+	CGraph* tmp_G = makeGraph("temp_g");
+	
+	tmp_G->root = node;
+	storeNodesInGraph(tmp_G, node);
+	
+	CGResultNode* res = computeGraph(tmp_G);
+	res = copyResultNode(res);
+	freeGraph(tmp_G);
+	free(tmp_G);
+	
+	return res;
 }
 
 
@@ -2771,19 +2781,19 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	
 	node->result = reduceDim(result);
 	
-	switch(result->type){
+	switch(node->result->type){
 		case CGVT_DOUBLE:
 			node->diff = makeZeroDoubleConstantNode();
-			node->diff->diff = NULL;
+			//printf("allocating %zu\n", node->diff);
 			break;
 		case CGVT_VECTOR:{
-			CGVector* v = (CGVector*)result->value;
+			CGVector* v = (CGVector*)node->result ->value;
 			node->diff = makeZeroVectorConstantNode(v->len);
 			break;
 		}
 		
 		case CGVT_MATRIX:{
-			CGMatrix* v = (CGMatrix*)result->value;
+			CGMatrix* v = (CGMatrix*)node->result ->value;
 			node->diff = makeZeroMatrixConstantNode(v->rows, v->cols);
 			break;
 		}

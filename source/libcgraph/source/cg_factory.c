@@ -413,4 +413,24 @@ CGResultNode* constantNodeToResultNodeCopy(CGNode* node){
 	}
 }
 
+CGNode* resultNodeToConstantNodeCopy(CGResultNode* result){
+	switch(result->type){
+		case CGVT_DOUBLE:
+		{
+			CGDouble* d = (CGDouble*)result->value;
+			return makeDoubleConstantNode(d->value);
+		}
+		case CGVT_VECTOR:
+		{
+			CGVector* v = (CGVector*)result->value;
+			return makeVectorConstantNode(v->len, cg_raw_copy(v->data, v->len));
+		}
+		case CGVT_MATRIX:
+		{
+			CGMatrix* m = (CGMatrix*)result->value;
+			return makeMatrixConstantNode(m->rows, m->cols, cg_raw_copy(m->data, m->rows*m->cols));
+		}
+	}
+}
+
 

@@ -40,6 +40,7 @@ void freeNode(CGraph* graph, CGNode* node){
 	}
 	
 	if(node->diff != NULL){
+		//printf("deallocating %zu\n", node->diff);
 		freeNode(graph, node->diff);
 		free(node->diff);
 	}
@@ -69,13 +70,15 @@ void freeNode(CGraph* graph, CGNode* node){
 					freeMatrixValue(mat);
 					free(node->constant->value);
 					free(node->constant);
+					break;
 				}
 			}
 			break;
 		}
-		case CGNT_VARIABLE:
+		case CGNT_VARIABLE:{
 			free(node->var);
 			break;
+		}
 		case CGNT_BINARY_OPERATION:
 			free(node->bop);
 			break;

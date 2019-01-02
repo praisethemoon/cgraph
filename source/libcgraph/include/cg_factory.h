@@ -35,6 +35,7 @@ CGNode* makeCrossEntropyLossFunc(CGNode* x, CGNode* y, uint64_t num_classes);
 CGNode* resultNodeToConstantNode(CGResultNode* result);
 CGResultNode* constantNodeToResultNode(CGNode* node);
 CGResultNode* constantNodeToResultNodeCopy(CGNode* node);
+CGNode* resultNodeToConstantNodeCopy(CGResultNode* result);
 
 CGResultNode* makeDoubleResultNode(double val);
 CGResultNode* makeVectorResultNode(uint64_t len, double* val);
