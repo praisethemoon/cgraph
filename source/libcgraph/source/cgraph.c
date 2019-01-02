@@ -2781,10 +2781,10 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	
 	node->result = reduceDim(result);
 	
+	
 	switch(node->result->type){
 		case CGVT_DOUBLE:
 			node->diff = makeZeroDoubleConstantNode();
-			//printf("allocating %zu\n", node->diff);
 			break;
 		case CGVT_VECTOR:{
 			CGVector* v = (CGVector*)node->result ->value;
@@ -2875,9 +2875,11 @@ void storeNodesInGraph(CGraph* graph, CGNode* node){
 	
 	vec_find(&graph->nodes, node, idx);
 	
-	if(idx == -1){
-		vec_push(&graph->nodes, node);
-	}
+	if(idx != -1)
+		return;
+	
+	vec_push(&graph->nodes, node);
+	
 	
 	switch(node->type){
 		case CGNT_CONSTANT:

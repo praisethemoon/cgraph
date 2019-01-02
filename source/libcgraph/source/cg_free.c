@@ -40,7 +40,6 @@ void freeNode(CGraph* graph, CGNode* node){
 	}
 	
 	if(node->diff != NULL){
-		//printf("deallocating %zu\n", node->diff);
 		freeNode(graph, node->diff);
 		free(node->diff);
 	}
@@ -105,18 +104,17 @@ void freeResultNode(CGResultNode* node){
 		return;
 	}
 	
-	if(node->value != NULL)
-		switch(node->type){
-			case CGVT_DOUBLE:
-				freeDoubleValue(node->value);
-				break;
-			case CGVT_VECTOR:
-				freeVectorValue(node->value);
-				break;
-			case CGVT_MATRIX:
-				freeMatrixValue(node->value);
-				break;
-		}
+	switch(node->type){
+		case CGVT_DOUBLE:
+			freeDoubleValue(node->value);
+			break;
+		case CGVT_VECTOR:
+			freeVectorValue(node->value);
+			break;
+		case CGVT_MATRIX:
+			freeMatrixValue(node->value);
+			break;
+	}
 	
 	free(node->value);
 }
@@ -125,14 +123,12 @@ void freeGraph(CGraph* graph){
 	if(graph == NULL)
 		return;
 	
-	
 	const char *key;
 	
 	map_iter_t iter = map_iter(&graph->vars);
 
 	while ((key = map_next(&graph->vars, &iter))) {
 		CGNode* node = *map_get(&graph->vars, key);
-		//printf("freeing variable %s\n", key);
 		if(node != NULL){
 			freeNode(graph, node);
 			free(node);
@@ -140,7 +136,6 @@ void freeGraph(CGraph* graph){
 	}
 	
 	map_deinit(&graph->vars);
-	
 	
 	int i = 0;
 	CGNode* node;

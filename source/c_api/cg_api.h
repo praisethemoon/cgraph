@@ -41,9 +41,13 @@ CGRAPH_API struct CGraph* cg_newGraph(char* name, struct CGNode* root);
 
 /**
  * \brief Deallocates graph memory
- * \param[out] graph graph to free, should be NULL after deallocation
+ * \param[in,out] graph graph to free, should be NULL after deallocation
  */
-CGRAPH_API struct CGraph* cg_freeGraph(struct CGraph* graph);
+CGRAPH_API void cg_freeGraph(struct CGraph* graph);
+
+CGRAPH_API void cg_freeResultNode(struct CGResultNode* result);
+
+
 
 
 /* * * * * * * * * * * *

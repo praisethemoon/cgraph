@@ -25,8 +25,12 @@ CGraph* cg_newGraph(char* name, CGNode* root){
 	return graph;
 }
 
-CGraph* cg_freeGraph(CGraph* graph){
+void cg_freeGraph(CGraph* graph){
 	freeGraph(graph);
+}
+
+void cg_freeResultNode(struct CGResultNode* result){
+	freeResultNode(result);
 }
 
 CGNode* cg_newDoubleNode(double v){
