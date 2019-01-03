@@ -47,28 +47,36 @@ CGNode* softmax(CGNode* x, uint8_t axis){
  */
 CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
 	// TODO: ASSERT
-	CGVector* y_vec = NULL;
+	
+	
+	double* x_val = NULL;
+	double* y_val = NULL;
+	
 	if(y->type == CGVT_DOUBLE){
 		CGDouble* raw_val = (CGDouble*)y->value;
-		y_vec = (CGVector*)makeVectorConstantNode(1, &raw_val->value)->constant->value;
+		y_val = calloc(1, sizeof(double));
+		y_val[0] = raw_val->value;
 	}
 	else
-	 
-		y_vec= (CGVector*)y->value;
+		y_val = ((CGVector*)y->value)->data;
 	
 	uint64_t num_samples = 1;
-	double* x_val = NULL;
-	double* y_val = y_vec->data;
 	
 	if(x->type == CGVT_MATRIX){
 		CGMatrix* m = (CGMatrix*)x->value;
 		num_samples = m->rows;
 		x_val = m->data;
 	}
-	else{
+	else if(x->type == CGVT_VECTOR){
 		CGVector* m = (CGVector*)x->value;
 		num_samples = 1;
 		x_val = m->data;
+	}
+	else {
+		CGDouble* raw_val = (CGDouble*)x->value;
+		x_val = calloc(1, sizeof(double));
+		num_samples = 1;
+		x_val[0] = raw_val->value;
 	}
 	
 	uint64_t i = 0;
@@ -82,11 +90,11 @@ CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classe
 			//printf("%lu vs %f\n", j, y_val[i]);
 			if(y_val[i] == j){
 				//printf("true %f => %f\n", x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
-				sum += log10(x_val[i*num_classes+j]);
+				sum += log(x_val[i*num_classes+j]);
 			}
 			else{
 				//printf("false %f => %f\n", 1.0-x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
-				sum += log10(1.0-x_val[i*num_classes+j]);
+				sum += log(1.0-x_val[i*num_classes+j]);
 			}
 		}
 	}

@@ -263,6 +263,7 @@ static int lua_createUnaryOperation(lua_State* L){
 		CGUOT_COS,
 		CGUOT_TAN,
 		CGUOT_TANH,
+		CGUOT_RELU,
 		//CGUOT_SUM,
 	};
 	

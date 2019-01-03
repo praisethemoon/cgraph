@@ -434,12 +434,15 @@ CGResultNode* dotVM(CGVector* V, CGMatrix* M, CGraph* graph, CGNode* parentNode)
 	
 	double* y = calloc(M->cols, sizeof(double));
 	CGVector* Y = calloc(1, sizeof(CGVector));
-	Y->len = M->rows;
+	Y->len = M->cols;
 	Y->data = y;
+	
+	int m = 1;
+	int n = M->cols;
+	int k = V->len;
 		
 	cblas_dgemm(M->shape == CGMS_ROW_MAJOR?CblasRowMajor:CblasColMajor,
-		    CblasNoTrans, CblasNoTrans, 1, M->cols, V->len,
-		    1.0, V->data, V->len, M->data, M->cols, 0, Y->data, Y->len);
+		    CblasNoTrans, CblasNoTrans, m, n, k, 1, V->data, k, M->data, n, 0, Y->data, n);
 	
 	
 	CGResultNode* result = calloc(1, sizeof(CGResultNode));

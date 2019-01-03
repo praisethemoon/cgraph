@@ -79,7 +79,7 @@ typedef enum CGUnaryOperationType {
 	CGUOT_RELU,
 } CGUnaryOperationType;
 
-#define MAX_UNARY_OPERATION CGNT_RELU
+#define MAX_UNARY_OPERATION CGUOT_RELU
 
 /**
  * \brief List of operations that apply mainly to a given axis of matrices

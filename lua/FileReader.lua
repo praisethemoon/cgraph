@@ -13,10 +13,13 @@ local FileReader = {}
 	return array of parsed data (per-line)
 ]]
 function FileReader.read(url, fn)
-  f = io.open(url, "r")
+  local f = io.open(url, "r")
   local data = {}
   for line in f:lines() do
-    data[#data+1] = fn(line)
+    local value = fn(line) 
+    if value ~= nil then
+      data[#data+1] = value
+    end 
   end
   f:close()
   return data

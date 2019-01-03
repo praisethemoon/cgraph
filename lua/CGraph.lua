@@ -275,6 +275,15 @@ local tanh = function(uhs)
 	return op
 end
 
+local ReLU = function(uhs)
+  local node = cgraph.uop(UnaryOperationType.RELU, uhs.node)
+  local op = {type='uop', opType=UnaryOperationType.RELU, node = node, uhs=uhs}
+  setmetatable(op, mt)
+      
+  return op
+end
+
+
 -- TODO: Update
 local sum = function(uhs, axis)
 	local node = cgraph.sum(uhs.node, axis)
@@ -285,7 +294,6 @@ local sum = function(uhs, axis)
 end
 
 local crossEntropyLoss = function(x, y, num_classes)
-	print(type(x))
 	local node = cgraph.crossEntropy(x.node, y.node, num_classes)
 	local op = {type='cross_entropy', opType=nil, node = node, x=x, y=y,num_classes=num_classes}
 	setmetatable(op, mt)
@@ -493,6 +501,7 @@ local CGraph = {
 	cos=cos,
 	tan=tan,
 	tanh=tanh,
+	ReLU=ReLU,
 	sum=sum,
 	crossEntropyLoss=crossEntropyLoss,
 	dot=dot,
