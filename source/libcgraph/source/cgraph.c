@@ -2870,6 +2870,7 @@ CGResultNode* reduceDim(CGResultNode* result){
 }
 
 CGResultNode* computeGraph(CGraph* graph){
+	resetGraphResultNodes(graph, graph->root);
 	return computeCGNode(graph, graph->root);
 }
 
@@ -2907,6 +2908,43 @@ void storeNodesInGraph(CGraph* graph, CGNode* node){
 			storeNodesInGraph(graph, node->crossEntropyLoss->y);
 			break;
 	}
+}
+
+void resetGraphResultNodes(CGraph* graph, CGNode* node){
+	if(node->result != NULL){
+		freeResultNode(node->result);
+		free(node->result);
+		node->result = NULL;
+	}
 	
+	if(node->diff != NULL){
+		freeNode(graph, node->diff);
+		free(node->diff);
+		node->diff = NULL;
+	}
+	
+	switch(node->type){
+		case CGNT_CONSTANT:
+			break;
+		case CGNT_VARIABLE:
+			break;
+		case CGNT_BINARY_OPERATION:
+			resetGraphResultNodes(graph, node->bop->lhs);
+			resetGraphResultNodes(graph, node->bop->rhs);
+			break;
+		case CGNT_UNARY_OPERATION:
+			resetGraphResultNodes(graph, node->uop->uhs);
+			break;
+		case CGNT_AXIS_BOUND_OPERATION:
+			resetGraphResultNodes(graph, node->axop->uhs);
+			break;
+		case CGNT_GRAPH:
+			resetGraphResultNodes(graph, node->graph->root);
+			break;
+		case CGNT_CROSS_ENTROPY_LOSS_FUNC:
+			resetGraphResultNodes(graph, node->crossEntropyLoss->x);
+			resetGraphResultNodes(graph, node->crossEntropyLoss->y);
+			break;
+	}
 }
 

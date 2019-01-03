@@ -143,5 +143,5 @@ CGNode* cg_resultToConstantNode(CGResultNode* result){
 }
 
 CGResultNode* cg_constantToResult(CGNode* node){
-	return constantNodeToResultNode(node);
+	return constantNodeToResultNodeCopy(node);
 }

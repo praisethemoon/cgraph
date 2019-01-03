@@ -26,6 +26,7 @@ double* raw_copy(double* src, uint64_t len){
 int main(int argc, char* argv[]){
 	
 	double x_val[] = {0.1, 0.2, 0.7};
+	double x_val2[] = {0.0, 0.0, 0.0};
 	double T1_val[] = {0.1, 0.4, 0.3, 0.3, 0.7, 0.7,0.5,0.2,0.9 };
 	double b1_val[] = {1.0, 1.0, 1.0};
 	double T2_val[] =  {0.2, 0.3, 0.5, 0.3, 0.5, 0.7,0.6,0.4,0.8 };
@@ -102,14 +103,56 @@ int main(int argc, char* argv[]){
 		}
 	}
 	
+	cg_setVar(graph, "x", cg_newMatrixNode(1, 3, x_val2));
+	res = cg_evalGraph(graph);
+	
+	printf("Result type: %d\n", cg_getResultType(res));
+	
+	switch(cg_getResultType(res)){
+		case CGVT_DOUBLE:
+		{
+			CGDouble* d = cg_getResultDoubleVal(res);
+			printf("current diff %f\n",  d->value);
+			break;
+		}
+		
+		case CGVT_VECTOR:
+		{
+			CGVector* vec = cg_getResultVectorVal(res);
+			uint64_t i = 0;
+			printf("(");
+			for(; i < vec->len; i++){
+				printf("%f, ", vec->data[i]);
+			}
+			printf(")\n");
+			break;
+		}
+		
+		case CGVT_MATRIX:
+		{
+			CGMatrix* m = cg_getResultMatrixVal(res);
+			uint64_t i = 0;
+			uint64_t j = 0;
+			printf("(");
+			for(; i < m->rows; i++){
+				printf("\n\t");
+				for(j = 0; j < m->cols; j++){
+					printf("%f, ", m->data[i*m->cols+j]);
+				}
+			}
+			printf(")\n");
+			break;
+		}
+	}
+	/*
 	
 	cg_autoDiffGraph(graph);
 	
 	struct CGNode* dx = cg_getVarDiff(graph, "b_2");
 	
 	cg_printNodeValue(dx);
-	
-	//cg_freeGraph(graph);
-	//free(graph);
+	*/
+	cg_freeGraph(graph);
+	free(graph);
 	return 0;
 }

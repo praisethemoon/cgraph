@@ -346,6 +346,12 @@ CGraph* makeGraph(char* name){
 }
 
 void graphSetVar(CGraph* graph, const char* name, CGNode* value){
+	CGNode** old = map_get(&graph->vars, name); 
+	if(old != NULL){
+		map_remove(&graph->vars, name);
+		freeNode(graph, *old);
+	}
+	
 	int res = map_set(&graph->vars, name, value);
 }
 

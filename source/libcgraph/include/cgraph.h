@@ -56,6 +56,8 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node);
 CGResultNode* computeGraph(CGraph* graph);
 void storeNodesInGraph(CGraph* graph, CGNode* node);
 
+void resetGraphResultNodes(CGraph* graph, CGNode* node);
+
 void freeDoubleValue(CGDouble* v);
 void freeVectorValue(CGVector* data);
 void freeMatrixValue(CGMatrix* data);
