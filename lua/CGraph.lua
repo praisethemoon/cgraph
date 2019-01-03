@@ -285,9 +285,12 @@ local sum = function(uhs, axis)
 end
 
 local crossEntropyLoss = function(x, y, num_classes)
-	local node = cgraph.crossEntropy(x, y, num_classes)
+	print(type(x))
+	local node = cgraph.crossEntropy(x.node, y.node, num_classes)
 	local op = {type='cross_entropy', opType=nil, node = node, x=x, y=y,num_classes=num_classes}
 	setmetatable(op, mt)
+
+	return op
 end
 
 
