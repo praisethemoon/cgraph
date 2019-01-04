@@ -15,7 +15,7 @@ struct CGNode* sigmoid_node(struct CGNode* x){
 }
 
 struct CGNode* softmax_node(struct CGNode* x){
-	return cg_newUnOp(CGUOT_TRANSPOSE, cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_TRANSPOSE, cg_newUnOp(CGUOT_EXP, x)), cg_newAxisBoundOp(CGABOT_SUM,cg_newUnOp(CGUOT_EXP, x), 0)));
+	return cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_EXP, x), cg_newAxisBoundOp(CGABOT_SUM,cg_newUnOp(CGUOT_EXP, x), 1));
 }
 
 double* raw_copy(double* src, uint64_t len){
@@ -26,15 +26,16 @@ double* raw_copy(double* src, uint64_t len){
 
 int main(int argc, char* argv[]){
 	
-	double x_val[] = {5.1,3.5,1.4,0.2};
+	double x_val[] = {0.2, 0.3, 0.5, 0.8, 0.12, 0.34, 0.75, 0.08};
 	double x_val2[] ={50.1,0.5,111.4,0};
+	double x_val3[] ={5.1,3.5,1.4,0.4};
 	double T1_val[] = {.21, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
 	double b1_val[] = {0.1, 0.1, 0.1, 0.1, 0.1};
 	double T2_val[] =  {0.3, 0.4, 0.12, 0.14, 0.1,0.3, 0.4, 0.12, 0.14, 0.1,0.3, 0.4, 0.12, 0.14, 0.1};
 	double b2_val[] = {0.0, 0.0, 0.0};
 	//double T3_val[] =  {0.1,0.4,0.8,0.3,0.7,0.2,0.5,0.2,0.9 };
 	//double b3_val[] = {1.0, 1.0, 1.0};
-	double y_val[] = {0};
+	double y_val[] = {1, 0};
 	
 	
 	
@@ -52,11 +53,12 @@ int main(int argc, char* argv[]){
 	struct CGNode* H  = cg_newCrossEntropyLoss(softmax_node(L2), y, 3);
 	//struct CGNode* H  = cg_newCrossEntropyLoss(softmax_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3)), y, 3);
 	
+	//struct CGNode* H  = cg_newCrossEntropyLoss(x, y, 3);
 	
 	struct CGraph* graph = cg_newGraph("nn", H);
 	
-	cg_setVar(graph, "x", cg_newMatrixNode(1, 4, x_val));
-	cg_setVar(graph, "y", cg_newVectorNode(1, y_val));
+	cg_setVar(graph, "x", cg_newMatrixNode(2, 4, x_val));
+	cg_setVar(graph, "y", cg_newVectorNode(2, y_val));
 	cg_setVar(graph, "T_1", cg_newMatrixNode(4, 5, T1_val));
 	cg_setVar(graph, "b_1", cg_newVectorNode(5, b1_val));
 	cg_setVar(graph, "T_2", cg_newMatrixNode(5, 3, T2_val));
@@ -72,7 +74,7 @@ int main(int argc, char* argv[]){
 		case CGVT_DOUBLE:
 		{
 			CGDouble* d = cg_getResultDoubleVal(res);
-			printf("current diff %f\n",  d->value);
+			printf("%f\n",  d->value);
 			break;
 		}
 		
@@ -105,13 +107,31 @@ int main(int argc, char* argv[]){
 		}
 	}
 
+	
+	cg_autoDiffGraph(graph);
+/*	
+	struct CGNode* dx = cg_getVarDiff(graph, "x");
+	
+	cg_printNodeValue(dx);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	cg_setVar(graph, "x", cg_newMatrixNode(1, 4, x_val2));
 	res = cg_evalGraph(graph);
 	switch(cg_getResultType(res)){
 		case CGVT_DOUBLE:
 		{
 			CGDouble* d = cg_getResultDoubleVal(res);
-			printf("current diff %f\n",  d->value);
+			printf("%f\n",  d->value);
 			break;
 		}
 		
@@ -143,15 +163,16 @@ int main(int argc, char* argv[]){
 			break;
 		}
 	}
-	/*
+	
 	
 	cg_autoDiffGraph(graph);
 	
-	struct CGNode* dx = cg_getVarDiff(graph, "b_2");
+	dx = cg_getVarDiff(graph, "x");
 	
 	cg_printNodeValue(dx);
-	*/
+	
 	cg_freeGraph(graph);
 	free(graph);
+	*/
 	return 0;
 }

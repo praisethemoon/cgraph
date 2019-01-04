@@ -356,7 +356,10 @@ void graphSetVar(CGraph* graph, const char* name, CGNode* value){
 }
 
 CGNode* graphGetVar(CGraph* graph, const char* name){
-	return *map_get(&graph->vars, name);
+	CGNode** noderef = map_get(&graph->vars, name);
+	if (noderef == NULL)
+		return NULL;
+	return *noderef;
 }
 
 

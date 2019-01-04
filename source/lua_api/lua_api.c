@@ -369,12 +369,13 @@ void pushResultNode(lua_State*L, CGResultNode* res){
 		case CGVT_VECTOR:{
 			CGVector* value = (CGVector*)res->value;
 			
-			
+			/*
 			uint64_t i = 0;
 			printf("Vector len: %d\n", value->len);
 			for(;i<value->len;i++){
 				printf("\t%d\t%lf\n", i, value->data[i]);
 			}
+			*/
 			
 			
 			lua_pushstring(L, "len");

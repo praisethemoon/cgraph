@@ -5,6 +5,7 @@
 #include <malloc.h>
 #include <math.h>
 
+
 #include "cgraph.h"
 #include "cg_operation.h"
 #include "cg_types.h"
@@ -14,6 +15,7 @@
 #include "cg_enums.h"
 #include "cg_factory.h"
 #include "cg_math.h"
+#include "cg_diff.h"
 
 void __cg_map_array(double* src, double* dest, uint64_t len, double(*f)(double)){
 	uint64_t i = 0;
@@ -22,11 +24,11 @@ void __cg_map_array(double* src, double* dest, uint64_t len, double(*f)(double))
 }
 
 double __cg_relu(double x){
-	return x>0?x:0;
+	return x>0.0?x:0.0;
 }
 
 double __cg_dx_relu(double x){
-	return x>0?1:0;
+	return x>0.0?1:0.0;
 }
 
 
@@ -90,16 +92,16 @@ CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classe
 			//printf("%lu vs %f\n", j, y_val[i]);
 			if(y_val[i] == j){
 				//printf("true %f => %f\n", x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
-				sum += log(x_val[i*num_classes+j]);
+				sum += -log(x_val[i*num_classes+j]);
 			}
 			else{
 				//printf("false %f => %f\n", 1.0-x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
-				sum += log(1.0-x_val[i*num_classes+j]);
+				//sum += -log(j - x_val[i*num_classes+j]);
 			}
 		}
 	}
 	
-	sum = -sum/num_samples;
+	sum = sum/num_samples;
 	
 	return makeDoubleResultNode(sum);
 }
@@ -107,31 +109,39 @@ CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classe
 
 CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
 	// TODO: ASSERT
-	CGVector* y_vec = (CGVector*)y->value;
+	
+	double* x_val = NULL;
+	double* y_val = NULL;
+	
 	if(y->type == CGVT_DOUBLE){
 		CGDouble* raw_val = (CGDouble*)y->value;
-		y_vec = (CGVector*)makeVectorConstantNode(1, &raw_val->value)->constant->value;
+		y_val = calloc(1, sizeof(double));
+		y_val[0] = raw_val->value;
 	}
 	else
-	 
-		y_vec= (CGVector*)y->value;
+		y_val = ((CGVector*)y->value)->data;
 	
 	uint64_t num_samples = 1;
-	double* x_val = NULL;
-	double* y_val = y_vec->data;
 	
 	if(x->type == CGVT_MATRIX){
 		CGMatrix* m = (CGMatrix*)x->value;
 		num_samples = m->rows;
 		x_val = m->data;
 	}
-	else{
+	else if(x->type == CGVT_VECTOR){
 		CGVector* m = (CGVector*)x->value;
 		num_samples = 1;
 		x_val = m->data;
 	}
+	else {
+		CGDouble* raw_val = (CGDouble*)x->value;
+		x_val = calloc(1, sizeof(double));
+		num_samples = 1;
+		x_val[0] = raw_val->value;
+	}
 	
 	double* out = calloc(num_samples*num_classes, sizeof(double));
+	memcpy(out, x_val, num_samples*num_classes*sizeof(double));
 	
 	uint64_t i = 0;
 	uint64_t j = 0;
@@ -139,22 +149,15 @@ CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
 	for(;i<num_samples;i++){
 		for(j=0;j<num_classes;j++){
 			if(y_val[i] == j)
-				out[i*num_classes+j] = -(1/x_val[i*num_classes+j]);
-			else
-				out[i*num_classes+j] = -(1/(1 - x_val[i*num_classes+j]));
+				out[i*num_classes+j] = (out[i*num_classes+j]-1)/num_samples;
 		}
 	}
 	
 	CGNode* res = makeMatrixConstantNode(num_samples, num_classes, out);
-	CGMatrix* m = (CGMatrix*)res->constant->value;
-	printf("diff CE(");
-	for(i=0; i < m->rows; i++){
-		printf("\n\t");
-		for(j = 0; j < m->cols; j++){
-			printf("%f, ", m->data[i*m->cols+j]);
-		}
-	}
-	printf(")\n");
+	/*
+	printf("cross entropy dx:\n");
+	printNode(res);
+	*/
 	return res;
 }
 

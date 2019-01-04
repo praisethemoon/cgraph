@@ -683,7 +683,7 @@ CGResultNode* divMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode)
  * M/v
  */
 CGResultNode* divMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
-	if(M->cols != V->len){
+	if(M->rows != V->len){
 		char msg[MAX_ERR_FMT_LEN];
 		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot calculate  M(%"PRIu64", %"PRIu64") DIV V(%"PRIu64")", M->rows, M->cols, V->len);
 		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
@@ -2929,8 +2929,12 @@ void resetGraphResultNodes(CGraph* graph, CGNode* node){
 	switch(node->type){
 		case CGNT_CONSTANT:
 			break;
-		case CGNT_VARIABLE:
+		case CGNT_VARIABLE:{
+			CGNode* var = graphGetVar(graph, node->var->name);
+			if(var != NULL)
+				resetGraphResultNodes(graph, var);
 			break;
+		}
 		case CGNT_BINARY_OPERATION:
 			resetGraphResultNodes(graph, node->bop->lhs);
 			resetGraphResultNodes(graph, node->bop->rhs);
