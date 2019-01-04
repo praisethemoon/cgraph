@@ -49,7 +49,6 @@ set(LUA_SRCS
 
 set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/lua_api.c
-	
 	${PROJECT_SOURCE_DIR}/vendor/luaarray/array.c
 	${PROJECT_SOURCE_DIR}/vendor/luaarray/core.c
 )

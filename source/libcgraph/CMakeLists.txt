@@ -15,7 +15,6 @@ set( EXTERNAL_DEPS
 	${PROJECT_SOURCE_DIR}/vendor/thread/tinycthread.c
 	${PROJECT_SOURCE_DIR}/vendor/container/vec.c
 	${PROJECT_SOURCE_DIR}/vendor/container/map.c
-	${PROJECT_SOURCE_DIR}/vendor/container/map.c
 )
 
 set (PROJECT_SRCS
@@ -24,6 +23,8 @@ set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/source/cg_constants.c
 	${PROJECT_SOURCE_DIR}/source/cg_errors.c
 	${PROJECT_SOURCE_DIR}/source/cg_diff.c
+	${PROJECT_SOURCE_DIR}/source/cg_math.c
+	${PROJECT_SOURCE_DIR}/source/cg_free.c
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})

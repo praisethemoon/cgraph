@@ -16,6 +16,36 @@
 #define CGNODE "CGNode"
 #define CGRAPH "CGraph"
 
+/* source: https://www.lua.org/pil/24.2.3.html 
+ * used when debugging lua with gdb
+ */
+static void stackDump (lua_State *L) {
+	int i;
+	int top = lua_gettop(L);
+	for (i = 1; i <= top; i++) {  /* repeat for each level */
+		int t = lua_type(L, i);
+		switch (t) {
+			case LUA_TSTRING:  /* strings */
+			printf("`%s'", lua_tostring(L, i));
+			break;
+
+			case LUA_TBOOLEAN:  /* booleans */
+			printf(lua_toboolean(L, i) ? "true" : "false");
+			break;
+
+			case LUA_TNUMBER:  /* numbers */
+			printf("%g", lua_tonumber(L, i));
+			break;
+
+			default:  /* other values */
+			printf("%s", lua_typename(L, t));
+			break;
+		}
+		printf("  ");  /* put a separator */
+	}
+	printf("\n");  /* end the listing */
+}
+
 static int create (lua_State *L)
 {
 	int i, j;
@@ -233,12 +263,33 @@ static int lua_createUnaryOperation(lua_State* L){
 		CGUOT_COS,
 		CGUOT_TAN,
 		CGUOT_TANH,
-		CGUOT_SUM,
+		CGUOT_RELU,
+		//CGUOT_SUM,
 	};
 	
 	uint8_t type = lua_tointeger(L, 1);
 	CGNode* uhs = checkNode(L, 2);
 	CGNode* node = makeUnaryOpNode(ops[type], uhs);
+	
+	pushNode(L, node);
+	return 1;
+}
+
+static int lua_createSumOperation(lua_State* L){
+	CGNode* uhs = checkNode(L, 1);
+	uint8_t axis = lua_tointeger(L, 2);
+	CGNode* node = makeAxisBoundNode(CGABOT_SUM, uhs, axis);
+	
+	pushNode(L, node);
+	return 1;
+}
+
+
+static int lua_createCrossEntropyLoss(lua_State* L){
+	CGNode* x = checkNode(L, 1);
+	CGNode* y = checkNode(L, 2);
+	uint64_t num_classes = lua_tointeger(L, 3);
+	CGNode* node = makeCrossEntropyLossFunc(x, y, num_classes);
 	
 	pushNode(L, node);
 	return 1;
@@ -283,10 +334,8 @@ static int lua_getGraphVar(lua_State* L){
 	return 1;
 }
 
-static int lua_computeGraph(lua_State* L){
-	CGraph* graph = checkGraph(L, 1);
-	CGResultNode* res = computeGraph(graph);
-	
+void pushResultNode(lua_State*L, CGResultNode* res){
+
 	if(res->error != NULL)
 	{
 		lua_newtable(L);
@@ -299,8 +348,6 @@ static int lua_computeGraph(lua_State* L){
 		lua_pushstring(L, "node");
 		pushNode(L, res->error->faultyNode);
 		lua_settable(L, -3);
-		
-		return 1;
 	}
 	
 	lua_newtable(L);
@@ -329,6 +376,7 @@ static int lua_computeGraph(lua_State* L){
 				printf("\t%d\t%lf\n", i, value->data[i]);
 			}
 			*/
+			
 			
 			lua_pushstring(L, "len");
 			lua_pushnumber(L, value->len);
@@ -373,6 +421,12 @@ static int lua_computeGraph(lua_State* L){
 			break;
 		}
 	}
+}
+
+static int lua_computeGraph(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	CGResultNode* res = computeGraph(graph);
+	pushResultNode(L, res);
 	
 	return 1;
 }
@@ -401,6 +455,7 @@ void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 			
 			lua_pushstring(L, "node");
 			pushNode(L, node);
+			printf("Checking stack: %d\n", lua_checkstack(L, 20));
 			lua_settable(L, -3);
 			
 			return;
@@ -531,24 +586,32 @@ void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 	}
 }
 
-static int lua_diffGraph(lua_State* L){
+static int lua_backPropGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
-	char* newName = lua_tostring(L, 2);
-	char* wrtNode = lua_tostring(L, 3);
 	
-	CGraph* newGraph = differentiateGraphWRTVar(graph, newName, wrtNode);
+	autoDifferenciateGraph(graph);
+
+	return 1;
+}
+
+static int lua_getGraphVarDiff(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	const char* name = lua_tostring(L, 2);
 	
-	lua_newtable(L);
+	CGNode* node = graphGetVar(graph, name);
 	
-	lua_pushstring(L, "graph");
-	pushGraph(L, newGraph);
-	lua_settable(L, -3);
-	lua_pushstring(L, "root");
-	nodeToLuaTable(newGraph->root, L, newGraph);
-	lua_settable(L, -3);
+	if(node == NULL || node->diff == NULL)
+	{
+		lua_pushnil(L);
+	}
+	else {
+		pushResultNode(L, constantNodeToResultNode(node->diff));
+		//pushNode(L, node->diff);
+	}
 	
 	return 1;
 }
+
 
 static int lua_freeGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
@@ -596,12 +659,15 @@ int luaopen_libcgraph(lua_State *L)
 		{"matrix", lua_createMatrixConstant},
 		{"bop", lua_createBinaryOperation},
 		{"uop", lua_createUnaryOperation},
+		{"sum", lua_createSumOperation},
 		{"graphNode", lua_createGraphNode},
 		{"graph", lua_createGraph},
 		{"setVar", lua_setGraphVar},
 		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
-		{"diff", lua_diffGraph},
+		{"crossEntropy", lua_createCrossEntropyLoss},
+		{"backProp", lua_backPropGraph},
+		{"getVarDiff", lua_getGraphVarDiff},
 		{"optimizeGraph", lua_optimizeGraph},
 		{"freeGraph", lua_freeGraph},
 		{NULL, NULL}

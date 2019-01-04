@@ -20,11 +20,17 @@ CGraph* cg_newGraph(char* name, CGNode* root){
 	CGraph* graph = makeGraph(name);
 	graph->root = root;
 	
+	storeNodesInGraph(graph, graph->root);
+	
 	return graph;
 }
 
-CGraph* cg_freeGraph(CGraph* graph){
+void cg_freeGraph(CGraph* graph){
 	freeGraph(graph);
+}
+
+void cg_freeResultNode(struct CGResultNode* result){
+	freeResultNode(result);
 }
 
 CGNode* cg_newDoubleNode(double v){
@@ -36,7 +42,7 @@ CGNode* cg_newDouble0Node(){
 }
 
 CGNode* cg_newVectorNode(uint64_t len, double* v){
-	return makeVectorConstantNode(len, v);
+	return makeVectorConstantNodeCopy(len, v);
 }
 
 CGNode* cg_newVector0Node(uint64_t len){
@@ -44,7 +50,7 @@ CGNode* cg_newVector0Node(uint64_t len){
 }
 
 CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, double* v){
-	return makeMatrixConstantNode(rows, cols, v);
+	return makeMatrixConstantNodeCopy(rows, cols, v);
 }
 
 CGNode* cg_newMatrix0Node(uint64_t rows, uint64_t cols){
@@ -61,6 +67,15 @@ CGNode* cg_newBinOp(CGBinaryOperationType type, CGNode* lhs, CGNode* rhs){
 
 CGNode* cg_newUnOp(CGUnaryOperationType type, CGNode* uhs){
 	return makeUnaryOpNode(type, uhs);
+}
+
+
+CGNode* cg_newAxisBoundOp(CGAxisBoundOperationType type, struct CGNode* uhs, uint8_t axis){
+	return makeAxisBoundNode(type, uhs, axis);
+}
+
+CGNode* cg_newCrossEntropyLoss(struct CGNode* x, struct CGNode* y, uint64_t num_classes){
+	return makeCrossEntropyLossFunc(x, y, num_classes);
 }
 
 CGNode* cg_newGraphNode(CGraph* graph){
@@ -102,6 +117,7 @@ CGVarType cg_getResultType(CGResultNode* result){
 CGDouble* cg_getResultDoubleVal(CGResultNode* result){
 	return result->value;
 }
+
 CGVector* cg_getResultVectorVal(CGResultNode* result){
 	return result->value;
 }
@@ -110,6 +126,22 @@ CGMatrix* cg_getResultMatrixVal(CGResultNode* result){
 	return result->value;
 }
 
-CGraph* cg_diffGraph(CGraph* graph, char* newName, char* wrtVar){
-	return differentiateGraphWRTVar(graph, newName, wrtVar);
+void cg_autoDiffGraph(CGraph* graph){
+	autoDifferenciateGraph(graph);
+}
+
+CGNode* cg_getVarDiff(CGraph* graph, const char*  name){
+	return graphGetVar(graph, name)->diff;
+}
+
+CGNode* cg_printNodeValue(CGNode* node){
+	printNode(node);
+}
+
+CGNode* cg_resultToConstantNode(CGResultNode* result){
+	return resultNodeToConstantNode(result);
+}
+
+CGResultNode* cg_constantToResult(CGNode* node){
+	return constantNodeToResultNodeCopy(node);
 }

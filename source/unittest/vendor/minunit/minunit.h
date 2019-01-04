@@ -64,7 +64,7 @@
 /*  Maximum length of last message */
 #define MINUNIT_MESSAGE_LEN 1024
 /*  Accuracy with which floats are compared */
-#define MINUNIT_EPSILON 1E-12
+#define MINUNIT_EPSILON 1E-6 //was 1E-12
 
 /*  Misc. counters */
 static int minunit_run = 0;

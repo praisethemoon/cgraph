@@ -41,9 +41,17 @@ CGRAPH_API struct CGraph* cg_newGraph(char* name, struct CGNode* root);
 
 /**
  * \brief Deallocates graph memory
- * \param[out] graph graph to free, should be NULL after deallocation
+ * \param[in,out] graph graph to free, should be set freed manually after calling this function (cg_freeGraph(g); free(g))
  */
-CGRAPH_API struct CGraph* cg_freeGraph(struct CGraph* graph);
+CGRAPH_API void cg_freeGraph(struct CGraph* graph);
+
+/**
+ * \brief Frees a result node. Currently not used.
+ * \param[in,out] result result node to deallocate, should be set freed manually after calling this function (cg_freeResultNode(r); free(r))
+ */
+CGRAPH_API void cg_freeResultNode(struct CGResultNode* result);
+
+
 
 
 /* * * * * * * * * * * *
@@ -125,6 +133,25 @@ CGRAPH_API struct CGNode* cg_newBinOp(CGBinaryOperationType type, struct CGNode*
 CGRAPH_API struct CGNode* cg_newUnOp(CGUnaryOperationType type, struct CGNode* uhs);
 
 /**
+ * \brief Creates an axis bound operator that performs operations along the specified axis, 
+ * note that axis starts from 0 for the first dimension
+ * \param[in] type Operation type
+ * \param[in] uhs Unary hand side to sum
+ * \param[in] axis axis to sum
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newAxisBoundOp(CGAxisBoundOperationType type, struct CGNode* uhs, uint8_t axis);
+
+/**
+ * \brief Create a cross entropy loss function
+ * \param[in] x output of softmax
+ * \param[in] y classes, should *not* be one hot vectors, but rather integers from 0 to num_classes-1
+ * \param[in] num_classes number of classes to consider.
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newCrossEntropyLoss(struct CGNode* x, struct CGNode* y, uint64_t num_classes);
+
+/**
  * \brief Creates a node that is actually an entire graph.
  * \param[in] graph Subgraph, must already have its variable setup.
  * \return Graph node
@@ -142,7 +169,7 @@ CGRAPH_API struct CGNode* cg_newGraphNode(struct CGraph* graph);
  * \param[in] var Variable name to update/set
  * \param[in] value Value to bind with the variable
  */
-CGRAPH_API void cg_setVar(struct CGraph* graph, char* var, struct CGNode* value);
+CGRAPH_API void cg_setVar(struct CGraph* graph, const char* var, struct CGNode* value);
 
 
 /**
@@ -225,15 +252,41 @@ CGRAPH_API CGVector* cg_getResultVectorVal(struct CGResultNode* result);
  */
 CGRAPH_API CGMatrix* cg_getResultMatrixVal(struct CGResultNode* result);
 
+/**
+ * \brief Derivates a graph with respect to final output, usually the loss
+ * \param[in,out] graph Graph to derive, fills in `diff` field of every node.
+ */
+CGRAPH_API void cg_autoDiffGraph(struct CGraph* graph);
 
 /**
- * \brief  Derivates a graph with respect to a variable
- * \param[in] graph graph to compute its derivative
- * \param[in] newName Resulting graph's name
- * \param[in] wrtVar With respect to variable name
- * \return Graph, representing the derivative of the original
+ * \brief Returns the derivative of a given node variable's name with respect to the parent node, must have already called `cg_diffGraph` before usage
+ * \param[in] graph Original graph
+ * \param[in] name variable name to return
+ * \return CGNode*, a constant node representing the derivative. Unlike forward mode which returns a CGResultNode, this one returns a node.
  */
-CGRAPH_API struct CGraph* cg_diffGraph(struct CGraph* graph, char* newName, char* wrtVar);
+CGRAPH_API struct CGNode* cg_getVarDiff(struct CGraph* graph, const char*  name);
+
+/**
+ * \brief Prints a given node, or rather, dumps it. Works only with constant node values.
+ * \param[in] node node to print.
+ */
+CGRAPH_API struct CGNode* cg_printNodeValue(struct CGNode* node);
+
+/**
+ * \brief Converts a CGResultNode to a constant CGNode
+ * \param[in] result CGResultNode to convert
+ * \return CGNode version of the given result
+ */
+CGRAPH_API struct CGNode* cg_resultToConstantNode(struct CGResultNode* result);
+
+
+/**
+ * \brief Converts a constant CGNode to a CGResultNode
+ * \param[in] node CGNode to convert
+ * \return CGResultNode version of the result
+ */
+CGRAPH_API struct CGResultNode* cg_constantToResult(struct CGNode* node);
+
 
 #ifdef CG_USE_LIBCPUID
 struct CGCPUInfo* getCPUInformation();

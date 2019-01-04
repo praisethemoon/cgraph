@@ -30,7 +30,7 @@ local UnaryOperationType = {
 	COS=6,
 	TAN=7,
 	TANH=8,
-	SUM=9
+	RELU=9
 }
 
 local function bopToString(bop)
@@ -71,7 +71,7 @@ local function _renderMatrix(rows, cols, value)
 	local strRep= ("Mat [rows: ".. rows.. ", cols: ".. cols.. ", value: ")
 	for i=1,rows do
 		strRep = strRep .. ("\n\t")
-		for j=1,rows do
+		for j=1,cols do
 			strRep = strRep .. ("\t".. value[(i-1)*cols +j])
 		end
 	end
@@ -275,13 +275,32 @@ local tanh = function(uhs)
 	return op
 end
 
-local sum = function(uhs)
-	local node = cgraph.uop(UnaryOperationType.SUM, uhs.node)
-	local op = {type='uop', opType=UnaryOperationType.SUM, node = node, uhs=uhs}
+local ReLU = function(uhs)
+  local node = cgraph.uop(UnaryOperationType.RELU, uhs.node)
+  local op = {type='uop', opType=UnaryOperationType.RELU, node = node, uhs=uhs}
+  setmetatable(op, mt)
+      
+  return op
+end
+
+
+-- TODO: Update
+local sum = function(uhs, axis)
+	local node = cgraph.sum(uhs.node, axis)
+	local op = {type='sum', opType=nil, node = node, uhs=uhs,axis=axis}
 	setmetatable(op, mt)
 			
 	return op
 end
+
+local crossEntropyLoss = function(x, y, num_classes)
+	local node = cgraph.crossEntropy(x.node, y.node, num_classes)
+	local op = {type='cross_entropy', opType=nil, node = node, x=x, y=y,num_classes=num_classes}
+	setmetatable(op, mt)
+
+	return op
+end
+
 
 local function nodeToDot(graph, uhs, str)
 	function listNodeToString(uhs, str, idCounter)
@@ -328,6 +347,11 @@ local function nodeToDot(graph, uhs, str)
 		elseif uhs.type == 'graph' then
 			str = str .. "\t" .. idCounter ..' [label="graph '..(uhs.graph.name)..'"'..fillAttribute..', shape=record];\n';
 			str, idCounter= listNodeToString(uhs.graph.root, str, idCounter)
+			--print('returning graph', str)
+			return str, idCounter
+		elseif uhs.type == 'sum' then
+			str = str .. "\t" .. idCounter ..' [label="sum axis'..(uhs.axis)..'"'..fillAttribute..', shape=record];\n';
+			str, idCounter= listNodeToString(uhs.uhs, str, idCounter)
 			--print('returning graph', str)
 			return str, idCounter
 		else
@@ -427,15 +451,32 @@ local graph = function(name, rootNode)
 		end
 	end
 	
-	function Graph:diff(var, newName)
-		local res = cgraph.diff(self.cdata, newName, var)
-		local graph = {name= newName, root=res.root, cdata=res.graph, vars=self.vars}
-		setmetatable(graph, Graph)
-		
-		return graph
+	function Graph:backProp()
+		cgraph.backProp(self.cdata)
 	end
 	
-	function Graph:optimize(var, newName)
+	function Graph:getVarDiff(name)
+		local res= cgraph.getVarDiff(self.cdata, name)
+		if res == nil then
+      print('variable '..name..' has no diff')		
+		end
+		if res.error then
+			print('error', errorTypeToString(res.error))
+			self.err = res
+			return res
+		end
+		if res.type == TensorType.DOUBLE then
+			return double(res.value)
+		elseif res.type == TensorType.VECTOR then
+			return vector(res.len, res.value)
+		elseif res.type == TensorType.MATRIX then
+			return matrix(res.rows, res.cols, res.value)
+		else
+			return {}
+		end
+	end
+	
+	function Graph:optimize()
 		local res = cgraph.optimizeGraph(self.cdata)
 		
 		self.cdata = res.graph
@@ -463,7 +504,9 @@ local CGraph = {
 	cos=cos,
 	tan=tan,
 	tanh=tanh,
+	ReLU=ReLU,
 	sum=sum,
+	crossEntropyLoss=crossEntropyLoss,
 	dot=dot,
 	inv=inv,
 	tr=tr,

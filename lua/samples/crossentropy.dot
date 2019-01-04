@@ -1,0 +1,30 @@
+digraph crossentropy{
+	1 [label="-", shape=circle];
+	2 [label="*", shape=circle];
+	3 [label="-", shape=circle];
+	4 [label="Var y", shape=box];
+	5 [label="log", shape=circle];
+	6 [label="Var x", shape=box];
+	7 [label="*", shape=circle];
+	8 [label="-", shape=circle];
+	9 [label="Scalar =1", style="filled", fillcolor=".7 .3 1.0"];
+	10 [label="Var y", shape=box];
+	11 [label="log", shape=circle];
+	12 [label="-", shape=circle];
+	13 [label="Scalar =1", style="filled", fillcolor=".7 .3 1.0"];
+	14 [label="Var x", shape=box];
+	1 -> Result ;
+	2 -> 1;
+	7 -> 1;
+	3 -> 2;
+	5 -> 2;
+	10 -> 3;
+	14 -> 5;
+	8 -> 7;
+	11 -> 7;
+	9 -> 8;
+	10 -> 8;
+	12 -> 11;
+	13 -> 12;
+	14 -> 12;
+}

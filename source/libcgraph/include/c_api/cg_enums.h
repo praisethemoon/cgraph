@@ -38,10 +38,14 @@ typedef enum CGErrorType {
 	CGET_MATRIX_NOT_INVERTIBLE,
 	
 	/**
-	 * \brief Did you just yourself in the foot?
+	 * \brief Did you just shoot yourself in the foot?
 	 */
 	CGET_DIVIDE_BY_ZERO,
 	
+	/**
+	 * \brief Attempting to compute a variable node value when the graph instance is NULL, usually when calling `computeRawNode`
+	 */
+	CGET_NO_GRAPH_INSTANCE,
 }CGErrorType;
 #define MAX_ERROR_TYPE CGET_DIVIDE_BY_ZERO
 
@@ -72,10 +76,24 @@ typedef enum CGUnaryOperationType {
 	CGUOT_COS,
 	CGUOT_TAN,
 	CGUOT_TANH,
-	CGUOT_SUM,
+	CGUOT_RELU,
 } CGUnaryOperationType;
 
-#define MAX_UNARY_OPERATION CGUOT_SUM
+#define MAX_UNARY_OPERATION CGUOT_RELU
+
+/**
+ * \brief List of operations that apply mainly to a given axis of matrices
+ */
+typedef enum CGAxisBoundOperationType {
+	CGABOT_SUM = 0,
+	CGABOT_MIN,
+	CGABOT_MAX,
+	CGABOT_MEAN,
+	CGABOT_VARIANCE,
+	CGABOT_SOFTMAX,
+}CGAxisBoundOperationType;
+
+#define MAX_AXIS_BOUND_OPERATION CGABOT_VARIANCE
 
 /**
  * \brief List of the available node types
@@ -85,9 +103,12 @@ typedef enum CGNodeType {
 	CGNT_CONSTANT,
 	CGNT_GRAPH,
 	CGNT_BINARY_OPERATION,
-	CGNT_UNARY_OPERATION
+	CGNT_UNARY_OPERATION,
+	CGNT_AXIS_BOUND_OPERATION,
+	CGNT_CROSS_ENTROPY_LOSS_FUNC,
 }CGNodeType;
-#define MAX_NODE_TYPE CGNT_UNARY_OPERATION
+
+#define MAX_NODE_TYPE CGNT_CROSS_ENTROPY_LOSS_FUNC
 
 /**
  * \brief List of the available tensor types
