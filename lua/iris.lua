@@ -83,7 +83,7 @@ end
 function updateWeights(name)
   local t_1 = g:getVar(name)
   local dxt_1 = g:getVarDiff(name)
-  local alpha = 0.01
+  local alpha = 3
   
   local size = t_1.len or t_1.cols*t_1.rows
   
@@ -122,9 +122,9 @@ function train(X, y)
  
   local output = g:eval()
  
-  local alpha = 0.1
+  local alpha = 50
   loss = {}
-  for i=1,1000 do
+  for k=1,1 do
     local err = 0
     local confusionMat = {0, 0}
     for i=1,100,1 do
