@@ -18,7 +18,7 @@ It will support a Lua API in the future.
 ### Optimizations
 Uses BLAS for complex operations.
 
-The current version focuses on clear code rather than highly performant.
+The current version focuses on clear code rather than highly performant one.
 Once everything is well tested, hard optimizations such as switch statements and others will be improved.
 Also not all operations are written in blas, some uses classic for-loop, as I am still learning BLAS,
 optimizations will come once the library becomes stable.
@@ -31,79 +31,23 @@ optimizations will come once the library becomes stable.
 
 ###### Notes
 
-- Currently tested only on ubuntu 16.04
-- Matrices are by default Row major (can be changed manually).
+- Currently tested only on ubuntu 16.04 LTS and Ubuntu 18.04.1 LTS (Plasma Desktop, I know it has nothing to do, just wanted to say it)
+- Matrices are by default Row major
+- Vectors are treated as column matrices
 
 ### Limitations:
 - Double numbers only.
 
-### Supported Operations:
+### C API Status:
+- Memory management has been greatly improved, but needs more checking, especilly with the gradient calculation
+- C API is almost stable.
+- Could use more unittests
 
-|operator|type|lhs|rhs|uhs|implemented|implementation method|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|`*`|binary|`double`|`double`||:heavy_check_mark:|`c`|
-|`*`|binary|`double`|`vector`||:heavy_check_mark:|`blas`|
-|`*`|binary|`double`|`matrix`||:heavy_check_mark:|`blas`|
-|`*`|binary|`vector`|`double`||:heavy_check_mark:|`blas`|
-|`*`|binary|`matrix`|`double`||:heavy_check_mark:|`blas`|
-|`*` (cross)|binary|`vector`|`vector`||:heavy_check_mark:|`c`|
-|`*`|binary|`matrix`|`vector`||:heavy_check_mark:|`blas`|
-|`*`|binary|`matrix`|`matrix`||:heavy_check_mark:|`blas`|
-|`+`|binary|`double`|`double`||:heavy_check_mark:|`c`|
-|`+`|binary|`double`|`vector`||:heavy_check_mark:|`c`|
-|`+`|binary|`double`|`matrix`||:heavy_check_mark:|`c`|
-|`+`|binary|`vector`|`vector`||:heavy_check_mark:|`c`|
-|`+`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
-|`+`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
-|`+`|binary|`matrix`|`matrix`||:heavy_check_mark:|`c`|
-|`+`|binary|`matrix`|`vector`||:heavy_check_mark:|`c`|
-|`-`|binary|`double`|`double`||:heavy_check_mark:|`c`|
-|`-`|binary|`double`|`vector`||:heavy_check_mark:|`c`|
-|`-`|binary|`double`|`matrix`||:heavy_check_mark:|`c`|
-|`-`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
-|`-`|binary|`vector`|`vector`||:heavy_check_mark:|`c`|
-|`-`|binary|`vector`|`matrix`||:heavy_check_mark:|`c`|
-|`-`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
-|`-`|binary|`matrix`|`vector`||:heavy_check_mark:|`c`|
-|`-`|binary|`matrix`|`matrix`||:heavy_check_mark:|`c`|
-|`/`|binary|`double`|`double`||:heavy_check_mark:|`c`|
-|`/`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
-|`/`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
-|`./`|binary|`double`|`vector`||:heavy_check_mark:|`c`|
-|`./`|binary|`double`|`matrix`||:heavy_check_mark:|`c`|
-|`^`|binary|`double`|`double`||:heavy_check_mark:|`c`|
-|`^`|binary|`vector`|`double`||:heavy_check_mark:|`c`|
-|`^`|binary|`matrix`|`double`||:heavy_check_mark:|`c`|
-|`.`|binary|`vector`|`vector`||:heavy_check_mark:|`blas`|
-|`^T*`|binary|`matrix`|`double`||:heavy_multiplication_x:|`c`|
-|`^T*`|binary|`matrix`|`vector`||:heavy_multiplication_x:|`c`|
-|`^T*`|binary|`matrix`|`matrix`||:heavy_multiplication_x:|`c`|
-|`-`|unary|||`double`|:heavy_check_mark:|`c`|
-|`-`|unary|||`vector`|:heavy_check_mark:|`c`|
-|`-`|unary|||`matrix`|:heavy_check_mark:|`c`|
-|`inv`|unary|||`double`|:heavy_multiplication_x:|`c`|
-|`inv`|unary|||`vector`|:heavy_multiplication_x:|`c`|
-|`inv`|unary|||`matrix`|:heavy_multiplication_x:|`c`|
-|`T`|unary|||`matrix`|:heavy_check_mark:|`c`|
-|`exp`|unary|||`double`|:heavy_check_mark:|`c`|
-|`exp`|unary|||`vector`|:heavy_check_mark:|`c`|
-|`exp`|unary|||`matrix`|:heavy_check_mark:|`c`|
-|`log`|unary|||`double`|:heavy_check_mark:|`c`|
-|`log`|unary|||`vector`|:heavy_check_mark:|`c`|
-|`log`|unary|||`matrix`|:heavy_check_mark:|`c`|
-|`sin`|unary|||`double`|:heavy_check_mark:|`c`|
-|`sin`|unary|||`vector`|:heavy_check_mark:|`c`|
-|`sin`|unary|||`matrix`|:heavy_check_mark:|`c`|
-|`cos`|unary|||`double`|:heavy_check_mark:|`c`|
-|`cos`|unary|||`vector`|:heavy_check_mark:|`c`|
-|`cos`|unary|||`matrix`|:heavy_check_mark:|`c`|
-|`tan`|unary|||`double`|:heavy_check_mark:|`c`|
-|`tan`|unary|||`vector`|:heavy_check_mark:|`c`|
-|`tan`|unary|||`matrix`|:heavy_check_mark:|`c`|
-|`tanh`|unary|||`double`|:heavy_check_mark:|`c`|
-|`tanh`|unary|||`vector`|:heavy_check_mark:|`c`|
-|`tanh`|unary|||`matrix`|:heavy_check_mark:|`c`|
-|`sum`|unary|||`vector`|:heavy_multiplication_x:|`c`|
+### Lua API status:
+- Working but need memory improvements
+- No unittest
+- Easy to setup and use, but not yet reliable.
+- Plotting a graph is currently outdated as more operations has been added to the library and not considered in the render function
 
 ### Example (Lua API):
 
@@ -127,56 +71,17 @@ print(sigmoid(CGraph.dot( CGraph.vector(3, array {0,0,0}), CGraph.vector(3, arra
 return sigmoid
 ```
 
-returns:
-
-`Scalar [value: 0.5]`
-
-and created a file named `sigmoid.dot` containing the DOT Graph instance:
-
-```dot
-digraph sigmoid{
-	1 [label="/", shape=circle];
-	2 [label="Scalar =1", style="filled", fillcolor=".7 .3 1.0"];
-	3 [label="+", shape=circle];
-	4 [label="Scalar =1", style="filled", fillcolor=".7 .3 1.0"];
-	5 [label="exp", shape=circle];
-	6 [label="-", shape=circle];
-	7 [label="Var z", shape=box];
-	8 [label="dot", shape=circle];
-	9 [label="Vector <3>", style="filled", fillcolor=".7 .5 1.0"];
-	10 [label="Vector <3>", style="filled", fillcolor=".7 .5 1.0"];
-	1 -> Result ;
-	2 -> 1;
-	3 -> 1;
-	4 -> 3;
-	5 -> 3;
-	6 -> 5;
-	7 -> 6;
-	8 -> 7;
-	9 -> 8;
-	10 -> 8;
-}
-```
-
-You can plot it with Graphviz's `dot` cmd line: `dot -Tpng sigmoid.dot -o sigmoid.png` to get
-
-![lua/sigmoid.png](lua/sigmoid.png)
-
-
 ### Future work
-- Graph variables (done)
-- Lua API for graph construction (done)
-- Derivative calculations (WIP | DONE)
-- Graph optimizations: Derivative produces highly inefficient graphs that can be geatly optimized
-- Nested Graphs
-- Usage of BLAS in all operations
-- GPU BLAS implementation (clBLAS probably & CUDA as well)
+- Graph variables (Done)
+- Lua API for graph construction (Done)
+- Derivative calculations (Done)
+- Usage of BLAS in all operations (In progress)
+- GPU BLAS implementation (clBLAS probably & raw OpenCL as well)
 - Multithreaded implementation
-- Analyze graph to optimize calculations i.e `A^T.B` is a 2-operations expression that can be reduced to one highly efficient operation in BLAS.
-- Graph plotting and visualization (done)
-- Switch to LuaJIT instead of Lua API
+- Graph plotting and visualization (Done, outdated)
+- Switch to LuaJIT instead of Lua API (Must do ASAP)
 - Travis CI (done)
-- Valgrind to check memory
+- Valgrind to check memory (Done)
 - Optimal data fetching and allocation (Lazy evaluation)
 
 ### Dependencies included within the source code:
@@ -189,7 +94,8 @@ You can plot it with Graphviz's `dot` cmd line: `dot -Tpng sigmoid.dot -o sigmoi
 - luaarray [http://www.nongnu.org/techne/lua/luaarray/](http://www.nongnu.org/techne/lua/luaarray/)
 - minunit [https://github.com/siu/minunit](https://github.com/siu/minunit)
 - Remotery [https://github.com/Celtoys/Remotery](https://github.com/Celtoys/Remotery)
+- Underscore [https://github.com/jtarchie/underscore-lua](https://github.com/jtarchie/underscore-lua)
 
-### Help Requested
+### Help Wanted
 If you would like to contribute, feel free to fork this stuff.
-A wonderful start would be to include a unit test file to check all the functionalities.
+A wonderful start would be to include a unit test file to check all the functionalities of either API.
