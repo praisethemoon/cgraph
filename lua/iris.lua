@@ -26,33 +26,41 @@ FileReader.read("Iris.csv", fn)
 
 table.remove(X, 1)
 
-print(#X)
-print(#y)
-
 local Xinput = X
 local Yclass = y
+
+function shuffle(tbl, tbl2)
+  size = #tbl
+  for i = size, 1, -1 do
+    local rand = math.random(i)
+    tbl[i], tbl[rand] = tbl[rand], tbl[i]
+    tbl2[i], tbl2[rand] = tbl2[rand], tbl2[i]
+  end
+  return tbl, tbl2
+end
+
+Xinput, Yclass = shuffle(Xinput,Yclass)
 
 local function sigmoid(Z)
   local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
   return sigmoid
 end
 
-local function softmax(Z)
-  return (CGraph.exp(Z)) / CGraph.sum(CGraph.exp(Z), 1)
-end
 
 local X = CGraph.variable 'X'
 local theta1 = CGraph.variable 'T_1'
 local b1 = CGraph.variable 'b_1'
 local theta2 = CGraph.variable 'T_2'
 local b2 = CGraph.variable 'b_2'
+local theta3 = CGraph.variable 'T_3'
+local b3 = CGraph.variable 'b_3'
 local y = CGraph.variable 'y'
 
-local A2 = CGraph.ReLU(CGraph.dot(X, theta1) + b1)
-local A3 = CGraph.ReLU(CGraph.dot(A2, theta2) + b2)
-local final = A3
+local A2 = sigmoid(CGraph.dot(X, theta1) + b1)
+local A3 = sigmoid(CGraph.dot(A2, theta2) + b2)
+local final = sigmoid(CGraph.dot(A3, theta3) + b3)
 
-local g = CGraph.graph("nn", crossEntroy(softmax(final), y, 3))
+local g = CGraph.graph("nn", crossEntroy((final), y, 3))
 
 
 function gaussian (mean, variance)
@@ -66,22 +74,49 @@ end
 function randomWeight(size)
   vec = {}
   for i=1,size do
-    table.insert(vec, gaussian(0, 0.1))
+    table.insert(vec, gaussian(0, 0.01))
   end
   
   return vec
 end
 
+function updateWeights(name)
+  local t_1 = g:getVar(name)
+  local dxt_1 = g:getVarDiff(name)
+  local alpha = 0.01
+  
+  local size = t_1.len or t_1.cols*t_1.rows
+  
+  local t_1_newval = {}
+  for k=1,size do
+    table.insert(t_1_newval, t_1.value[k] - alpha*dxt_1.value[k])
+  end
+  
+  if t_1.len then
+    g:setVar(name, CGraph.vector(size, t_1_newval))
+  else
+    g:setVar(name, CGraph.matrix(t_1.rows, t_1.cols, t_1_newval))
+  end
+  
+end
+
+lossPerClass = {0,0,0}
+
 function train(X, y)
   g:setVar('T_1', CGraph.matrix(4, 5, randomWeight(20)))
   g:setVar('b_1', CGraph.vector(5, randomWeight(5)))
-  g:setVar('T_2', CGraph.matrix(5, 3, randomWeight(15)))
-  g:setVar('b_2', CGraph.vector(3, randomWeight(3)))
- 
+  g:setVar('T_2', CGraph.matrix(5, 5, randomWeight(25)))
+  g:setVar('b_2', CGraph.vector(5, randomWeight(5)))
+  g:setVar('T_3', CGraph.matrix(5, 3, randomWeight(15)))
+  g:setVar('b_3', CGraph.vector(3, randomWeight(3)))
+ --[[
   print(g:getVar('T_1'))
   print(g:getVar('b_1'))
   print(g:getVar('T_2'))
   print(g:getVar('b_2'))
+  print(g:getVar('T_3'))
+  print(g:getVar('b_3'))
+  ]]
   g:setVar('X', CGraph.matrix(1, 4, _.flatten({X[i]})))
   g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
  
@@ -89,62 +124,42 @@ function train(X, y)
  
   local alpha = 0.1
   loss = {}
-  for i=1,20 do
+  for i=1,1000 do
     local err = 0
-    for i=1,148,4 do
-      g:setVar('X', CGraph.matrix(4, 4, _.flatten({X[i], X[i+1], X[i+2],X[i+3]})))
-      g:setVar('y', CGraph.vector(4, _.flatten({y[i], y[i+1],y[i+2],y[i+3]})))
+    local confusionMat = {0, 0}
+    for i=1,100,1 do
+      g:setVar('X', CGraph.matrix(1, 4, _.flatten({X[i]})))
+      g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
       local output = g:eval()
       table.insert(loss, output.value)
-      print(output.value)
+      --print(output.value)
+      
       g:backProp()
       
+      updateWeights('T_1')
+      updateWeights('b_1')
+      updateWeights('T_2')
+      updateWeights('b_2')
+      updateWeights('T_3')
+      updateWeights('b_3')
       
-      t_1 = g:getVar('T_2')
-      dxt_1 = g:getVarDiff('T_2')
-      t_1_newval = {}
-      for k=1,t_1.rows*t_1.cols do
-        table.insert(t_1_newval, t_1.value[k] - alpha*dxt_1.value[k])
-      end
-      g:setVar('T_2', CGraph.matrix(5, 3, t_1_newval))
-      
-      print(t_1)
-      print(dxt_1)
-      
-      --[[
-      t_1 = g:getVar('b_1')
-      dxt_1 = g:getVarDiff('b_1')
-      t_1_newval = {}
-      for k=1,t_1.len do
-        table.insert(t_1_newval, t_1.value[k] - alpha*dxt_1.value[k])
-      end
-      g:setVar('b_1', CGraph.vector(5, t_1_newval))
-      
-      t_1 = g:getVar('T_2')
-      dxt_1 = g:getVarDiff('T_2')
-      t_1_newval = {}
-      for k=1,t_1.rows*t_1.cols do
-        table.insert(t_1_newval, t_1.value[k] - alpha*dxt_1.value[k])
-      end
-      g:setVar('T_2', CGraph.matrix(5, 3, t_1_newval))
-      
-      
-      t_1 = g:getVar('b_2')
-      dxt_1 = g:getVarDiff('b_2')
-      t_1_newval = {}
-      for k=1,t_1.len do
-        table.insert(t_1_newval, t_1.value[k] - alpha*dxt_1.value[k])
-      end
-      g:setVar('b_2', CGraph.vector(3, t_1_newval))
-      ]]
    end
   end
-  
-  return loss
+  print(loss[#loss-1])
+    for i=100,148,1 do
+      g:setVar('X', CGraph.matrix(1, 4, _.flatten({X[i]})))
+      g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
+      local output = g:eval()
+      lossPerClass[y[i]+1] = lossPerClass[y[i]+1] + output.value
+   end
 end
 
 train(Xinput, Yclass)
 
+print('class', 0, lossPerClass[1]/48)
+print('class', 1, lossPerClass[2]/48)
+print('class', 2, lossPerClass[3]/48)
+  
 --[[
 g:backProp()
 

@@ -457,6 +457,9 @@ local graph = function(name, rootNode)
 	
 	function Graph:getVarDiff(name)
 		local res= cgraph.getVarDiff(self.cdata, name)
+		if res == nil then
+      print('variable '..name..' has no diff')		
+		end
 		if res.error then
 			print('error', errorTypeToString(res.error))
 			self.err = res

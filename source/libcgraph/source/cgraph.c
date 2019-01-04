@@ -2777,7 +2777,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		
 		case CGNT_CROSS_ENTROPY_LOSS_FUNC:
 		{
-			CGResultNode* x_res = computeCGNode(graph, node->crossEntropyLoss->x);
+			CGResultNode* x_res = computeCGNode(graph, softmax_node(node->crossEntropyLoss->x));
 			CGResultNode* y_res = computeCGNode(graph, node->crossEntropyLoss->y);
 			
 			result = crossEntropy(x_res, y_res, node->crossEntropyLoss->num_classes);

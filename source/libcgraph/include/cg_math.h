@@ -26,7 +26,7 @@ CGNode* variance(CGNode* X, uint8_t axis);
 CGResultNode* relu(CGResultNode* x);
 CGNode* dx_relu(CGResultNode* x);
 
-
+CGNode* softmax_node(CGNode* x);
 CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes);
 CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes);
 #endif

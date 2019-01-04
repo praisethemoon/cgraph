@@ -44,6 +44,11 @@ CGNode* softmax(CGNode* x, uint8_t axis){
 	return NULL;
 }
 
+
+CGNode* softmax_node(CGNode* x){
+	return makeBinaryOpNode(CGBOT_DIV, makeUnaryOpNode(CGUOT_EXP, x), makeAxisBoundNode(CGABOT_SUM, makeUnaryOpNode(CGUOT_EXP, x), 1));
+}
+
 /*
  * TODO: Test this highly unoptimized crap
  */

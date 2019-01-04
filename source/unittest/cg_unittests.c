@@ -967,7 +967,7 @@ struct CGNode* sigmoid_node(struct CGNode* x){
 	return cg_newBinOp(CGBOT_DIV, cg_newDoubleNode(1.0), cg_newBinOp(CGBOT_ADD, cg_newDoubleNode(1.0), cg_newUnOp(CGUOT_EXP, cg_newUnOp(CGUOT_MINUS, x))));
 }
 
-struct CGNode* softmax_node(struct CGNode* x){
+struct CGNode* softmax_node_tmp(struct CGNode* x){
 	return cg_newUnOp(CGUOT_TRANSPOSE, cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_TRANSPOSE, cg_newUnOp(CGUOT_EXP, x)), cg_newAxisBoundOp(CGABOT_SUM,cg_newUnOp(CGUOT_EXP, x), 0)));
 }
 
@@ -992,7 +992,7 @@ MU_TEST(runReluSigmoidSoftmax){
 	
 	struct CGNode* L1 = cg_newUnOp(CGUOT_RELU, cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, x, T_1), b_1));
 	struct CGNode* L2 = sigmoid_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L1, T_2), b_2));
-	struct CGNode* H  = softmax_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3));
+	struct CGNode* H  = softmax_node_tmp(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3));
 	
 	struct CGraph* graph = cg_newGraph("nn", H);
 	
