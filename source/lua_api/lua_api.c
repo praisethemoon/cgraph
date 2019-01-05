@@ -431,6 +431,14 @@ static int lua_computeGraph(lua_State* L){
 	return 1;
 }
 
+static int lua_computeGraphNode(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	CGNode* node = checkNode(L, 2);
+	CGResultNode* res = computeGraphNode(graph, node);
+	pushResultNode(L, res);
+	
+	return 1;
+}
 
 void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 	lua_newtable(L);
@@ -665,6 +673,7 @@ int luaopen_libcgraph(lua_State *L)
 		{"setVar", lua_setGraphVar},
 		{"getVar", lua_getGraphVar},
 		{"compute", lua_computeGraph},
+		{"computeNode", lua_computeGraphNode},
 		{"crossEntropy", lua_createCrossEntropyLoss},
 		{"backProp", lua_backPropGraph},
 		{"getVarDiff", lua_getGraphVarDiff},

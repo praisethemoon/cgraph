@@ -2877,6 +2877,13 @@ CGResultNode* computeGraph(CGraph* graph){
 	return computeCGNode(graph, graph->root);
 }
 
+CGResultNode* computeGraphNode(CGraph* graph, CGNode* node){
+	storeNodesInGraph(graph, node);
+	resetGraphResultNodes(graph, node);
+	return computeCGNode(graph, node);
+}
+
+
 void storeNodesInGraph(CGraph* graph, CGNode* node){
 	int idx = -1;
 	

@@ -54,6 +54,8 @@ CGResultNode* reduceDim(CGResultNode* result);
 CGResultNode* computeRawNode(CGNode* node);
 CGResultNode* computeCGNode(CGraph* graph, CGNode* node);
 CGResultNode* computeGraph(CGraph* graph);
+CGResultNode* computeGraphNode(CGraph* graph, CGNode* node);
+
 void storeNodesInGraph(CGraph* graph, CGNode* node);
 
 void resetGraphResultNodes(CGraph* graph, CGNode* node);
