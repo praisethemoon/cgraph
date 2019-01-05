@@ -96,6 +96,8 @@ local function nodeToString(uhs)
 		return "Unary  "..uopToString(uhs.opType)..'\n'
 	elseif uhs.type == 'var' then
 		return "Variable [name: " .. uhs.name .. ']\n'
+	elseif uhs.type == "cross_entropy" then
+		return "Cross Entropy"
 	else
 		return "[UNKNOWN]\n"
 	end
@@ -354,6 +356,12 @@ local function nodeToDot(graph, uhs, str)
 			str, idCounter= listNodeToString(uhs.uhs, str, idCounter)
 			--print('returning graph', str)
 			return str, idCounter
+		elseif uhs.type == "cross_entropy" then
+			str = str .. "\t" .. idCounter ..' [label="Cross Entropy Loss ['..uhs.num_classes..']"'..fillAttribute..', shape=record];\n';
+			str, idCounter= listNodeToString(uhs.x, str, idCounter)
+			str, idCounter= listNodeToString(uhs.y, str, idCounter)
+			--print('returning graph', str)
+			return str, idCounter
 		else
 			str = str .. "\t" .. idCounter ..' [label="UNKNOWN"'..fillAttribute..', shape=plaintext];\n';
 		end
@@ -380,6 +388,18 @@ local function nodeToDot(graph, uhs, str)
 		elseif node.type == 'graph' then
 			str = str .. "\t" .. node.graph.root.__id__ .. ' -> ' .. node.__id__ .. ';\n'
 			str = renderNodesToString(node.graph.root, str)
+			--print('new str', str)
+			return str	
+		elseif node.type == 'sum' then
+			str = str .. "\t" .. node.uhs.__id__ .. ' -> ' .. node.__id__ .. ';\n'
+			str = renderNodesToString(node.uhs, str)
+			--print('new str', str)
+			return str	
+		elseif node.type == "cross_entropy" then
+			str = str .. "\t" .. node.x.__id__ .. ' -> ' .. node.__id__ .. ';\n'
+			str = str .. "\t" .. node.y.__id__ .. ' -> ' .. node.__id__ .. ';\n'
+			str = renderNodesToString(node.x, str)
+			str = renderNodesToString(node.y, str)
 			--print('new str', str)
 			return str	
 		end

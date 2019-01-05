@@ -70,6 +70,7 @@ local eval = softmax(final)
 
 local g = CGraph.graph("nn", crossEntroy((final), y, 3))
 
+g:plot()
 
 function gaussian (mean, variance)
     math.randomseed(os.time()+math.random()*1000)
