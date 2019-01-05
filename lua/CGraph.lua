@@ -436,6 +436,26 @@ local graph = function(name, rootNode)
 			return {}
 		end
 	end
+
+	function Graph:evalNode(node)
+		self.err = {}
+		local res = cgraph.computeNode(self.cdata, node.node)
+		
+		if res.error then
+			print('error', errorTypeToString(res.error))
+			self.err = res
+			return res
+		end
+		if res.type == TensorType.DOUBLE then
+			return double(res.value)
+		elseif res.type == TensorType.VECTOR then
+			return vector(res.len, res.value)
+		elseif res.type == TensorType.MATRIX then
+			return matrix(res.rows, res.cols, res.value)
+		else
+			return {}
+		end
+	end
 	
 	function Graph:plot()
 		local str = 'digraph ' .. self.name .. '{\n'

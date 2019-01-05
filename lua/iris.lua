@@ -29,6 +29,7 @@ table.remove(X, 1)
 local Xinput = X
 local Yclass = y
 
+
 function shuffle(tbl, tbl2)
   size = #tbl
   for i = size, 1, -1 do
@@ -39,12 +40,17 @@ function shuffle(tbl, tbl2)
   return tbl, tbl2
 end
 
-Xinput, Yclass = shuffle(Xinput,Yclass)
 
 local function sigmoid(Z)
   local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
   return sigmoid
 end
+
+
+local function softmax(Z)
+	return CGraph.exp(Z) / CGraph.sum(CGraph.exp(Z), 0)
+end
+
 
 
 local X = CGraph.variable 'X'
@@ -59,6 +65,8 @@ local y = CGraph.variable 'y'
 local A2 = sigmoid(CGraph.dot(X, theta1) + b1)
 local A3 = sigmoid(CGraph.dot(A2, theta2) + b2)
 local final = sigmoid(CGraph.dot(A3, theta3) + b3)
+
+local eval = softmax(final)
 
 local g = CGraph.graph("nn", crossEntroy((final), y, 3))
 
@@ -83,7 +91,7 @@ end
 function updateWeights(name)
   local t_1 = g:getVar(name)
   local dxt_1 = g:getVarDiff(name)
-  local alpha = 3
+  local alpha = 0.1
   
   local size = t_1.len or t_1.cols*t_1.rows
   
@@ -102,7 +110,32 @@ end
 
 lossPerClass = {0,0,0}
 
-function train(X, y)
+function argmax(t)
+  local max, max_idx = t[1], 1
+  for i,v in ipairs(t) do
+    if v > max then
+      max = v
+      max_idx = i
+    end
+  end
+
+  return max, max_idx
+end
+
+function buildConfusionMatrix(nb_classes)
+  local mat = {}
+  for i=1,nb_classes do
+    mat[i] = {}
+    for j=1,nb_classes do
+      mat[i][j] = 0
+    end
+  end
+
+  return mat
+end
+
+function train(X, y, X_test, Y_test)
+  print('Training on '..#X..' samples and testing on '..#X_test..' samples.')
   g:setVar('T_1', CGraph.matrix(4, 5, randomWeight(20)))
   g:setVar('b_1', CGraph.vector(5, randomWeight(5)))
   g:setVar('T_2', CGraph.matrix(5, 5, randomWeight(25)))
@@ -122,12 +155,12 @@ function train(X, y)
  
   local output = g:eval()
  
-  local alpha = 50
+  
   loss = {}
-  for k=1,1 do
+  for k=1,1000 do
     local err = 0
-    local confusionMat = {0, 0}
-    for i=1,100,1 do
+    X, y = shuffle(X, y)
+    for i=1,#X,1 do
       g:setVar('X', CGraph.matrix(1, 4, _.flatten({X[i]})))
       g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
       local output = g:eval()
@@ -136,6 +169,9 @@ function train(X, y)
       
       g:backProp()
       
+      --local dxt_1 = g:getVarDiff('b_1')
+      --print(dxt_1)
+
       updateWeights('T_1')
       updateWeights('b_1')
       updateWeights('T_2')
@@ -146,19 +182,29 @@ function train(X, y)
    end
   end
   print(loss[#loss-1])
-    for i=100,148,1 do
-      g:setVar('X', CGraph.matrix(1, 4, _.flatten({X[i]})))
-      g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
-      local output = g:eval()
-      lossPerClass[y[i]+1] = lossPerClass[y[i]+1] + output.value
-   end
+  local confMat = buildConfusionMatrix(3)
+  for i=1,#X_test,1 do
+    g:setVar('X', CGraph.matrix(1, 4, _.flatten({X_test[i]})))
+    g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
+    local output = g:evalNode(eval)
+    --print(output)
+    --print(y[i])
+    local max, idx = argmax(output.value)
+    confMat[idx][Y_test[i]+1] = confMat[idx][Y_test[i]+1] + 1
+  end
+
+  for i=1,3 do
+    print(confMat[i][1], confMat[i][2], confMat[i][3])
+  end
 end
 
-train(Xinput, Yclass)
+Xinput, Yclass = shuffle(Xinput,Yclass)
+Xinput, Yclass = shuffle(Xinput,Yclass)
+Xinput, Yclass = shuffle(Xinput,Yclass)
+Xinput, Yclass = shuffle(Xinput,Yclass)
 
-print('class', 0, lossPerClass[1]/48)
-print('class', 1, lossPerClass[2]/48)
-print('class', 2, lossPerClass[3]/48)
+
+train(_.initial(Xinput, 100), _.initial(Yclass, 100), _.last(Xinput, 50), _.last(Yclass, 50))
   
 --[[
 g:backProp()

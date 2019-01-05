@@ -32,9 +32,9 @@ local A2 = sigmoid(CGraph.dot(CGraph.tr(theta1), X ) + b1)
 local A3 = sigmoid(CGraph.dot(CGraph.tr(theta2), A2) + b2)
 local final = A3
 
-local g = CGraph.graph("nn", softmax(final))
+local g = CGraph.graph("nn", CGraph.ReLU(X))
 
-g:setVar('X', CGraph.vector(4, {5.1,7.5,0.4,1.2}))
+g:setVar('X', CGraph.vector(4, {5.1,-7.5,0.4,1.2}))
 g:setVar('T_1', CGraph.matrix(4, 5, {0.21, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1}))
 g:setVar('b_1', CGraph.vector(5, {0.1, 0.1, 0.1, 0.1, 0.1}))
 g:setVar('T_2', CGraph.matrix(5, 3, {0.3, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1}))
@@ -48,9 +48,9 @@ print(output)
 
 g:backProp()
 
-print 'T_1'
-print(g:getVarDiff('T_1'))
-
+print 'X'
+print(g:getVarDiff('X'))
+--[[
 
 print 'T_2'
 print(g:getVarDiff('T_2'))

@@ -94,6 +94,10 @@ CGResultNode* cg_evalGraph(CGraph* graph){
 	return computeGraph(graph);
 }
 
+CGResultNode* cg_evalGraphNode(CGraph* graph, CGNode* node){
+	return computeGraphNode(graph, node);
+}
+
 CGError* cg_getResultError(CGResultNode* result){
 	return result->error;
 }

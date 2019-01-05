@@ -189,6 +189,9 @@ CGRAPH_API struct CGNode* cg_getVar(struct CGraph* graph, char* var);
 CGRAPH_API struct CGResultNode* cg_evalGraph(struct CGraph* graph);
 
 
+
+CGRAPH_API struct CGResultNode* cg_evalGraphNode(struct CGraph* graph, struct CGNode* node);
+
 /**
  * \brief Returns error information that happened during graph evaluation
  * \param[in] result result node to check
