@@ -47,6 +47,7 @@ double* cg_raw_copy(double* src, uint64_t len);
 
 CGraph* makeGraph(char* name);
 void graphSetVar(CGraph* graph, const char* name, CGNode* value);
+void graphUnsetVar(CGraph* graph, const char* name);
 CGNode* graphGetVar(CGraph* graph, const char* name);
 
 

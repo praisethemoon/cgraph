@@ -29,6 +29,10 @@ void cg_freeGraph(CGraph* graph){
 	freeGraph(graph);
 }
 
+void cg_freeNode(CGraph* graph, CGNode* node){
+	freeNode(graph, node);
+}
+
 void cg_freeResultNode(struct CGResultNode* result){
 	freeResultNode(result);
 }
@@ -82,12 +86,16 @@ CGNode* cg_newGraphNode(CGraph* graph){
 	return makeGraphNode(graph);
 }
 
-void cg_setVar(CGraph* graph, char* var, CGNode* value){
+void cg_setVar(CGraph* graph, const char* var, CGNode* value){
 	graphSetVar(graph, var, value);
 }
 
-CGNode* cg_getVar(CGraph* graph, char* var){
+CGNode* cg_getVar(CGraph* graph, const char* var){
 	return graphGetVar(graph, var);
+}
+
+void cg_UnsetVar(CGraph* graph, const char* var){
+	graphUnsetVar(graph, var);
 }
 
 CGResultNode* cg_evalGraph(CGraph* graph){

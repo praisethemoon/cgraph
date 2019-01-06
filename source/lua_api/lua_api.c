@@ -334,6 +334,26 @@ static int lua_getGraphVar(lua_State* L){
 	return 1;
 }
 
+static int lua_UnsetGraphVar(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	const char* name = lua_tostring(L, 2);
+	
+	graphUnsetVar(graph, name);
+	
+	return 1;
+}
+
+static int lua_freeNodeFromGraph(lua_State* L){
+	CGraph* graph = checkGraph(L, 1);
+	CGNode* node = checkNode(L, 2);
+	
+	freeNode(graph, node);
+	free(node);
+	
+	return 1;
+}
+
+
 void pushResultNode(lua_State*L, CGResultNode* res){
 
 	if(res->error != NULL)
@@ -626,6 +646,7 @@ static int lua_freeNode(lua_State* L){
 	printf("freeing solo node\n");
 	
 	freeNode(NULL, node);
+	free(node);
 	
 	lua_pushnil(L);
 	return 1;
@@ -682,13 +703,16 @@ int luaopen_libcgraph(lua_State *L)
 		{"graph", lua_createGraph},
 		{"setVar", lua_setGraphVar},
 		{"getVar", lua_getGraphVar},
+		{"unsetVar", lua_UnsetGraphVar},
 		{"compute", lua_computeGraph},
 		{"computeNode", lua_computeGraphNode},
 		{"crossEntropy", lua_createCrossEntropyLoss},
 		{"backProp", lua_backPropGraph},
 		{"getVarDiff", lua_getGraphVarDiff},
-		{"optimizeGraph", lua_optimizeGraph},
+		//{"optimizeGraph", lua_optimizeGraph},
 		{"freeGraph", lua_freeGraph},
+		{"freeGraphNode", lua_freeNodeFromGraph},
+		{"freeNode", lua_freeNode},
 		{NULL, NULL}
 	};
 

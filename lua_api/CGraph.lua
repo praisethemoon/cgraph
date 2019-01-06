@@ -154,6 +154,23 @@ local mt = {
 	
 	__tostring = function(uhs)
 		return nodeToString(uhs)
+	end,
+
+	__len = function(uhs)
+		if uhs.type == 'value' then
+			if uhs.tensorType==TensorType.DOUBLE then
+				return {0}
+			elseif uhs.tensorType==TensorType.VECTOR then
+				return {uhs.len}
+			elseif uhs.tensorType==TensorType.MATRIX then
+				return {uhs.rows, uhs.cols}
+			end
+		end
+
+		return -1
+	end,
+	__call = function(uhs, i, j, k)
+
 	end
 }
 
@@ -169,14 +186,14 @@ local double = function (value)
 end
 
 local vector = function(len, value)
-	local self = {type='value', tensorType=TensorType.VECTOR, value=value, len=len, node=cgraph.vector(len, value)}
+	local self = {type='value', tensorType=TensorType.VECTOR, value=value,len=len, node=cgraph.vector(len, value)}
 	setmetatable(self, mt)
 	
 	return self
 end
 
 local matrix = function(rows, cols, value)
-	local self = {type='value', tensorType=TensorType.MATRIX, value=value, rows=rows, cols=cols, node=cgraph.matrix(rows, cols, value)}
+	local self = {type='value', tensorType=TensorType.MATRIX, value=value,rows=rows, cols=cols, node=cgraph.matrix(rows, cols, value)}
 	setmetatable(self, mt)
 	
 	return self
@@ -436,16 +453,20 @@ local graph = function(name, rootNode)
 	function Graph:getVar(name)
 		return self.vars[name]
 	end
+
+	function Graph:freeNode(node)
+		cgraph.freeGraphNode(self.cdata, node.node)
+	end
 	
 	function Graph:eval()
 		self.err = {}
 		local res = cgraph.compute(self.cdata)
 		
 		if res.error then
-			print('error', errorTypeToString(res.error))
-			self.err = res
+			print('error', errorTypeToString(res.error), res.message)
 			return res
 		end
+		
 		if res.type == TensorType.DOUBLE then
 			return double(res.value)
 		elseif res.type == TensorType.VECTOR then
@@ -498,13 +519,14 @@ local graph = function(name, rootNode)
 	function Graph:getVarDiff(name)
 		local res= cgraph.getVarDiff(self.cdata, name)
 		if res == nil then
-      print('variable '..name..' has no diff')		
+      		print('variable '..name..' has no diff')		
 		end
 		if res.error then
 			print('error', errorTypeToString(res.error))
 			self.err = res
 			return res
 		end
+		
 		if res.type == TensorType.DOUBLE then
 			return double(res.value)
 		elseif res.type == TensorType.VECTOR then
@@ -516,12 +538,14 @@ local graph = function(name, rootNode)
 		end
 	end
 	
+	--[[
 	function Graph:optimize()
 		local res = cgraph.optimizeGraph(self.cdata)
 		
 		self.cdata = res.graph
 		self.root = res.root
 	end
+	]]
 	
 	function Graph:free()
 		cgraph.freeGraph(self.cdata)

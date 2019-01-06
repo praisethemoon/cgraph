@@ -33,6 +33,7 @@ void freeMatrixValue(CGMatrix* data){
 }
 
 void freeNode(CGraph* graph, CGNode* node){
+	//printf("freeing node %d\n", node->type);
 	if(node->result != NULL){
 		freeResultNode(node->result);
 		free(node->result);

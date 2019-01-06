@@ -51,6 +51,11 @@ CGRAPH_API void cg_freeGraph(struct CGraph* graph);
  */
 CGRAPH_API void cg_freeResultNode(struct CGResultNode* result);
 
+/**
+ * \brief Frees a node. Currently not used.
+ * \param[in,out] result node to deallocate, should be set freed manually after calling this function (cg_freeNode(r); free(r))
+ */
+CGRAPH_API void cg_freeNode(struct CGraph* graph, struct CGNode* node);
 
 
 
@@ -173,14 +178,20 @@ CGRAPH_API void cg_setVar(struct CGraph* graph, const char* var, struct CGNode* 
 
 
 /**
- * \brief Gets the value of a variable within the given graph
+ * \brief Gets the value of a variable within the given graph. If the graph already has a variable, it will freed and replaced with the new one.
  * \param[in] graph Target graph
  * \param[in] var Variable name to update/set
  * \return Value of the given variable within the graph if it exists, otherwise returns NULL
  */
-CGRAPH_API struct CGNode* cg_getVar(struct CGraph* graph, char* var);
+CGRAPH_API struct CGNode* cg_getVar(struct CGraph* graph, const char* var);
 
 
+/**
+ * \brief Unsets the variable from the graph, i.e removes it but it does not free it.
+ * \param[in] graph Target graph
+ * \param[in] var Variable name to unset
+ */
+CGRAPH_API void graphUnsetVar(struct CGraph* graph, const char* name);
 /**
  * \brief Starts the graph computation recusively from its root node
  * \param[in] graph Graph to evaluate
