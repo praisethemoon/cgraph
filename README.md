@@ -1,7 +1,7 @@
 CGraph
 ===
 
-![resources/logo.png](resources/logo.png)
+![resources/logo_md.png](resources/logo_md.png)
 
 > C Computation Graph Library
 
@@ -12,8 +12,6 @@ CGraph
 
 CGraph, short for C Computation Graph is a C library for building Tensor graphs.
 It will support a Lua API in the future.
-
-> You see the logo? Illuminaty confirmed
 
 ### Optimizations
 Uses BLAS for complex operations.
@@ -28,6 +26,7 @@ optimizations will come once the library becomes stable.
 - LAPACK: `sudo apt-get install libblas-dev liblapack-dev`
 - cmake `sudo apt-get install cmake`
 - probably `build-essentials` as well.
+- lua (5.2) for the Lua API (I'm sure you want it but we will switch to Lua JIT soon)
 
 ###### Notes
 
@@ -41,13 +40,13 @@ optimizations will come once the library becomes stable.
 ### C API Status:
 - Memory management has been greatly improved, but needs more checking, especilly with the gradient calculation
 - C API is almost stable.
-- Could use more unittests
+- Could create more sanity check APIs
+- Could use more unittests.
 
 ### Lua API status:
 - Working but need memory improvements
 - No unittest
 - Easy to setup and use, but not yet reliable.
-- Plotting a graph is currently outdated as more operations has been added to the library and not considered in the render function
 
 ### Example (Lua API):
 
@@ -70,6 +69,44 @@ print(sigmoid(CGraph.dot( CGraph.vector(3, array {0,0,0}), CGraph.vector(3, arra
 
 return sigmoid
 ```
+
+`graph:plot()` will plot a graph as a `dot` which can be transformed into a png with graphviz's `dot` command: `dot -Tpng sigmoid.dot -o sigmoid.png`.
+
+![resources/sigmoid.png](resources/sigmoid.png)
+
+### Building and Running Neural Network Example
+
+- You would need lua socket installed `sudo apt-get install lua-socket lua-sec`
+- Or manually download iris dataset and place it into `datasets/Iris.csv`.
+
+Compiling C and Lua API
+
+```
+cd source
+mkdir build
+cd build
+cmake ..
+make
+cd ../../lua_api
+mv source/build/lua_api/libluacgraph.so ./libcgraph.so
+```
+
+Then, from `examples_lua` directory
+```
+lua iris.lua
+```
+
+### Debugging
+
+If you had an error while running a Lua script, you can debug it as follows:
+
+```
+gdb lua
+(gdb) source luagdb.txt
+(gdb) run iris.lua
+```
+
+And from there you have access to the C API from gdb.
 
 ### Future work
 - Graph variables (Done)
