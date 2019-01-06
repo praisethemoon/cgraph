@@ -28,7 +28,7 @@ double __cg_relu(double x){
 }
 
 double __cg_dx_relu(double x){
-	return x>0.0?1:0.0;
+	return x>=0.0?1:0.0;
 }
 
 

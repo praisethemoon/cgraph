@@ -621,9 +621,19 @@ static int lua_getGraphVarDiff(lua_State* L){
 }
 
 
+static int lua_freeNode(lua_State* L){
+	CGNode* node = checkNode(L, 1);
+	printf("freeing solo node\n");
+	
+	freeNode(NULL, node);
+	
+	lua_pushnil(L);
+	return 1;
+}
+
 static int lua_freeGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
-	
+	printf("freeing graph %s\n", graph->name);
 	if(graph->root != NULL){
 		freeGraph(graph);
 		graph->root = NULL;
@@ -693,8 +703,16 @@ int luaopen_libcgraph(lua_State *L)
 		{0, 0}
 	};
 	
+	static const luaL_Reg CGNODE_meta[] = {
+		{"__gc", lua_freeNode},
+		{0, 0}
+	};
+	
+	
 	/* TODO: set gc to metatable */
 	luaL_newmetatable(L, CGNODE);  
+	luaL_setfuncs(L, CGNODE_meta, 0);
 	luaL_newmetatable(L, CGRAPH);
+	luaL_setfuncs(L, CGRAPH_meta, 0);
 	return 1;
 }

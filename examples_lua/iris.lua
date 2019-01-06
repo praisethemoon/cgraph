@@ -1,34 +1,58 @@
+require 'package_config'
+
 local CGraph = require 'CGraph'
 local array = CGraph.array
 
-local FileReader = require 'FileReader'
+local FileReader = require 'io.FileReader'
+local datasets = require 'datasets'
 local _ = require 'underscore'
 local cg = CGraph
 
 local crossEntroy = CGraph.crossEntropyLoss
 
+--[[
+  Reading IRIS CSV Dataset
+]]
+
 classes= {}
+
+-- some version uses these class names
 
 classes["Iris-setosa"] = 0
 classes["Iris-versicolor"] = 1
 classes["Iris-virginica"] = 2
 
+-- others uses these
+classes["setosa"] = 0
+classes["versicolor"] = 1
+classes["virginica"] = 2
+
 X = {}
 y = {}
 
 local fn = function(line)
-  local id, sl, sw, pl, pw, c = line:match('(%S+),(%S+),(%S+),(%S+),(%S+),(%S+)')
+  local sl, sw, pl, pw, c = line:match('(%S+),(%S+),(%S+),(%S+),(%S+)')
   table.insert(X, {tonumber(sl), tonumber(sw), tonumber(pl), tonumber(pw)})
   table.insert(y, classes[c])
 end
 
-FileReader.read("Iris.csv", fn)
+function file_exists(name)
+  local f=io.open(name,"r")
+  if f~=nil then io.close(f) return true else return false end
+end
+
+if not file_exists "../datasets/Iris.csv" then
+  datasets.download('iris', "../datasets/Iris.csv")
+end
+
+print(datasets.iris.about)
+
+FileReader.read("../datasets/Iris.csv", fn)
 
 table.remove(X, 1)
 
 local Xinput = X
 local Yclass = y
-
 
 function shuffle(tbl, tbl2)
   size = #tbl
@@ -42,16 +66,13 @@ end
 
 
 local function sigmoid(Z)
-  local sigmoid = CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
-  return sigmoid
+  return CGraph.double(1) / (CGraph.double(1) + CGraph.exp(-Z))
 end
 
 
 local function softmax(Z)
 	return CGraph.exp(Z) / CGraph.sum(CGraph.exp(Z), 0)
 end
-
-
 
 local X = CGraph.variable 'X'
 local theta1 = CGraph.variable 'T_1'
@@ -61,6 +82,8 @@ local b2 = CGraph.variable 'b_2'
 local theta3 = CGraph.variable 'T_3'
 local b3 = CGraph.variable 'b_3'
 local y = CGraph.variable 'y'
+
+local relu = CGraph.ReLU
 
 local A2 = sigmoid(CGraph.dot(X, theta1) + b1)
 local A3 = sigmoid(CGraph.dot(A2, theta2) + b2)
@@ -82,19 +105,25 @@ end
 function randomWeight(size)
   vec = {}
   for i=1,size do
-    table.insert(vec, gaussian(0, 0.01))
+    math.randomseed(os.time()+math.random()*1000)
+    local x = math.random()*3
+    math.randomseed(os.time()+math.random()*1000)
+    local y = math.random()/100
+    table.insert(vec, gaussian(x,y))
   end
   
   return vec
 end
 
+
 function updateWeights(name)
   local t_1 = g:getVar(name)
   local dxt_1 = g:getVarDiff(name)
-  local alpha = 0.1
   
   local size = t_1.len or t_1.cols*t_1.rows
   
+  local alpha = 0.3
+
   local t_1_newval = {}
   for k=1,size do
     table.insert(t_1_newval, t_1.value[k] - alpha*dxt_1.value[k])
@@ -105,10 +134,7 @@ function updateWeights(name)
   else
     g:setVar(name, CGraph.matrix(t_1.rows, t_1.cols, t_1_newval))
   end
-  
 end
-
-lossPerClass = {0,0,0}
 
 function argmax(t)
   local max, max_idx = t[1], 1
@@ -142,18 +168,6 @@ function train(X, y, X_test, Y_test)
   g:setVar('b_2', CGraph.vector(5, randomWeight(5)))
   g:setVar('T_3', CGraph.matrix(5, 3, randomWeight(15)))
   g:setVar('b_3', CGraph.vector(3, randomWeight(3)))
- --[[
-  print(g:getVar('T_1'))
-  print(g:getVar('b_1'))
-  print(g:getVar('T_2'))
-  print(g:getVar('b_2'))
-  print(g:getVar('T_3'))
-  print(g:getVar('b_3'))
-  ]]
-  g:setVar('X', CGraph.matrix(1, 4, _.flatten({X[i]})))
-  g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
- 
-  local output = g:eval()
  
   
   loss = {}
@@ -187,8 +201,6 @@ function train(X, y, X_test, Y_test)
     g:setVar('X', CGraph.matrix(1, 4, _.flatten({X_test[i]})))
     g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
     local output = g:evalNode(eval)
-    --print(output)
-    --print(y[i])
     local max, idx = argmax(output.value)
     confMat[idx][Y_test[i]+1] = confMat[idx][Y_test[i]+1] + 1
   end
@@ -203,12 +215,4 @@ Xinput, Yclass = shuffle(Xinput,Yclass)
 Xinput, Yclass = shuffle(Xinput,Yclass)
 Xinput, Yclass = shuffle(Xinput,Yclass)
 
-
 train(_.initial(Xinput, 100), _.initial(Yclass, 100), _.last(Xinput, 50), _.last(Yclass, 50))
-  
---[[
-g:backProp()
-
-print 'T_1'
-print(g:getVarDiff('T_1'))
-]]
