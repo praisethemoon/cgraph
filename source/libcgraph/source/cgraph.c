@@ -2777,10 +2777,20 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		
 		case CGNT_CROSS_ENTROPY_LOSS_FUNC:
 		{
-			CGResultNode* x_res = computeCGNode(graph, softmax_node(node->crossEntropyLoss->x));
+			CGResultNode* X_res = computeCGNode(graph, node->crossEntropyLoss->x);
+			CGNode* X = resultNodeToConstantNodeCopy(X_res);
+		
+			CGNode* X_val = softmax_node(X);
+			
+						
+			CGResultNode* x_res = computeRawNode(X_val);
+
 			CGResultNode* y_res = computeCGNode(graph, node->crossEntropyLoss->y);
 			
 			result = crossEntropy(x_res, y_res, node->crossEntropyLoss->num_classes);
+			
+			freeResultNode(x_res);
+			free(x_res);
 			break;
 		}
 	}
@@ -2788,22 +2798,23 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 	node->result = reduceDim(result);
 	
 	
-	switch(node->result->type){
-		case CGVT_DOUBLE:
-			node->diff = makeZeroDoubleConstantNode();
-			break;
-		case CGVT_VECTOR:{
-			CGVector* v = (CGVector*)node->result ->value;
-			node->diff = makeZeroVectorConstantNode(v->len);
-			break;
+	if(node->diff == NULL)
+		switch(node->result->type){
+			case CGVT_DOUBLE:
+				node->diff = makeZeroDoubleConstantNode();
+				break;
+			case CGVT_VECTOR:{
+				CGVector* v = (CGVector*)node->result ->value;
+				node->diff = makeZeroVectorConstantNode(v->len);
+				break;
+			}
+			
+			case CGVT_MATRIX:{
+				CGMatrix* v = (CGMatrix*)node->result ->value;
+				node->diff = makeZeroMatrixConstantNode(v->rows, v->cols);
+				break;
+			}
 		}
-		
-		case CGVT_MATRIX:{
-			CGMatrix* v = (CGMatrix*)node->result ->value;
-			node->diff = makeZeroMatrixConstantNode(v->rows, v->cols);
-			break;
-		}
-	}
 	
 	return node->result;
 }
@@ -2962,3 +2973,13 @@ void resetGraphResultNodes(CGraph* graph, CGNode* node){
 	}
 }
 
+
+void graphSetVar_lua(CGraph* graph, const char* name, CGNode* value){
+	CGNode** old = map_get(&graph->vars, name); 
+	if(old != NULL){
+		freeNode(graph, *old);
+		map_remove(&graph->vars, name);
+	}
+	
+	int res = map_set(&graph->vars, name, value);
+}

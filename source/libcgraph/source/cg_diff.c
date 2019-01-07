@@ -422,6 +422,8 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 					break;
 				}
 			}
+		
+			break;
 		}
 		
 		case CGNT_UNARY_OPERATION:
@@ -560,6 +562,7 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 					break;
 				}
 			}
+			break;
 		}
 		
 		case CGNT_GRAPH: 
@@ -603,17 +606,25 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 		{
 			CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, copyNode(node->crossEntropyLoss->x->diff), makeBinaryOpNode(CGBOT_MULT, copyNode(node->diff), dx_crossEntropy(node->crossEntropyLoss->x->result, node->crossEntropyLoss->y->result, node->crossEntropyLoss->num_classes)));
 			CGResultNode* res1 = computeRawNode(mult1);
-			freeNodeDiff(node->crossEntropyLoss->x->diff);
+			freeNodeDiff(node->crossEntropyLoss->x);
 			node->crossEntropyLoss->x->diff = resultNodeToConstantNodeCopy(res1);
+			//freeNodeDiff(node->crossEntropyLoss->y);
 			
 			autoDifferenciateNode(graph, node->crossEntropyLoss->x);
 			
+			freeResultNode(res1);
+			free(res1);
 			break;
 		}
 	}
 }
 
 void autoDifferenciateGraph(CGraph* graph){
+	if(graph->root->diff != NULL){
+		freeNode(graph, graph->root->diff);
+		free(graph->root->diff);
+	}
+	
 	switch(graph->root->result->type){
 		case CGVT_DOUBLE:
 			graph->root->diff = makeOnesDoubleConstantNode();

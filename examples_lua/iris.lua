@@ -171,7 +171,7 @@ function train(X, y, X_test, Y_test)
  
   
   loss = {}
-  for k=1,1000 do
+  for k=1,10 do
     local err = 0
     X, y = shuffle(X, y)
     for i=1,#X,1 do

@@ -149,3 +149,105 @@ void freeGraph(CGraph* graph){
 	vec_deinit(&graph->nodes);
 	// graph pointer must be freed elsewhere. in lua API we create a copy so we cannot free the parameter of this function.
 }
+
+/*
+ * Lua lightuser data are automatically freed within the lua VM,
+ * this version is lua friendly.
+ */
+void freeGraph_lua(CGraph* graph){
+	if(graph == NULL)
+		return;
+	
+	const char *key;
+	
+	map_iter_t iter = map_iter(&graph->vars);
+
+	while ((key = map_next(&graph->vars, &iter))) {
+		CGNode* node = *map_get(&graph->vars, key);
+		if(node != NULL){
+			freeNode(graph, node);
+			//free(node);
+		}
+	}
+	
+	map_deinit(&graph->vars);
+	
+	int i = 0;
+	CGNode* node;
+	
+	vec_foreach(&graph->nodes, node, i) {
+		freeNode(graph, node);
+		//free(node);
+	}
+	
+	vec_deinit(&graph->nodes);
+	// graph pointer must be freed elsewhere. in lua API we create a copy so we cannot free the parameter of this function.
+}
+
+
+void freeNode_lua(CGraph* graph, CGNode* node){
+	//printf("freeing node %d\n", node->type);
+	/*
+	if(node->result != NULL){
+		freeResultNode(node->result);
+		free(node->result);
+		node->result = NULL;
+	}
+	
+	if(node->diff != NULL){
+		freeNode(graph, node->diff);
+		free(node->diff);
+	}
+	*/
+	switch(node->type){
+		case CGNT_CONSTANT:{
+			switch(node->constant->type){
+				case CGVT_DOUBLE:
+				{
+					free(node->constant->value);
+					free(node->constant);
+					
+					break;
+				}
+				
+				case CGVT_VECTOR:{
+					CGVector* vec = (CGVector*)node->constant->value;
+					freeVectorValue(vec);
+					free(node->constant->value);
+					free(node->constant);
+					
+					break;
+				}
+				
+				case CGVT_MATRIX:{
+					CGMatrix* mat = (CGMatrix*)node->constant->value;
+					freeMatrixValue(mat);
+					free(node->constant->value);
+					free(node->constant);
+					break;
+				}
+			}
+			break;
+		}
+		case CGNT_VARIABLE:{
+			free(node->var);
+			break;
+		}
+		case CGNT_BINARY_OPERATION:
+			free(node->bop);
+			break;
+		case CGNT_UNARY_OPERATION:
+			free(node->uop);
+			break;
+		case CGNT_AXIS_BOUND_OPERATION:
+			free(node->axop);
+			break;
+		case CGNT_GRAPH:
+			free(node->graph);
+			break;
+		case CGNT_CROSS_ENTROPY_LOSS_FUNC:
+			free(node->crossEntropyLoss);
+			break;
+	}
+	
+}

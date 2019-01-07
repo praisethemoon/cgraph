@@ -221,3 +221,5 @@ function train(X, y, X_test, Y_test)
 end
 
 train(_.initial(X_train,100) , _.initial(Y_train, 100), _.initial(X_test, 100), _.initial(Y_test, 100))
+
+g:free()
