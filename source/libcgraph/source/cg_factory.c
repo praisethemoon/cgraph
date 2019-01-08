@@ -14,7 +14,7 @@
 #include "vec.h"
 #include "map.h"
 
-#include <malloc.h>
+
 
 double* vcopy(uint64_t len, const double* data){
 	double* newdata = calloc(len, sizeof(double));

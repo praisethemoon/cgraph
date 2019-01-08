@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <malloc.h>
+
 
 #include "cgraph.h"
 #include "cg_operation.h"

@@ -14,7 +14,7 @@
 #include "cg_enums.h"
 #include "cg_math.h"
 
-#include <malloc.h>
+
 
 uint8_t nodeValueIsZero(CGNode* node){
 	assert(node->type == CGNT_CONSTANT);

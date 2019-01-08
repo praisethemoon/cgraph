@@ -1,6 +1,7 @@
 
 #include <inttypes.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "cgraph.h"
 #include "cg_operation.h"
@@ -9,7 +10,7 @@
 #include "cg_factory.h"
 #include "cg_errors.h"
 #include "cg_constants.h"
-#include <malloc.h>
+
 
 void dumpNode(CGNode* node){
 	fprintf(stderr, "\t\t+Node: '%s'\n", getNodeTypeString(node->type));

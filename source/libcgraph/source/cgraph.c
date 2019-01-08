@@ -22,7 +22,7 @@
 #include "cg_factory.h"
 #include "cg_math.h"
 
-#include <malloc.h>
+
 
 #define CHECK_RESULT(node) \
 if(node->error != NULL){\

@@ -18,7 +18,7 @@
 #include "cg_factory.h"
 #include "cg_math.h"
 
-#include <malloc.h>
+
 
 
 void freeDoubleValue(CGDouble* v){

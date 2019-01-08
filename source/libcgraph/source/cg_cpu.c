@@ -1,6 +1,6 @@
 #include <inttypes.h>
 #include <stdio.h>
-#include <malloc.h>
+
 #include <string.h>
 #include <libcpuid/libcpuid.h>
 #include "c_api/cg_enums.h"

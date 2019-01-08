@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <malloc.h>
+
 #include <math.h>
 
 

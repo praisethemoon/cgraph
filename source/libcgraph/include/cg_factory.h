@@ -7,7 +7,7 @@
 #include "cg_variables.h"
 #include "cg_enums.h"
 
-#include <malloc.h>
+
 
 // utilities
 double* vcopy(uint64_t len, const double* data);
