@@ -5,6 +5,8 @@
 #include <memory.h>
 #include <stdlib.h>
 
+#include <progressbar.h>
+
 #include "cg_api.h"
 #include "cg_enums.h"
 #include "cg_types.h"
@@ -21,7 +23,7 @@ double* raw_copy(double* src, uint64_t len){
 }
 
 int main(int argc, char* argv[]){
-	
+
 	double x_val[] = {0.2, 0.3, 0.5, 0.8, 0.12, 0.34, 0.75, 0.08};
 	double x_val2[] ={50.1,0.5,111.4,0};
 	double x_val3[] ={5.1,3.5,1.4,0.4};
@@ -53,7 +55,7 @@ int main(int argc, char* argv[]){
 	
 	struct CGraph* graph = cg_newGraph("nn", H);
 	
-	cg_setVar(graph, "x", cg_newMatrixNode(2, 4, x_val));
+	cg_setVar(graph, "x", cg_newMatrixRandNode(2, 4));
 	cg_setVar(graph, "y", cg_newVectorNode(2, y_val));
 	cg_setVar(graph, "T_1", cg_newMatrixNode(4, 5, T1_val));
 	cg_setVar(graph, "b_1", cg_newVectorNode(5, b1_val));
@@ -61,13 +63,59 @@ int main(int argc, char* argv[]){
 	cg_setVar(graph, "b_2", cg_newVectorNode(3, b2_val));
 	//cg_setVar(graph, "T_3", cg_newMatrixNode(3, 3, T3_val));
 	//cg_setVar(graph, "b_3", cg_newVectorNode(3, b3_val));
-	
+
+	/*
+	progressbar *progress = progressbar_new("Epoch ",1000);
 	uint64_t i = 0;
 	for(;i<10000;i++){
 		struct CGResultNode* res = cg_evalGraph(graph);
 		cg_setVar(graph, "x", cg_newMatrixNode(2, 4, x_val));
 		cg_autoDiffGraph(graph);
+		progressbar_inc(progress);
 	}
+	progressbar_finish(progress);
+	 */
+	struct CGResultNode* res = cg_evalGraph(graph);
+
+	printf("Result type: %d\n", cg_getResultType(res));
+
+	switch(cg_getResultType(res)){
+		case CGVT_DOUBLE:
+		{
+			CGDouble* d = cg_getResultDoubleVal(res);
+			printf("%f\n",  d->value);
+			break;
+		}
+
+		case CGVT_VECTOR:
+		{
+			CGVector* vec = cg_getResultVectorVal(res);
+			uint64_t i = 0;
+			printf("(");
+			for(; i < vec->len; i++){
+				printf("%f, ", vec->data[i]);
+			}
+			printf(")\n");
+			break;
+		}
+
+		case CGVT_MATRIX:
+		{
+			CGMatrix* m = cg_getResultMatrixVal(res);
+			uint64_t i = 0;
+			uint64_t j = 0;
+			printf("(");
+			for(; i < m->rows; i++){
+				printf("\n\t");
+				for(j = 0; j < m->cols; j++){
+					printf("%f, ", m->data[i*m->cols+j]);
+				}
+			}
+			printf(")\n");
+			break;
+		}
+	}
+
 	cg_freeGraph(graph);
 	free(graph);
 	printf("done\n");

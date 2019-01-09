@@ -144,7 +144,7 @@ end
 
 function argmax(t)
   local max, max_idx = t[1], 1
-  for i,v in ipairs(t) do
+  for i=1,#t do
     if v > max then
       max = v
       max_idx = i
@@ -177,11 +177,11 @@ function train(X, y, X_test, Y_test)
  
   
   loss = {}
-  for k=1,100 do
+  for k=1,1 do
     print('epoch', k)
     local err = 0
     X, y = shuffle(X, y)
-    for i=1,#X,1 do
+    for i=1,10,1 do
       g:setVar('X', CGraph.matrix(1, 784, _.flatten({X[i]})))
       g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
       local output = g:eval()
@@ -208,6 +208,7 @@ function train(X, y, X_test, Y_test)
     g:setVar('X', CGraph.matrix(1, 784, _.flatten({X_test[i]})))
     g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
     local output = g:evalNode(eval)
+    print(output.value)
     local max, idx = argmax(output.value)
     confMat[idx][Y_test[i]+1] = confMat[idx][Y_test[i]+1] + 1
   end

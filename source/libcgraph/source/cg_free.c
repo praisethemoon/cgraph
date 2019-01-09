@@ -173,7 +173,7 @@ void freeGraph_lua(CGraph* graph){
 
 void freeNode_lua(CGraph* graph, CGNode* node){
 	//printf("freeing node %d\n", node->type);
-	/*
+
 	if(node->result != NULL){
 		freeResultNode(node->result);
 		free(node->result);
@@ -184,7 +184,7 @@ void freeNode_lua(CGraph* graph, CGNode* node){
 		freeNode(graph, node->diff);
 		free(node->diff);
 	}
-	*/
+
 	switch(node->type){
 		case CGNT_CONSTANT:{
 			switch(node->constant->type){

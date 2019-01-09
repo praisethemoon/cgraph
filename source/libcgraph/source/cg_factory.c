@@ -2,6 +2,7 @@
 
 #include <inttypes.h>
 #include <stdlib.h>
+#include <time.h>
 #include <assert.h>
 
 #include "cgraph.h"
@@ -13,6 +14,7 @@
 
 #include "vec.h"
 #include "map.h"
+#include "random.h"
 
 
 
@@ -161,6 +163,93 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	
 	return node;
 }
+
+#define TEST_SEED 54321U
+
+CGNode* makeRandomDoubleConstantNode(){
+    CGDouble* d = calloc(1, sizeof(CGDouble));
+
+    MT mt;
+
+    init_genrand(&mt, time(NULL));
+    d->value = genrand_res53(&mt);
+    d->value = (d->value - 0.5)/10;
+
+    CGPConstant* c = calloc(1, sizeof(CGPConstant));
+    c->type = CGVT_DOUBLE;
+    c->value = d;
+
+    CGNode* node = calloc(1, sizeof(CGNode));
+    node->type = CGNT_CONSTANT;
+    node->constant = c;
+
+    node->result = NULL;
+    node->diff = NULL;
+
+    return node;
+}
+
+CGNode* makeRandomVectorConstantNode(uint64_t  len){
+    CGVector* v = calloc(1, sizeof(CGVector));
+    v->len = len;
+    v->data = calloc(len, sizeof(double));
+
+    uint64_t i = 0;
+
+    MT mt;
+
+	init_genrand(&mt, time(NULL));
+    for(;i<len;i++){
+        v->data[i] = (genrand_res53(&mt) - 0.5)/10;
+    }
+
+    CGPConstant* c = calloc(1, sizeof(CGPConstant));
+    c->type = CGVT_VECTOR;
+    c->value = v;
+
+    CGNode* node = calloc(1, sizeof(CGNode));
+    node->type = CGNT_CONSTANT;
+    node->constant = c;
+
+    node->result = NULL;
+    node->diff = NULL;
+
+    return node;
+}
+
+
+CGNode* makeRandomMatrixConstantNode(uint64_t  rows, uint64_t cols){
+    CGMatrix* m = calloc(1, sizeof(CGMatrix));
+    m->data = calloc(rows*cols, sizeof(double));
+    m->rows = rows;
+    m->cols = cols;
+    m->shape = CGMS_ROW_MAJOR;
+
+
+    uint64_t i = 0;
+
+    MT mt;
+
+	init_genrand(&mt, time(NULL));
+    for(;i<rows*cols;i++){
+        m->data[i] = (genrand_res53(&mt) - 0.5)/10;
+    }
+
+    CGPConstant* c = calloc(1, sizeof(CGPConstant));
+    c->type = CGVT_MATRIX;
+    c->value = m;
+
+    CGNode* node = calloc(1, sizeof(CGNode));
+    node->type = CGNT_CONSTANT;
+    node->constant = c;
+
+    node->result = NULL;
+    node->diff = NULL;
+
+    return node;
+}
+
+
 
 
 

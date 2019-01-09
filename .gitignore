@@ -3,9 +3,13 @@ build/*
 *.so
 *.dll
 *.o
+*.dylib
+lua_api/*.dylib
+source/cmake-build-debug/*
 source/html
 source/latex
 source/build
 .DS_Store
 */.idea/*
 .vscode/*
+datasets/*

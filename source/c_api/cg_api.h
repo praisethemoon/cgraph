@@ -76,6 +76,20 @@ CGRAPH_API struct CGNode* cg_newDoubleNode(double v);
  */
 CGRAPH_API struct CGNode* cg_newDouble0Node();
 
+
+/**
+ * \brief Creates a 1 initialized scalar value
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newDouble1Node();
+
+
+/**
+ * \brief Creates a randomly initialized scalar value
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newDoubleRandNode();
+
 /**
  * \brief Creates a vector node
  * \param[in] len Vector length
@@ -90,6 +104,20 @@ CGRAPH_API struct CGNode* cg_newVectorNode(uint64_t len, double* v);
  * \return Graph node
  */
 CGRAPH_API struct CGNode* cg_newVector0Node(uint64_t len);
+
+/**
+ * \brief Creates a 1 initialized vector node
+ * \param[in] len Vector length
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newVector1Node(uint64_t len);
+
+/**
+ * \brief Creates a randomly initialized vector node
+ * \param[in] len Vector length
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newVectorRandNode(uint64_t len);
 
 
 /**
@@ -109,6 +137,24 @@ CGRAPH_API struct CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, double*
  * \return Graph node
  */
 CGRAPH_API struct CGNode* cg_newMatrix0Node(uint64_t rows, uint64_t cols);
+
+/**
+ * \brief Creates a 1 initialized Matrix node, matrices are ROW Major
+ * \param[in] rows Matrix rows
+ * \param[in] cols Matrix cols
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newMatrix1Node(uint64_t rows, uint64_t cols);
+
+/**
+ * \brief Creates a randomly initialized Matrix node, matrices are ROW Major
+ * \param[in] rows Matrix rows
+ * \param[in] cols Matrix cols
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newMatrixRandNode(uint64_t rows, uint64_t cols);
+
+
 
 /**
  * \brief Creates a variable node

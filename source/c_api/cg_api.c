@@ -45,6 +45,14 @@ CGNode* cg_newDouble0Node(){
 	return makeZeroDoubleConstantNode();
 }
 
+CGNode* cg_newDouble1Node(){
+	return makeOnesDoubleConstantNode();
+}
+
+CGNode* cg_newDoubleRandNode(){
+	return makeRandomDoubleConstantNode();
+}
+
 CGNode* cg_newVectorNode(uint64_t len, double* v){
 	return makeVectorConstantNodeCopy(len, v);
 }
@@ -53,12 +61,28 @@ CGNode* cg_newVector0Node(uint64_t len){
 	return makeZeroVectorConstantNode(len);
 }
 
+CGNode* cg_newVector1Node(uint64_t len){
+	return makeOnesVectorConstantNode(len);
+}
+
+CGNode* cg_newVectorRandNode(uint64_t len){
+	return makeRandomVectorConstantNode(len);
+}
+
 CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, double* v){
 	return makeMatrixConstantNodeCopy(rows, cols, v);
 }
 
 CGNode* cg_newMatrix0Node(uint64_t rows, uint64_t cols){
 	return makeZeroMatrixConstantNode(rows, cols);
+}
+
+CGNode* cg_newMatrix1Node(uint64_t rows, uint64_t cols){
+	return makeOnesMatrixConstantNode(rows, cols);
+}
+
+CGNode* cg_newMatrixRandNode(uint64_t rows, uint64_t cols){
+	return makeRandomMatrixConstantNode(rows, cols);
 }
 
 CGNode* cg_newVariable(char* name){
