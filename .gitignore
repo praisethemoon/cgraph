@@ -6,3 +6,6 @@ build/*
 source/html
 source/latex
 source/build
+.DS_Store
+*/.idea/*
+.vscode/*

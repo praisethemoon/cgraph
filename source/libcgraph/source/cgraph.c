@@ -2977,7 +2977,7 @@ void resetGraphResultNodes(CGraph* graph, CGNode* node){
 void graphSetVar_lua(CGraph* graph, const char* name, CGNode* value){
 	CGNode** old = map_get(&graph->vars, name); 
 	if(old != NULL){
-		freeNode(graph, *old);
+		//freeNode(graph, *old);
 		map_remove(&graph->vars, name);
 	}
 	

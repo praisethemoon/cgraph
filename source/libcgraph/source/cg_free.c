@@ -160,25 +160,11 @@ void freeGraph_lua(CGraph* graph){
 	
 	const char *key;
 	
-	map_iter_t iter = map_iter(&graph->vars);
-
-	while ((key = map_next(&graph->vars, &iter))) {
-		CGNode* node = *map_get(&graph->vars, key);
-		if(node != NULL){
-			freeNode(graph, node);
-			//free(node);
-		}
-	}
-	
 	map_deinit(&graph->vars);
 	
 	int i = 0;
 	CGNode* node;
-	
-	vec_foreach(&graph->nodes, node, i) {
-		freeNode(graph, node);
-		//free(node);
-	}
+
 	
 	vec_deinit(&graph->nodes);
 	// graph pointer must be freed elsewhere. in lua API we create a copy so we cannot free the parameter of this function.

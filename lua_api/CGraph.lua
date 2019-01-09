@@ -1,6 +1,7 @@
-require ('libcgraph')
 
-local cgraph = cgraph
+
+require ('libcgraph')
+local cgraph = libcgraph
 local io = io
 local write = io.write
 
@@ -59,7 +60,9 @@ end
 
 local function _renderVector(len, value)
 	local strRep = ("Vec [len: ".. len.. ", value: \n")
-	for i, v in ipairs(value) do
+	
+	for i=1,#value do
+		local v = value[i]
 		strRep = strRep .. ("\t[".. (i-1).. "] = \t".. v.. "\n")
 	end
 	strRep = strRep .. ("]\n")
@@ -454,9 +457,9 @@ local graph = function(name, rootNode)
 		return self.vars[name]
 	end
 
-	function Graph:freeNode(node)
-		cgraph.freeGraphNode(self.cdata, node.node)
-	end
+	--function Graph:freeNode(node)
+	--	cgraph.freeGraphNode(self.cdata, node.node)
+	--end
 	
 	function Graph:eval()
 		self.err = {}

@@ -8,7 +8,6 @@
 #include "cg_api.h"
 #include "cg_enums.h"
 #include "cg_types.h"
-#include "../lua_api/vendor/lua/lua.h"
 
 struct CGNode* sigmoid_node(struct CGNode* x){
 	return cg_newBinOp(CGBOT_DIV, cg_newDoubleNode(1.0), cg_newBinOp(CGBOT_ADD, cg_newDoubleNode(1.0), cg_newUnOp(CGUOT_EXP, cg_newUnOp(CGUOT_MINUS, x))));

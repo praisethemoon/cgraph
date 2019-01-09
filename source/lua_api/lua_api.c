@@ -1,5 +1,5 @@
-#include "lua.h"
-#include "lauxlib.h"
+#include <luajit.h>
+#include <lauxlib.h>
 
 #include "array.h"
 
@@ -12,6 +12,26 @@
 #include "cg_variables.h"
 #include "cg_diff.h"
 #include "cg_enums.h"
+
+#if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502
+/* Compatibility for Lua 5.1.
+ *
+ * luaL_setfuncs() is used to create a module table where the functions have
+ * json_config_t as their first upvalue. Code borrowed from Lua 5.2 source. */
+static void luaL_setfuncs (lua_State *l, const luaL_Reg *reg, int nup)
+{
+    int i;
+
+    luaL_checkstack(l, nup, "too many upvalues");
+    for (; reg->name != NULL; reg++) {  /* fill the table with given functions */
+        for (i = 0; i < nup; i++)  /* copy upvalues to the top */
+            lua_pushvalue(l, -nup);
+        lua_pushcclosure(l, reg->func, nup);  /* closure with those upvalues */
+        lua_setfield(l, -(nup + 2), reg->name);
+    }
+    lua_pop(l, nup);  /* remove upvalues */
+}
+#endif
 
 #define CGNODE "CGNode"
 #define CGRAPH "CGraph"
@@ -79,9 +99,9 @@ static CGNode* checkNode(lua_State* L, int index){
 }
 
 static void pushNode(lua_State* L, CGNode* node){
-	//CGNode* lnode = (CGNode *)lua_newuserdata(L, sizeof(CGNode));
-	//*lnode = *node;
-	lua_pushlightuserdata(L, node);
+	CGNode* lnode = (CGNode *)lua_newuserdata(L, sizeof(CGNode));
+	*lnode = *node;
+	//lua_pushlightuserdata(L, node);
 	luaL_getmetatable(L, CGNODE);
 	lua_setmetatable(L, -2);
 }
@@ -310,8 +330,8 @@ static int lua_setGraphVar(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	const char* name = lua_tostring(L, 2);
 	CGNode* node = checkNode(L, 3);
-	
-	graphSetVar(graph, name, node);
+
+    graphSetVar_lua(graph, name, node);
 	
 	lua_pushnil(L);
 	return 1;
@@ -347,8 +367,8 @@ static int lua_freeNodeFromGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	CGNode* node = checkNode(L, 2);
 	
-	freeNode(graph, node);
-	free(node);
+	freeNode_lua(graph, node);
+	//free(node);
 	
 	return 1;
 }
@@ -643,10 +663,10 @@ static int lua_getGraphVarDiff(lua_State* L){
 
 static int lua_freeNode(lua_State* L){
 	CGNode* node = checkNode(L, 1);
-	printf("freeing solo node\n");
+	//printf("freeing solo node\n");
 	
 	freeNode(NULL, node);
-	free(node);
+	//free(node);
 	
 	lua_pushnil(L);
 	return 1;
@@ -656,30 +676,10 @@ static int lua_freeGraph(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	printf("freeing graph %s\n", graph->name);
 	if(graph->root != NULL){
-		freeGraph(graph);
-		graph->root = NULL;
+		freeGraph_lua(graph);
 	}
 	
 	lua_pushnil(L);
-	return 1;
-}
-
-static int lua_optimizeGraph(lua_State* L){
-	CGraph* graph = checkGraph(L, 1);
-	
-	if(graph->root != NULL){
-		optimizeGraph(graph);
-		lua_newtable(L);
-		lua_pushstring(L, "graph");
-		pushGraph(L, graph);
-		lua_settable(L, -3);
-		lua_pushstring(L, "root");
-		nodeToLuaTable(graph->root, L, graph);
-		lua_settable(L, -3);
-	}
-	else
-		lua_pushnil(L);
-	
 	return 1;
 }
 
@@ -709,14 +709,13 @@ int luaopen_libcgraph(lua_State *L)
 		{"crossEntropy", lua_createCrossEntropyLoss},
 		{"backProp", lua_backPropGraph},
 		{"getVarDiff", lua_getGraphVarDiff},
-		//{"optimizeGraph", lua_optimizeGraph},
 		{"freeGraph", lua_freeGraph},
 		{"freeGraphNode", lua_freeNodeFromGraph},
 		{"freeNode", lua_freeNode},
 		{NULL, NULL}
 	};
 
-	luaL_openlib(L, "cgraph", driver, 0);
+	luaL_openlib(L, "libcgraph", driver, 0);
 	
 	lua_pushinteger (L, ARRAY_TDOUBLE);
 	lua_pushcclosure (L, create, 1);
@@ -731,10 +730,9 @@ int luaopen_libcgraph(lua_State *L)
 		{"__gc", lua_freeNode},
 		{0, 0}
 	};
-	
-	
+
 	/* TODO: set gc to metatable */
-	luaL_newmetatable(L, CGNODE);  
+	luaL_newmetatable(L, CGNODE);
 	luaL_setfuncs(L, CGNODE_meta, 0);
 	luaL_newmetatable(L, CGRAPH);
 	luaL_setfuncs(L, CGRAPH_meta, 0);

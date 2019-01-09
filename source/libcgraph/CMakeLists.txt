@@ -44,6 +44,10 @@ add_library(cgraph
 )
 endif()
 
+if (APPLE)
+	include_directories(/usr/local/opt/openblas/include)
+endif()
+
 if (UNIX)
 	target_link_libraries(cgraph 
 		m 

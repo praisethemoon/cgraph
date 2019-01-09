@@ -1,4 +1,5 @@
-require 'package_config'
+package.path = package.path .. ";../lua_api/?.lua"
+package.cpath = package.cpath .. ";../lua_api/?.dylib"
 
 local CGraph = require 'CGraph'
 local array = CGraph.array
@@ -138,7 +139,8 @@ end
 
 function argmax(t)
   local max, max_idx = t[1], 1
-  for i,v in ipairs(t) do
+  for i=1,#t do
+    local v = t[i]
     if v > max then
       max = v
       max_idx = i
@@ -200,7 +202,10 @@ function train(X, y, X_test, Y_test)
   for i=1,#X_test,1 do
     g:setVar('X', CGraph.matrix(1, 4, _.flatten({X_test[i]})))
     g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
+    
     local output = g:evalNode(eval)
+    print(output)
+    print(output.value[1], output.value[2], output.value[3])
     local max, idx = argmax(output.value)
     confMat[idx][Y_test[i]+1] = confMat[idx][Y_test[i]+1] + 1
   end
@@ -216,3 +221,4 @@ Xinput, Yclass = shuffle(Xinput,Yclass)
 Xinput, Yclass = shuffle(Xinput,Yclass)
 
 train(_.initial(Xinput, 100), _.initial(Yclass, 100), _.last(Xinput, 50), _.last(Yclass, 50))
+print("good to meet ya")

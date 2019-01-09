@@ -1,5 +1,5 @@
 
-local https = require "ssl.https" --luasec
+
 
 local datasets = {
     iris = {
@@ -20,6 +20,7 @@ local datasets = {
 
 
 datasets.iris.download = function(folder)
+    local https = require "ssl.https" --luasec
     local key = datasets.iris.url
     local fullpath = folder.."/iris.csv"
     print("Downloading `".. key.."` dataset into `"..fullpath.."`.")
@@ -31,6 +32,7 @@ datasets.iris.download = function(folder)
 end
 
 datasets.mnist.download = function(folder)
+    local https = require "ssl.https" --luasec
     local train = datasets.mnist.url[1]
     local test = datasets.mnist.url[2]
     local fullpath_train = folder.."/train.csv"
