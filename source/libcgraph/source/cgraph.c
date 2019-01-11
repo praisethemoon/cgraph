@@ -42,6 +42,8 @@ CGNode* copyNode(CGNode* node){
 	n->type = CGNT_CONSTANT;
 	n->constant = calloc(1, sizeof(CGPConstant));
 	n->constant->type = node->constant->type;
+	n->result = NULL;
+	n->diff = NULL;
 	
 	switch(node->constant->type){
 		case CGVT_DOUBLE: {

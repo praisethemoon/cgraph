@@ -238,6 +238,14 @@ CGRAPH_API struct CGNode* cg_getVar(struct CGraph* graph, const char* var);
  * \param[in] var Variable name to unset
  */
 CGRAPH_API void graphUnsetVar(struct CGraph* graph, const char* name);
+
+/**
+ * \brief Copies a constant node
+ * @param node Node to copy
+ * @return New memory independant copy
+ */
+CGRAPH_API struct CGNode* cg_copyNode(struct CGNode* node);
+
 /**
  * \brief Starts the graph computation recusively from its root node
  * \param[in] graph Graph to evaluate
@@ -246,8 +254,17 @@ CGRAPH_API void graphUnsetVar(struct CGraph* graph, const char* name);
 CGRAPH_API struct CGResultNode* cg_evalGraph(struct CGraph* graph);
 
 
-
+/*
+ * TODO: docs
+ */
 CGRAPH_API struct CGResultNode* cg_evalGraphNode(struct CGraph* graph, struct CGNode* node);
+
+/**
+ * \brief Computes nodes value with no parent graph. Node must contain no variable or anything graph specific
+ * @param node node to execute
+ * @return Result node that can be evaluated for result or error description in case of exception
+ */
+CGRAPH_API struct CGResultNode* cg_evalRawNode(struct CGNode* node);
 
 /**
  * \brief Returns error information that happened during graph evaluation

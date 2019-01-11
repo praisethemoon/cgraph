@@ -106,6 +106,10 @@ CGNode* cg_newCrossEntropyLoss(struct CGNode* x, struct CGNode* y, uint64_t num_
 	return makeCrossEntropyLossFunc(x, y, num_classes);
 }
 
+CGNode* cg_copyNode(struct CGNode* node){
+    return copyNode(node);
+}
+
 CGNode* cg_newGraphNode(CGraph* graph){
 	return makeGraphNode(graph);
 }
@@ -129,6 +133,12 @@ CGResultNode* cg_evalGraph(CGraph* graph){
 CGResultNode* cg_evalGraphNode(CGraph* graph, CGNode* node){
 	return computeGraphNode(graph, node);
 }
+
+
+CGResultNode* cg_evalRawNode(CGNode* node){
+    return computeRawNode(node);
+}
+
 
 CGError* cg_getResultError(CGResultNode* result){
 	return result->error;

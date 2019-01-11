@@ -7,6 +7,7 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}/../c_api/
 	${PROJECT_SOURCE_DIR}/../libcgraph/include/c_api
 	${PROJECT_SOURCE_DIR}/vendor/progressbar
+	${PROJECT_SOURCE_DIR}/vendor/csv
 )
 
 set (PROJECT_SRCS
@@ -16,7 +17,6 @@ set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/vendor/progressbar/progressbar.c
 	${PROJECT_SOURCE_DIR}/vendor/progressbar/statusbar.c
 	${PROJECT_SOURCE_DIR}/vendor/csv/csv.c
-	${PROJECT_SOURCE_DIR}/vendor/csv/split.c
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})

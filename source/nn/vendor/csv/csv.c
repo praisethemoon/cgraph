@@ -1,158 +1,148 @@
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
 
-void free_csv_line( char **parsed )
+#include "csv.h"
+
+int
+csv_open(struct csv* file, char* path, char separator, size_t field_count)
 {
-    char **ptr;
+    if (file == NULL || path == NULL)
+        return CSV_E_NULL;
 
-    for ( ptr = parsed; *ptr; ptr++ ) {
-        free( *ptr );
-    }
+    if (field_count == 0)
+        return CSV_E_FIELD_COUNT;
 
-    free( parsed );
+    if (separator == '\n')
+        return CSV_E_NEWLINE;
+
+    errno = 0;
+    file->fd = open(path, O_RDONLY);
+    if (file->fd < 0)
+        return CSV_E_IO;
+
+    file->field_count = field_count;
+    file->sep = separator;
+    file->fields = malloc(sizeof(char*) * field_count);
+
+    file->i = 0;
+    file->bytes_read = 0;
+
+    memset(file->buffer, '\0', __CSV_BUF_SIZE);
+    file->fields[0] = &file->buffer[0];
+
+    return CSV_OK;
 }
 
-static int count_fields( const char *line )
+static int
+rewind_redo(struct csv* file, int bytes_back, char*** out_fields)
 {
-    const char *ptr;
-    int cnt, fQuote;
+    memset(file->buffer, '\0', __CSV_BUF_SIZE);
+    errno = 0;
+    if (lseek(file->fd, bytes_back, SEEK_CUR) == -1)
+        return CSV_E_IO;
 
-    for ( cnt = 1, fQuote = 0, ptr = line; *ptr; ptr++ )
-    {
-        if ( fQuote )
-        {
-            if ( *ptr == '\"' )
-            {
-                if ( ptr[1] == '\"' )
-                {
-                    ptr++;
-                    continue;
-                }
-                fQuote = 0;
-            }
-            continue;
-        }
-
-        switch( *ptr )
-        {
-            case '\"':
-                fQuote = 1;
-                continue;
-            case ',':
-                cnt++;
-                continue;
-            default:
-                continue;
-        }
-    }
-
-    if ( fQuote ) {
-        return -1;
-    }
-
-    return cnt;
+    return csv_read_record(file, out_fields);
 }
 
-/*
- *  Given a string containing no linebreaks, or containing line breaks
- *  which are escaped by "double quotes", extract a NULL-terminated
- *  array of strings, one for every cell in the row.
- */
-char **parse_csv( const char *line )
+int
+csv_read_record(struct csv* file, char*** out_fields)
 {
-    char **buf, **bptr, *tmp, *tptr;
-    const char *ptr;
-    int fieldcnt, fQuote, fEnd;
+    int record_len;
+    unsigned int fields;
 
-    fieldcnt = count_fields( line );
+    if (file == NULL || out_fields == NULL)
+        return CSV_E_NULL;
 
-    if ( fieldcnt == -1 ) {
-        return NULL;
+    if (file->i == file->bytes_read) {
+        file->bytes_read = read(file->fd, file->buffer, __CSV_BUF_SIZE);
+        if (file->bytes_read == -1)
+            return CSV_E_IO;
+
+        if (file->bytes_read == 0)
+            return CSV_END;
+
+        file->i = 0;
     }
 
-    buf = malloc( sizeof(char*) * (fieldcnt+1) );
+    file->fields[0] = &file->buffer[file->i];
+    fields = 1;
+    record_len = 0;
+    for (; file->i < file->bytes_read; file->i++, record_len++) {
+        if (file->buffer[file->i] == file->sep) {
+            file->buffer[file->i] = '\0';
+            file->fields[fields] = &file->buffer[file->i+1];
+            fields++;
 
-    if ( !buf ) {
-        return NULL;
-    }
-
-    tmp = malloc( strlen(line) + 1 );
-
-    if ( !tmp )
-    {
-        free( buf );
-        return NULL;
-    }
-
-    bptr = buf;
-
-    for ( ptr = line, fQuote = 0, *tmp = '\0', tptr = tmp, fEnd = 0; ; ptr++ )
-    {
-        if ( fQuote )
-        {
-            if ( !*ptr ) {
-                break;
-            }
-
-            if ( *ptr == '\"' )
-            {
-                if ( ptr[1] == '\"' )
-                {
-                    *tptr++ = '\"';
-                    ptr++;
-                    continue;
-                }
-                fQuote = 0;
-            }
-            else {
-                *tptr++ = *ptr;
-            }
-
-            continue;
-        }
-
-        switch( *ptr )
-        {
-            case '\"':
-                fQuote = 1;
-                continue;
-            case '\0':
-                fEnd = 1;
-            case ',':
-                *tptr = '\0';
-                *bptr = strdup( tmp );
-
-                if ( !*bptr )
-                {
-                    for ( bptr--; bptr >= buf; bptr-- ) {
-                        free( *bptr );
+            if (fields == file->field_count) {
+                while (1) {
+                    if (file->buffer[file->i] == '\n') {
+                        file->buffer[file->i] = '\0';
+                        file->i++;
+                        *out_fields = file->fields;
+                        return CSV_OK;
                     }
-                    free( buf );
-                    free( tmp );
 
-                    return NULL;
+                    if (file->buffer[file->i] == file->sep)
+                        return CSV_E_TOO_MANY_FIELDS;
+
+                    file->i++;
+                    record_len++;
+
+                    if (file->i == file->bytes_read)
+                        return rewind_redo(file, -record_len, out_fields);
                 }
-
-                bptr++;
-                tptr = tmp;
-
-                if ( fEnd ) {
-                    break;
-                } else {
-                    continue;
-                }
-
-            default:
-                *tptr++ = *ptr;
-                continue;
+            }
         }
 
-        if ( fEnd ) {
-            break;
-        }
+        if (file->buffer[file->i] == '\n')
+            return CSV_E_TOO_FEW_FIELDS;
     }
 
-    *bptr = NULL;
-    free( tmp );
-    return buf;
+    if (fields < file->field_count)
+        return rewind_redo(file, -record_len, out_fields);
+
+    return CSV_OK;
 }
+
+int
+csv_error_string(int code, char** out_error_string)
+{
+    static const char* strings[] = {
+            "OK",
+            "End",
+            "Null pointer",
+            "Unexpected newline",
+            "Field count can not be zero",
+            "I/O error",
+            "Too few fields for record",
+            "Too many fields for record",
+            "Not enough lines to skip",
+            "Invalid return code"
+    };
+
+    if (out_error_string == NULL)
+        return CSV_E_NULL;
+
+    if (code < 0 || code > CSV_E_MAX)
+        return CSV_E_INVALID_CODE;
+
+    *out_error_string = (char*)strings[code];
+    return CSV_OK;
+}
+
+int
+csv_close(struct csv* file)
+{
+    if (file == NULL)
+        return CSV_E_NULL;
+
+    free(file->fields);
+    close(file->fd);
+
+    return CSV_OK;
+}
+
