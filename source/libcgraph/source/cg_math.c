@@ -94,14 +94,8 @@ CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classe
 	
 	for(;i<num_samples;i++){
 		for(j=0;j<num_classes;j++){
-			//printf("%lu vs %f\n", j, y_val[i]);
 			if(y_val[i] == j){
-				//printf("true %f => %f\n", x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
 				sum += -log(x_val[i*num_classes+j]);
-			}
-			else{
-				//printf("false %f => %f\n", 1.0-x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
-				//sum += -log(j - x_val[i*num_classes+j]);
 			}
 		}
 	}

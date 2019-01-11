@@ -67,12 +67,7 @@ int main(int argc, char* argv[]){
 
     struct CGNode* eval  = softmax_node(L3);
 
-
-
-	
 	struct CGraph* graph = cg_newGraph("nn", H);
-
-
 
 	cg_setVar(graph, "x", cg_newMatrixRandNode(1, 4));
 	cg_setVar(graph, "y", cg_newVectorNode(1, y_val));
@@ -206,7 +201,7 @@ int main(int argc, char* argv[]){
         cg_setVar(graph, "x", cg_newMatrixNode(1, 4, X_test[i]));
         cg_setVar(graph, "y", cg_newVectorNode(1, Y_test[i]));
 
-        printf("ground truth: %f\n", Y_test[i][0]);
+        printf("ground truth: %d\n", (int)Y_test[i][0]);
 
         struct CGResultNode *res = cg_evalGraphNode(graph, eval);
 
@@ -250,6 +245,6 @@ int main(int argc, char* argv[]){
 
 	cg_freeGraph(graph);
 	free(graph);
-	printf("done Yeah\n");
+	printf("Training & testing completed.\n");
 	return 0;
 }
