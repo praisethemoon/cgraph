@@ -50,10 +50,11 @@ print(datasets.iris.about)
 
 FileReader.read("../datasets/iris/iris.csv", fn)
 
-table.remove(X, 1)
 
 local Xinput = X
 local Yclass = y
+
+print(#Xinput, #Yclass)
 
 function shuffle(tbl, tbl2)
   size = #tbl
@@ -86,7 +87,7 @@ local y = CGraph.variable 'y'
 
 local relu = CGraph.ReLU
 
-local A2 = sigmoid(CGraph.dot(X, theta1) + b1)
+local A2 = relu(CGraph.dot(X, theta1) + b1)
 local A3 = sigmoid(CGraph.dot(A2, theta2) + b2)
 local final = sigmoid(CGraph.dot(A3, theta3) + b3)
 
@@ -123,7 +124,7 @@ function updateWeights(name)
   
   local size = t_1.len or t_1.cols*t_1.rows
   
-  local alpha = 0.3
+  local alpha = 0.03
 
   local t_1_newval = {}
   for k=1,size do
@@ -173,7 +174,7 @@ function train(X, y, X_test, Y_test)
  
   
   loss = {}
-  for k=1,100000 do
+  for k=1,1000 do
     local err = 0
     X, y = shuffle(X, y)
     for i=1,#X,1 do
@@ -197,15 +198,15 @@ function train(X, y, X_test, Y_test)
       
    end
   end
+  
   print(loss[#loss-1])
+
   local confMat = buildConfusionMatrix(3)
   for i=1,#X_test,1 do
     g:setVar('X', CGraph.matrix(1, 4, _.flatten({X_test[i]})))
     g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
     
     local output = g:evalNode(eval)
-    print(output)
-    print(output.value[1], output.value[2], output.value[3])
     local max, idx = argmax(output.value)
     confMat[idx][Y_test[i]+1] = confMat[idx][Y_test[i]+1] + 1
   end

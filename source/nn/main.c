@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include <string.h> 
+#include <string.h>
 #include <memory.h>
 #include <stdlib.h>
 
@@ -15,7 +15,7 @@
 #include "csv.h"
 
 struct CGNode* sigmoid_node(struct CGNode* x){
-	return cg_newBinOp(CGBOT_DIV, cg_newDoubleNode(1.0), cg_newBinOp(CGBOT_ADD, cg_newDoubleNode(1.0), cg_newUnOp(CGUOT_EXP, cg_newUnOp(CGUOT_MINUS, x))));
+    return cg_newBinOp(CGBOT_DIV, cg_newDoubleNode(1.0), cg_newBinOp(CGBOT_ADD, cg_newDoubleNode(1.0), cg_newUnOp(CGUOT_EXP, cg_newUnOp(CGUOT_MINUS, x))));
 }
 
 
@@ -36,45 +36,32 @@ void updateWeight(struct CGraph* graph, char* var, struct CGNode* alpha){
 }
 
 int main(int argc, char* argv[]){
-/*
-	double x_val[] = {0.2, 0.3, 0.5, 0.8, 0.12, 0.34, 0.75, 0.08};
-	double x_val2[] ={50.1,0.5,111.4,0};
-	double x_val3[] ={5.1,3.5,1.4,0.4};
-	double T1_val[] = {.21, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-	double b1_val[] = {0.1, 0.1, 0.1, 0.1, 0.1};
-	double T2_val[] =  {0.3, 0.4, 0.12, 0.14, 0.1,0.3, 0.4, 0.12, 0.14, 0.1,0.3, 0.4, 0.12, 0.14, 0.1};
-	double b2_val[] = {0.0, 0.0, 0.0};
-	double T3_val[] =  {0.1,0.4,0.8,0.3,0.7,0.2,0.5,0.2,0.9 };
-	//double b3_val[] = {1.0, 1.0, 1.0};
- */
-	double y_val[] = {1};
+    double y_val[] = {1};
 
-	
-	
-	struct CGNode* x = cg_newVariable("x");
-	struct CGNode* y = cg_newVariable("y");
-	struct CGNode* T_1 = cg_newVariable("T_1");
-	struct CGNode* b_1 = cg_newVariable("b_1");
-	struct CGNode* T_2 = cg_newVariable("T_2");
-	struct CGNode* b_2 = cg_newVariable("b_2");
-	struct CGNode* T_3 = cg_newVariable("T_3");
-	struct CGNode* b_3 = cg_newVariable("b_3");
-	
-	struct CGNode* L1 = sigmoid_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, x, T_1), b_1));
-	struct CGNode* L2 = sigmoid_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L1, T_2), b_2));
-    struct CGNode* L3 = sigmoid_node(cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3));
-	struct CGNode* H  = cg_newCrossEntropyLoss((L3), y, 3);
+    struct CGNode* x = cg_newVariable("x");
+    struct CGNode* y = cg_newVariable("y");
+    struct CGNode* T_1 = cg_newVariable("T_1");
+    struct CGNode* b_1 = cg_newVariable("b_1");
+    struct CGNode* T_2 = cg_newVariable("T_2");
+    struct CGNode* b_2 = cg_newVariable("b_2");
+    struct CGNode* T_3 = cg_newVariable("T_3");
+    struct CGNode* b_3 = cg_newVariable("b_3");
 
-    struct CGNode* eval  = softmax_node(L3);
+    struct CGNode* L1 = cg_newUnOp(CGUOT_RELU, cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, x, T_1), b_1));
+    struct CGNode* L2 = cg_newUnOp(CGUOT_RELU, cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L1, T_2), b_2));
+    struct CGNode* L3 = cg_newUnOp(CGUOT_RELU, cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3));
+    struct CGNode* H  = cg_newCrossEntropyLoss((L3), y, 3);
 
-	struct CGraph* graph = cg_newGraph("nn", H);
+    struct CGNode* eval  = (L3);
 
-	cg_setVar(graph, "x", cg_newMatrixRandNode(1, 4));
-	cg_setVar(graph, "y", cg_newVectorNode(1, y_val));
-	cg_setVar(graph, "T_1", cg_newMatrixRandNode(4, 5));
-	cg_setVar(graph, "b_1", cg_newVectorRandNode(5));
-	cg_setVar(graph, "T_2", cg_newMatrixRandNode(5, 5));
-	cg_setVar(graph, "b_2", cg_newVectorRandNode(5));
+    struct CGraph* graph = cg_newGraph("nn", H);
+
+    cg_setVar(graph, "x", cg_newMatrixRandNode(1, 4));
+    cg_setVar(graph, "y", cg_newVectorNode(1, y_val));
+    cg_setVar(graph, "T_1", cg_newMatrixRandNode(4, 5));
+    cg_setVar(graph, "b_1", cg_newVectorRandNode(5));
+    cg_setVar(graph, "T_2", cg_newMatrixRandNode(5, 5));
+    cg_setVar(graph, "b_2", cg_newVectorRandNode(5));
     cg_setVar(graph, "T_3", cg_newMatrixRandNode(5, 3));
     cg_setVar(graph, "b_3", cg_newVectorRandNode(3));
 
@@ -142,7 +129,7 @@ int main(int argc, char* argv[]){
 
             cg_autoDiffGraph(graph);
 
-            struct CGNode* alpha = cg_newDoubleNode(0.5);
+            struct CGNode* alpha = cg_newDoubleNode(.03);
 
             updateWeight(graph, "T_1", alpha);
             updateWeight(graph, "T_2", alpha);
@@ -243,8 +230,8 @@ int main(int argc, char* argv[]){
 
     }
 
-	cg_freeGraph(graph);
-	free(graph);
-	printf("Training & testing completed.\n");
-	return 0;
+    cg_freeGraph(graph);
+    free(graph);
+    printf("Training & testing completed.\n");
+    return 0;
 }

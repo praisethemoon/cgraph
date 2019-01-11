@@ -2304,6 +2304,12 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 			parentNode->result = newres;
 			return newres;
 		}
+
+        case CGUOT_SOFTPLUS:{
+            newres = softplus(lhsResult);
+            parentNode->result = newres;
+            return newres;
+        }
 	}
 	char msg[MAX_ERR_FMT_LEN];
 	snprintf(msg, MAX_ERR_FMT_LEN, "Operation [%s %s] cannot be applied", getVariableTypeString(uhsType), getUnaryOperationTypeString(type));

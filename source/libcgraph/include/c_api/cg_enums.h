@@ -77,9 +77,10 @@ typedef enum CGUnaryOperationType {
 	CGUOT_TAN,
 	CGUOT_TANH,
 	CGUOT_RELU,
+	CGUOT_SOFTPLUS,
 } CGUnaryOperationType;
 
-#define MAX_UNARY_OPERATION CGUOT_RELU
+#define MAX_UNARY_OPERATION CGUOT_SOFTPLUS
 
 /**
  * \brief List of operations that apply mainly to a given axis of matrices
@@ -91,6 +92,10 @@ typedef enum CGAxisBoundOperationType {
 	CGABOT_MEAN,
 	CGABOT_VARIANCE,
 	CGABOT_SOFTMAX,
+	// NOT IMPLEMENTED
+	CGABOT_ARGMIN,
+	CGABOT_ARGMAX,
+
 }CGAxisBoundOperationType;
 
 #define MAX_AXIS_BOUND_OPERATION CGABOT_VARIANCE

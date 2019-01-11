@@ -5,6 +5,7 @@ build/*
 *.o
 *.dylib
 lua_api/*.dylib
+datasets/*
 source/cmake-build-debug/*
 source/html
 source/latex
@@ -13,3 +14,8 @@ source/build
 */.idea/*
 .vscode/*
 datasets/*
+*.dylib
+*.dylib
+*.dylib
+lua_api/libcgraph.dylib
+datasets/iris/iris.csv

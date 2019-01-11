@@ -232,7 +232,7 @@ CGNode* makeRandomMatrixConstantNode(uint64_t  rows, uint64_t cols){
 
 	init_genrand(&mt, time(NULL));
     for(;i<rows*cols;i++){
-        m->data[i] = (genrand_res53(&mt) - 0.5)/10;
+        m->data[i] = (genrand_res53(&mt))/10;
     }
 
     CGPConstant* c = calloc(1, sizeof(CGPConstant));
