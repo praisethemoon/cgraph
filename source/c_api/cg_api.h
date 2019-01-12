@@ -366,8 +366,8 @@ CGRAPH_API struct CGResultNode* cg_constantToResult(struct CGNode* node);
 
 
 #ifdef CG_USE_LIBCPUID
-struct CGCPUInfo* getCPUInformation();
-void printCPUInfo(struct CGCPUInfo* cpuInfo);
+struct CGCPUInfo* cg_getCPUInformation();
+void cg_printCPUInfo(struct CGCPUInfo* cpuInfo);
 #endif
 
 #endif

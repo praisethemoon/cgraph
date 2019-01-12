@@ -1,3 +1,5 @@
+#ifdef CG_USE_LIBCPUID
+
 #include <inttypes.h>
 #include <stdio.h>
 
@@ -88,3 +90,5 @@ void printCPUInfo(CGCPUInfo* cpuInfo){
 	printf("SSE4.2 : %s\n", cpuInfo->flags[CGCPUF_SSE4_2]?"OK":"X");
 	
 }
+
+#endif

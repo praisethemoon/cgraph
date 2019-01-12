@@ -132,6 +132,7 @@ And from there you have access to the C API from gdb.
 - minunit [https://github.com/siu/minunit](https://github.com/siu/minunit)
 - Remotery [https://github.com/Celtoys/Remotery](https://github.com/Celtoys/Remotery)
 - Underscore [https://github.com/jtarchie/underscore-lua](https://github.com/jtarchie/underscore-lua)
+- Lua Flot [http://stevedonovan.github.io/lua-flot/flot-lua.html](http://stevedonovan.github.io/lua-flot/flot-lua.html)
 
 ### Help Wanted
 If you would like to contribute, feel free to fork this stuff.
