@@ -65,10 +65,13 @@ void freeVectorValue(CGVector* data);
 void freeMatrixValue(CGMatrix* data);
 void freeResultNode(CGResultNode* node);
 void freeNode(CGraph* graph, CGNode* node);
+void freeNode_lua(CGraph* graph, CGNode* node);
+void freeGraph_lua(CGraph* graph);
 void freeGraph(CGraph* graph);
-
 CGNode* copyNode(CGNode* node);
 void* copyNodeValue(CGNode* node);
 void* copyRNodeValue(CGResultNode* node);
 CGResultNode* copyResultNode(CGResultNode* node);
+
+void graphSetVar_lua(CGraph* graph, const char* name, CGNode* value);
 #endif

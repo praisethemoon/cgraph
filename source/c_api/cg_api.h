@@ -51,6 +51,11 @@ CGRAPH_API void cg_freeGraph(struct CGraph* graph);
  */
 CGRAPH_API void cg_freeResultNode(struct CGResultNode* result);
 
+/**
+ * \brief Frees a node. Currently not used.
+ * \param[in,out] result node to deallocate, should be set freed manually after calling this function (cg_freeNode(r); free(r))
+ */
+CGRAPH_API void cg_freeNode(struct CGraph* graph, struct CGNode* node);
 
 
 
@@ -71,6 +76,20 @@ CGRAPH_API struct CGNode* cg_newDoubleNode(double v);
  */
 CGRAPH_API struct CGNode* cg_newDouble0Node();
 
+
+/**
+ * \brief Creates a 1 initialized scalar value
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newDouble1Node();
+
+
+/**
+ * \brief Creates a randomly initialized scalar value
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newDoubleRandNode();
+
 /**
  * \brief Creates a vector node
  * \param[in] len Vector length
@@ -85,6 +104,20 @@ CGRAPH_API struct CGNode* cg_newVectorNode(uint64_t len, double* v);
  * \return Graph node
  */
 CGRAPH_API struct CGNode* cg_newVector0Node(uint64_t len);
+
+/**
+ * \brief Creates a 1 initialized vector node
+ * \param[in] len Vector length
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newVector1Node(uint64_t len);
+
+/**
+ * \brief Creates a randomly initialized vector node
+ * \param[in] len Vector length
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newVectorRandNode(uint64_t len);
 
 
 /**
@@ -104,6 +137,24 @@ CGRAPH_API struct CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, double*
  * \return Graph node
  */
 CGRAPH_API struct CGNode* cg_newMatrix0Node(uint64_t rows, uint64_t cols);
+
+/**
+ * \brief Creates a 1 initialized Matrix node, matrices are ROW Major
+ * \param[in] rows Matrix rows
+ * \param[in] cols Matrix cols
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newMatrix1Node(uint64_t rows, uint64_t cols);
+
+/**
+ * \brief Creates a randomly initialized Matrix node, matrices are ROW Major
+ * \param[in] rows Matrix rows
+ * \param[in] cols Matrix cols
+ * \return Graph node
+ */
+CGRAPH_API struct CGNode* cg_newMatrixRandNode(uint64_t rows, uint64_t cols);
+
+
 
 /**
  * \brief Creates a variable node
@@ -173,13 +224,27 @@ CGRAPH_API void cg_setVar(struct CGraph* graph, const char* var, struct CGNode* 
 
 
 /**
- * \brief Gets the value of a variable within the given graph
+ * \brief Gets the value of a variable within the given graph. If the graph already has a variable, it will freed and replaced with the new one.
  * \param[in] graph Target graph
  * \param[in] var Variable name to update/set
  * \return Value of the given variable within the graph if it exists, otherwise returns NULL
  */
-CGRAPH_API struct CGNode* cg_getVar(struct CGraph* graph, char* var);
+CGRAPH_API struct CGNode* cg_getVar(struct CGraph* graph, const char* var);
 
+
+/**
+ * \brief Unsets the variable from the graph, i.e removes it but it does not free it.
+ * \param[in] graph Target graph
+ * \param[in] var Variable name to unset
+ */
+CGRAPH_API void graphUnsetVar(struct CGraph* graph, const char* name);
+
+/**
+ * \brief Copies a constant node
+ * @param node Node to copy
+ * @return New memory independant copy
+ */
+CGRAPH_API struct CGNode* cg_copyNode(struct CGNode* node);
 
 /**
  * \brief Starts the graph computation recusively from its root node
@@ -189,8 +254,17 @@ CGRAPH_API struct CGNode* cg_getVar(struct CGraph* graph, char* var);
 CGRAPH_API struct CGResultNode* cg_evalGraph(struct CGraph* graph);
 
 
-
+/*
+ * TODO: docs
+ */
 CGRAPH_API struct CGResultNode* cg_evalGraphNode(struct CGraph* graph, struct CGNode* node);
+
+/**
+ * \brief Computes nodes value with no parent graph. Node must contain no variable or anything graph specific
+ * @param node node to execute
+ * @return Result node that can be evaluated for result or error description in case of exception
+ */
+CGRAPH_API struct CGResultNode* cg_evalRawNode(struct CGNode* node);
 
 /**
  * \brief Returns error information that happened during graph evaluation

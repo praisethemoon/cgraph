@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <malloc.h>
+
 
 #include "cgraph.h"
 #include "cg_operation.h"
@@ -25,6 +25,9 @@ CGNode* variance(CGNode* X, uint8_t axis);
 
 CGResultNode* relu(CGResultNode* x);
 CGNode* dx_relu(CGResultNode* x);
+
+CGResultNode* softplus(CGResultNode* x);
+CGNode* dx_softplus(CGResultNode* x);
 
 CGNode* softmax_node(CGNode* x);
 CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes);

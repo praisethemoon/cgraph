@@ -93,7 +93,7 @@ static rmtBool g_SettingsInitialized = RMT_FALSE;
         #include <sys/time.h>
     #else
         #ifndef __FreeBSD__
-            #include <malloc.h>
+            
         #endif
     #endif
 

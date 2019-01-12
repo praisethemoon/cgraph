@@ -1,5 +1,4 @@
-package.path = package.path .. ";../lua_api/?.lua"
-package.cpath = package.cpath .. ";../lua_api/?.dylib"
+require 'package_config'
 
 local CGraph = require 'CGraph'
 local array = CGraph.array
@@ -11,50 +10,55 @@ local cg = CGraph
 
 local crossEntroy = CGraph.crossEntropyLoss
 
---[[
-  Reading IRIS CSV Dataset
-]]
 
-classes= {}
+  
+function file_exists(name)
+    local f=io.open(name,"r")
+    if f~=nil then io.close(f) return true else return false end
+end
 
--- some version uses these class names
+if not file_exists "../datasets/mnist/train.csv" then
+    datasets.mnist.download("../datasets/mnist/")
+end
+print("\n\n")
+print(datasets.mnist.about)
+print("\n\n")
 
-classes["Iris-setosa"] = 0
-classes["Iris-versicolor"] = 1
-classes["Iris-virginica"] = 2
+function split(s, delimiter)
+    result = {};
+    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, tonumber(match));
+    end
+    return result;
+end
 
--- others uses these
-classes["setosa"] = 0
-classes["versicolor"] = 1
-classes["virginica"] = 2
+print("Reading train set")
 
-X = {}
-y = {}
+X_train = {}
+Y_train = {}
 
 local fn = function(line)
-  local sl, sw, pl, pw, c = line:match('(%S+),(%S+),(%S+),(%S+),(%S+)')
-  table.insert(X, {tonumber(sl), tonumber(sw), tonumber(pl), tonumber(pw)})
-  table.insert(y, classes[c])
+    local data = split(line, ',')
+    table.insert(Y_train, data[1])
+    table.remove(data, 1)
+    table.insert(X_train, data)
+end
+FileReader.read("../datasets/mnist/train.csv", fn)
+
+X_test = {}
+Y_test = {}
+
+print("Reading test set")
+local fn2 = function(line)
+    local data = split(line, ',')
+    table.insert(Y_test, data[1])
+    table.remove(data, 1)
+    table.insert(X_test, data)
 end
 
-function file_exists(name)
-  local f=io.open(name,"r")
-  if f~=nil then io.close(f) return true else return false end
-end
-
-if not file_exists "../datasets/iris/iris.csv" then
-  datasets.iris.download("../datasets/iris/")
-end
-
-print(datasets.iris.about)
-
-FileReader.read("../datasets/iris/iris.csv", fn)
+FileReader.read("../datasets/mnist/test.csv", fn2)
 
 
-local Xinput = X
-local Yclass = y
-
-print(#Xinput, #Yclass)
 
 function shuffle(tbl, tbl2)
   size = #tbl
@@ -87,13 +91,13 @@ local y = CGraph.variable 'y'
 
 local relu = CGraph.ReLU
 
-local A2 = relu(CGraph.dot(X, theta1) + b1)
+local A2 = sigmoid(CGraph.dot(X, theta1) + b1)
 local A3 = sigmoid(CGraph.dot(A2, theta2) + b2)
 local final = sigmoid(CGraph.dot(A3, theta3) + b3)
 
 local eval = softmax(final)
 
-local g = CGraph.graph("nn", crossEntroy((final), y, 3))
+local g = CGraph.graph("nn", crossEntroy((final), y, 10))
 
 
 function gaussian (mean, variance)
@@ -124,7 +128,7 @@ function updateWeights(name)
   
   local size = t_1.len or t_1.cols*t_1.rows
   
-  local alpha = 0.03
+  local alpha = 0.3
 
   local t_1_newval = {}
   for k=1,size do
@@ -141,7 +145,6 @@ end
 function argmax(t)
   local max, max_idx = t[1], 1
   for i=1,#t do
-    local v = t[i]
     if v > max then
       max = v
       max_idx = i
@@ -165,20 +168,21 @@ end
 
 function train(X, y, X_test, Y_test)
   print('Training on '..#X..' samples and testing on '..#X_test..' samples.')
-  g:setVar('T_1', CGraph.matrix(4, 5, randomWeight(20)))
-  g:setVar('b_1', CGraph.vector(5, randomWeight(5)))
-  g:setVar('T_2', CGraph.matrix(5, 5, randomWeight(25)))
-  g:setVar('b_2', CGraph.vector(5, randomWeight(5)))
-  g:setVar('T_3', CGraph.matrix(5, 3, randomWeight(15)))
-  g:setVar('b_3', CGraph.vector(3, randomWeight(3)))
+  g:setVar('T_1', CGraph.matrix(784, 650, randomWeight(509600)))
+  g:setVar('b_1', CGraph.vector(650, randomWeight(650)))
+  g:setVar('T_2', CGraph.matrix(650, 300, randomWeight(195000)))
+  g:setVar('b_2', CGraph.vector(300, randomWeight(300)))
+  g:setVar('T_3', CGraph.matrix(300, 10, randomWeight(3000)))
+  g:setVar('b_3', CGraph.vector(10, randomWeight(10)))
  
   
   loss = {}
-  for k=1,1000 do
+  for k=1,1 do
+    print('epoch', k)
     local err = 0
     X, y = shuffle(X, y)
-    for i=1,#X,1 do
-      g:setVar('X', CGraph.matrix(1, 4, _.flatten({X[i]})))
+    for i=1,10,1 do
+      g:setVar('X', CGraph.matrix(1, 784, _.flatten({X[i]})))
       g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
       local output = g:eval()
       table.insert(loss, output.value)
@@ -198,28 +202,25 @@ function train(X, y, X_test, Y_test)
       
    end
   end
-  
   print(loss[#loss-1])
-
-  local confMat = buildConfusionMatrix(3)
+  local confMat = buildConfusionMatrix(10)
   for i=1,#X_test,1 do
-    g:setVar('X', CGraph.matrix(1, 4, _.flatten({X_test[i]})))
+    g:setVar('X', CGraph.matrix(1, 784, _.flatten({X_test[i]})))
     g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
-    
     local output = g:evalNode(eval)
+    print(output.value)
     local max, idx = argmax(output.value)
     confMat[idx][Y_test[i]+1] = confMat[idx][Y_test[i]+1] + 1
   end
 
-  for i=1,3 do
-    print(confMat[i][1], confMat[i][2], confMat[i][3])
+  for i=1,10 do
+    for j=1,10 do
+        io.write(confMat[i][j] .. ', ')
+    end
+    io.write("\n")
   end
 end
 
-Xinput, Yclass = shuffle(Xinput,Yclass)
-Xinput, Yclass = shuffle(Xinput,Yclass)
-Xinput, Yclass = shuffle(Xinput,Yclass)
-Xinput, Yclass = shuffle(Xinput,Yclass)
+train(_.initial(X_train,100) , _.initial(Y_train, 100), _.initial(X_test, 100), _.initial(Y_test, 100))
 
-train(_.initial(Xinput, 100), _.initial(Yclass, 100), _.last(Xinput, 50), _.last(Yclass, 50))
-print("good to meet ya")
+g:free()

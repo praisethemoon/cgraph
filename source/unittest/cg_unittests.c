@@ -3,7 +3,7 @@
  *  \brief Unit tests of every functionality offered by the library
  */
 
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
 
@@ -958,7 +958,7 @@ MU_TEST(runCrossEntropyLossVec){
 	
 	ASSERT_DOUBLE(res);
 	
-	mu_assert_double_eq(2.223177, cg_getResultDoubleVal(res)->value);
+	mu_assert_double_eq(1.163768, cg_getResultDoubleVal(res)->value);
 	
 	cg_freeGraph(graph); free(graph);
 }

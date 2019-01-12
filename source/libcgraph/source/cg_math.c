@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <malloc.h>
+
 #include <math.h>
 
 
@@ -24,17 +24,25 @@ void __cg_map_array(double* src, double* dest, uint64_t len, double(*f)(double))
 }
 
 double __cg_relu(double x){
-	return x>0.0?x:0.0;
+	return x>=0.0?x:0.0;
 }
 
 double __cg_dx_relu(double x){
-	return x>=0.0?1:0.0;
+	return x>=0.0?1.0:0.0;
 }
 
-
-CGNode* sigmoid(CGNode* x){
-	return NULL;
+double __cg_sigmoid(double x){
+    return x>=0.0?1.0/(1.0 + exp(-x)):1.0/(1.0 + exp(x));
 }
+
+double __cg_softplus(double x){
+    return log(1 + exp(x));
+}
+
+double __cg_dx_softplus(double x){
+    return __cg_sigmoid(x);
+}
+
 
 /*
  * A numerically stable version of softmax
@@ -94,14 +102,8 @@ CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classe
 	
 	for(;i<num_samples;i++){
 		for(j=0;j<num_classes;j++){
-			//printf("%lu vs %f\n", j, y_val[i]);
 			if(y_val[i] == j){
-				//printf("true %f => %f\n", x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
 				sum += -log(x_val[i*num_classes+j]);
-			}
-			else{
-				//printf("false %f => %f\n", 1.0-x_val[i*num_classes+j], log(x_val[i*num_classes+j]));
-				//sum += -log(j - x_val[i*num_classes+j]);
 			}
 		}
 	}
@@ -219,4 +221,57 @@ CGNode* dx_relu(CGResultNode* x){
 			return makeMatrixConstantNode(m->rows, m->cols, y);
 		}
 	}
+}
+
+CGResultNode* softplus(CGResultNode* x){
+    switch(x->type){
+        case CGVT_DOUBLE:{
+            double val = ((CGDouble*)x->value)->value;
+            return makeDoubleResultNode(__cg_softplus(val));
+        }
+
+        case CGVT_VECTOR: {
+            CGVector* v = (CGVector*)x->value;
+
+            double* y = calloc(v->len, sizeof(double));
+            __cg_map_array(v->data, y, v->len, __cg_softplus);
+            return makeVectorResultNode(v->len, y);
+        }
+
+        case CGVT_MATRIX: {
+            CGMatrix* m = (CGMatrix*)x->value;
+            uint64_t len = m->cols*m->rows;
+
+            double* y = calloc(len, sizeof(double));
+            __cg_map_array(m->data, y, len, __cg_softplus);
+            return makeMatrixResultNode(m->rows, m->cols, y);
+        }
+    }
+}
+
+
+CGNode* dx_softplus(CGResultNode* x){
+    switch(x->type){
+        case CGVT_DOUBLE:{
+            double val = ((CGDouble*)x->value)->value;
+            return makeDoubleConstantNode(__cg_dx_softplus(val));
+        }
+
+        case CGVT_VECTOR: {
+            CGVector* v = (CGVector*)x->value;
+
+            double* y = calloc(v->len, sizeof(double));
+            __cg_map_array(v->data, y, v->len, __cg_dx_softplus);
+            return makeVectorConstantNode(v->len, y);
+        }
+
+        case CGVT_MATRIX: {
+            CGMatrix* m = (CGMatrix*)x->value;
+            uint64_t len = m->cols*m->rows;
+
+            double* y = calloc(len, sizeof(double));
+            __cg_map_array(m->data, y, len, __cg_dx_softplus);
+            return makeMatrixConstantNode(m->rows, m->cols, y);
+        }
+    }
 }

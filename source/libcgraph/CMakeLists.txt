@@ -8,6 +8,7 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}/vendor/profiler
 	${PROJECT_SOURCE_DIR}/vendor/container
 	${PROJECT_SOURCE_DIR}/vendor/thread
+	${PROJECT_SOURCE_DIR}/vendor/random
 )
 
 
@@ -15,6 +16,7 @@ set( EXTERNAL_DEPS
 	${PROJECT_SOURCE_DIR}/vendor/thread/tinycthread.c
 	${PROJECT_SOURCE_DIR}/vendor/container/vec.c
 	${PROJECT_SOURCE_DIR}/vendor/container/map.c
+	${PROJECT_SOURCE_DIR}/vendor/random/random.c
 )
 
 set (PROJECT_SRCS
@@ -42,6 +44,10 @@ target_link_libraries(cgraph
 add_library(cgraph
 	${PROJECT_SOURCE_DIR}/source/cg_cpu.c
 )
+endif()
+
+if (APPLE)
+	include_directories(/usr/local/opt/openblas/include)
 endif()
 
 if (UNIX)
