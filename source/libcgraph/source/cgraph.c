@@ -2002,6 +2002,206 @@ CGResultNode* min(CGNode* X, CGraph* graph){
 }
 
 
+CGResultNode* argmax(CGNode* X, CGraph* graph){
+    CGResultNode* res = computeCGNode(graph, X->axop->uhs);
+
+    switch(res->type){
+        case CGVT_DOUBLE:
+        {
+            double y = 0;
+            CGDouble* Y = calloc(1, sizeof(CGDouble));
+
+            Y->value = ((CGDouble*)res->value)->value;
+            CGResultNode* result = calloc(1, sizeof(CGResultNode));
+            result->type = CGVT_DOUBLE;
+            result->value = Y;
+
+            return result;
+        }
+
+        case CGVT_VECTOR:
+        {
+            CGVector* v = (CGVector*)res->value;
+            CGDouble* Y = calloc(1, sizeof(CGDouble));
+
+            uint64_t i = 1;
+            uint64_t maxIdx = 0;
+
+            for (;i < v->len; i++){
+                if(v->data[i] > v->data[maxIdx])
+                    maxIdx = i;
+            }
+
+            Y->value = maxIdx;
+            CGResultNode* result = calloc(1, sizeof(CGResultNode));
+            result->type = CGVT_DOUBLE;
+            result->value = Y;
+
+            return result;
+        }
+
+        case CGVT_MATRIX: {
+            CGMatrix* M = (CGMatrix*)res->value;
+            CGVector* V = calloc(1, sizeof(CGVector));
+
+            if(X->axop->axis == 0){
+                uint64_t len = M->cols;
+                double* y = calloc(len, sizeof(double));
+
+                V->data = y;
+                V->len = len;
+
+                uint64_t i = 0;
+
+                for(;i<M->cols;i++){
+                    y[i] = i;
+                }
+
+                for(i=0;i<M->rows*M->cols;i++){
+                    if(M->data[(uint64_t)y[i%len]] < M->data[i])
+                        y[i%len] = i;
+                }
+
+                // transform vector representation into matrix
+                for(i=0;i<M->cols;i++){
+                    y[i] = ((int)y[i])/M->cols;
+                }
+            }
+            else {
+                uint64_t len = M->rows;
+                double* y = calloc(len, sizeof(double));
+
+                V->data = y;
+                V->len = len;
+
+                uint64_t i = 0;
+
+                for(;i<M->rows;i++){
+                    y[i] = i*M->cols;
+                }
+
+                for(i=0;i<M->rows*M->cols;i++){
+                    if(M->data[(uint64_t)y[i/M->cols]] < M->data[i])
+                        y[i/M->cols] = i;
+                }
+
+                // transform vector representation into matrix
+                for(i=0;i<M->rows;i++){
+                    y[i] = ((int)y[i])%M->cols;
+                }
+            }
+
+            CGResultNode* result = calloc(1, sizeof(CGResultNode));
+            result->type = CGVT_VECTOR;
+            result->value = V;
+
+            return result;
+
+        }
+    }
+}
+
+
+CGResultNode* argmin(CGNode* X, CGraph* graph){
+    CGResultNode* res = computeCGNode(graph, X->axop->uhs);
+
+    switch(res->type){
+        case CGVT_DOUBLE:
+        {
+            double y = 0;
+            CGDouble* Y = calloc(1, sizeof(CGDouble));
+
+            Y->value = 0;
+            CGResultNode* result = calloc(1, sizeof(CGResultNode));
+            result->type = CGVT_DOUBLE;
+            result->value = Y;
+
+            return result;
+        }
+
+        case CGVT_VECTOR:
+        {
+            CGVector* v = (CGVector*)res->value;
+            CGDouble* Y = calloc(1, sizeof(CGDouble));
+
+            uint64_t i = 1;
+            uint64_t minIdx = 0;
+
+            for (;i < v->len; i++){
+                if(v->data[i] > v->data[minIdx])
+                    minIdx = (double)i;
+            }
+
+            Y->value = minIdx;
+            CGResultNode* result = calloc(1, sizeof(CGResultNode));
+            result->type = CGVT_DOUBLE;
+            result->value = Y;
+
+            return result;
+        }
+
+        case CGVT_MATRIX: {
+            CGMatrix* M = (CGMatrix*)res->value;
+            CGVector* V = calloc(1, sizeof(CGVector));
+
+            if(X->axop->axis == 0){
+                uint64_t len = M->cols;
+                double* y = calloc(len, sizeof(double));
+
+                V->data = y;
+                V->len = len;
+
+                uint64_t i = 0;
+
+                for(;i<M->cols;i++){
+                    y[i] = i;
+                }
+
+                for(i=0;i<M->rows*M->cols;i++){
+                    if(M->data[(uint64_t)y[i%len]] > M->data[i])
+                        y[i%len] = (double)i;
+                }
+
+                // transform vector representation into matrix
+                for(i=0;i<M->cols;i++){
+                    y[i] = ((int)y[i])/M->cols;
+                }
+            }
+            else {
+                uint64_t len = M->rows;
+                double* y = calloc(len, sizeof(double));
+
+                V->data = y;
+                V->len = len;
+
+                uint64_t i = 0;
+
+                for(;i<M->rows;i++){
+                    y[i] = i*M->cols;
+                }
+
+                for(i=0;i<M->rows*M->cols;i++){
+                    if(M->data[(uint64_t)y[i/M->cols]] > M->data[i])
+                        y[i/M->cols] = (double)i;
+                }
+
+
+                // transform vector representation into matrix
+                for(i=0;i<M->rows;i++){
+                    y[i] = ((int)y[i])%M->cols;
+                }
+            }
+
+            CGResultNode* result = calloc(1, sizeof(CGResultNode));
+            result->type = CGVT_VECTOR;
+            result->value = V;
+
+            return result;
+
+        }
+    }
+}
+
 CGResultNode* mean(CGNode* X, CGraph* graph){
 	CGResultNode* res = computeCGNode(graph, X->axop->uhs);
 	
@@ -2769,6 +2969,19 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 					//CGResultNode* res = computeCGNode(graph, node->axop->uhs);
 					//break;
 				}
+
+				case CGABOT_ARGMAX:{
+				    result = argmax(node, graph);
+                    break;
+				}
+
+                case CGABOT_ARGMIN:{
+                    result = argmin(node, graph);
+                    break;
+                }
+
+				default:
+				    break;
 			}
 			
 			break;

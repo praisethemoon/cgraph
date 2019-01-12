@@ -19,3 +19,4 @@ datasets/*
 *.dylib
 lua_api/libcgraph.dylib
 datasets/iris/iris.csv
+*.html

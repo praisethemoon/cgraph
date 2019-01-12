@@ -1,4 +1,4 @@
-#include <luajit.h>
+#include <lua.h>
 #include <lauxlib.h>
 
 #include "array.h"
@@ -284,13 +284,33 @@ static int lua_createUnaryOperation(lua_State* L){
 		CGUOT_TAN,
 		CGUOT_TANH,
 		CGUOT_RELU,
-		//CGUOT_SUM,
 	};
 	
 	uint8_t type = lua_tointeger(L, 1);
 	CGNode* uhs = checkNode(L, 2);
 	CGNode* node = makeUnaryOpNode(ops[type], uhs);
 	
+	pushNode(L, node);
+	return 1;
+}
+
+static int lua_createAxisBoundOp(lua_State* L){
+	const CGAxisBoundOperationType ops[] = {
+			CGABOT_SUM,
+			CGABOT_MIN,
+			CGABOT_MAX,
+			CGABOT_MEAN,
+			CGABOT_VARIANCE,
+			CGABOT_SOFTMAX,
+			CGABOT_ARGMIN,
+			CGABOT_ARGMAX
+	};
+	// TODO: Assert
+	CGNode* uhs = checkNode(L, 1);
+	uint8_t type = lua_tointeger(L, 2);
+	uint8_t axis = lua_tointeger(L, 3);
+	CGNode* node = makeAxisBoundNode(ops[type], uhs, axis);
+
 	pushNode(L, node);
 	return 1;
 }
@@ -480,6 +500,7 @@ static int lua_computeGraphNode(lua_State* L){
 	return 1;
 }
 
+//@Deprecated
 void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 	lua_newtable(L);
 	
@@ -698,6 +719,7 @@ int luaopen_libcgraph(lua_State *L)
 		{"matrix", lua_createMatrixConstant},
 		{"bop", lua_createBinaryOperation},
 		{"uop", lua_createUnaryOperation},
+		{"abop", lua_createAxisBoundOp},
 		{"sum", lua_createSumOperation},
 		{"graphNode", lua_createGraphNode},
 		{"graph", lua_createGraph},

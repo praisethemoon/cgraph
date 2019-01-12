@@ -30,7 +30,7 @@ add_library(luacgraph SHARED
 
 target_link_libraries(luacgraph 
 	cgraphapi
-	luajit-5.1.a
+	lua5.1
 )
 
 install(TARGETS luacgraph DESTINATION lib)

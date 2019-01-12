@@ -1,6 +1,7 @@
 package.path = package.path .. ";../lua_api/?.lua"
 package.cpath = package.cpath .. ";../lua_api/?.dylib"
 
+local flot = require 'flot'
 local CGraph = require 'CGraph'
 local array = CGraph.array
 
@@ -86,12 +87,13 @@ local b3 = CGraph.variable 'b_3'
 local y = CGraph.variable 'y'
 
 local relu = CGraph.ReLU
+local softplus = CGraph.softplus
 
-local A2 = relu(CGraph.dot(X, theta1) + b1)
-local A3 = sigmoid(CGraph.dot(A2, theta2) + b2)
-local final = sigmoid(CGraph.dot(A3, theta3) + b3)
+local A2 = softplus(CGraph.dot(X, theta1) + b1)
+local A3 = softplus(CGraph.dot(A2, theta2) + b2)
+local final = softplus(CGraph.dot(A3, theta3) + b3)
 
-local eval = softmax(final)
+local eval = CGraph.argmax(softmax(final))
 
 local g = CGraph.graph("nn", crossEntroy((final), y, 3))
 
@@ -173,7 +175,8 @@ function train(X, y, X_test, Y_test)
   g:setVar('b_3', CGraph.vector(3, randomWeight(3)))
  
   
-  loss = {}
+  local points = {}
+  local loss = {}
   for k=1,1000 do
     local err = 0
     X, y = shuffle(X, y)
@@ -181,7 +184,7 @@ function train(X, y, X_test, Y_test)
       g:setVar('X', CGraph.matrix(1, 4, _.flatten({X[i]})))
       g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
       local output = g:eval()
-      table.insert(loss, output.value)
+      err = err + output.value
       --print(output.value)
       
       g:backProp()
@@ -195,20 +198,26 @@ function train(X, y, X_test, Y_test)
       updateWeights('b_2')
       updateWeights('T_3')
       updateWeights('b_3')
-      
    end
+   table.insert(loss, {k, err/#X})
   end
-  
-  print(loss[#loss-1])
+  local p = flot.Plot { -- legend at 'south east' corner
+    legend = { position = "se" },
+  }
+  p:add_series("Avg. Loss", loss)
+
+  flot.render(p)
 
   local confMat = buildConfusionMatrix(3)
   for i=1,#X_test,1 do
     g:setVar('X', CGraph.matrix(1, 4, _.flatten({X_test[i]})))
     g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
     
-    local output = g:evalNode(eval)
-    local max, idx = argmax(output.value)
-    confMat[idx][Y_test[i]+1] = confMat[idx][Y_test[i]+1] + 1
+    local idx = g:evalNode(eval).value
+
+
+    --local max, idx = argmax(output.value)
+    confMat[idx+1][Y_test[i]+1] = confMat[idx+1][Y_test[i]+1] + 1
   end
 
   for i=1,3 do

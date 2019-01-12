@@ -3,6 +3,7 @@ require 'package_config'
 local CGraph = require 'CGraph'
 local array = CGraph.array
 
+local flot = require 'flot'
 local FileReader = require 'io.FileReader'
 local datasets = require 'datasets'
 local _ = require 'underscore'
@@ -91,11 +92,11 @@ local y = CGraph.variable 'y'
 
 local relu = CGraph.ReLU
 
-local A2 = sigmoid(CGraph.dot(X, theta1) + b1)
-local A3 = sigmoid(CGraph.dot(A2, theta2) + b2)
-local final = sigmoid(CGraph.dot(A3, theta3) + b3)
+local A2 = relu(CGraph.dot(X, theta1) + b1)
+local A3 = relu(CGraph.dot(A2, theta2) + b2)
+local final = relu(CGraph.dot(A3, theta3) + b3)
 
-local eval = softmax(final)
+local eval = CGraph.argmax(softmax(final))
 
 local g = CGraph.graph("nn", crossEntroy((final), y, 10))
 
@@ -177,7 +178,7 @@ function train(X, y, X_test, Y_test)
  
   
   loss = {}
-  for k=1,1 do
+  for k=1,100 do
     print('epoch', k)
     local err = 0
     X, y = shuffle(X, y)
@@ -185,8 +186,7 @@ function train(X, y, X_test, Y_test)
       g:setVar('X', CGraph.matrix(1, 784, _.flatten({X[i]})))
       g:setVar('y', CGraph.vector(1, _.flatten({y[i]})))
       local output = g:eval()
-      table.insert(loss, output.value)
-      --print(output.value)
+     err = err+ output.value
       
       g:backProp()
       
@@ -200,17 +200,24 @@ function train(X, y, X_test, Y_test)
       updateWeights('T_3')
       updateWeights('b_3')
       
-   end
+   table.insert(loss, {k, err/#X})
+  end
+  local p = flot.Plot { -- legend at 'south east' corner
+    legend = { position = "se" },
+  }
+  p:add_series("Avg. Loss", loss)
+
+  flot.render(p)
   end
   print(loss[#loss-1])
   local confMat = buildConfusionMatrix(10)
   for i=1,#X_test,1 do
     g:setVar('X', CGraph.matrix(1, 784, _.flatten({X_test[i]})))
     g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
-    local output = g:evalNode(eval)
-    print(output.value)
-    local max, idx = argmax(output.value)
-    confMat[idx][Y_test[i]+1] = confMat[idx][Y_test[i]+1] + 1
+    local idx = g:evalNode(eval).value
+  
+    --local max, idx = argmax(output.value)
+    confMat[idx+1][Y_test[i]+1] = confMat[idx+1][Y_test[i]+1] + 1
   end
 
   for i=1,10 do
@@ -221,6 +228,5 @@ function train(X, y, X_test, Y_test)
   end
 end
 
-train(_.initial(X_train,100) , _.initial(Y_train, 100), _.initial(X_test, 100), _.initial(Y_test, 100))
-
-g:free()
+--train(_.initial(X_train,100) , _.initial(Y_train, 100), _.initial(X_test, 100), _.initial(Y_test, 100))
+train(X_train , Y_train, X_test, Y_test)
