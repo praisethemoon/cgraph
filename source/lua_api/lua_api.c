@@ -1,6 +1,6 @@
 #include <lua.h>
 #include <lauxlib.h>
-
+#include <stdlib.h>
 #include "array.h"
 
 #include "cg_factory.h"
@@ -103,6 +103,7 @@ static CGNode* checkNode(lua_State* L, int index){
 static void pushNode(lua_State* L, CGNode* node){
 	CGNode* lnode = (CGNode *)lua_newuserdata(L, sizeof(CGNode));
 	*lnode = *node;
+	free(node);
 	//lua_pushlightuserdata(L, node);
 	luaL_getmetatable(L, CGNODE);
 	lua_setmetatable(L, -2);
@@ -119,6 +120,7 @@ static CGraph* checkGraph(lua_State* L, int index){
 static void pushGraph(lua_State* L, CGraph* graph){
 	CGraph* lgraph= (CGraph *)lua_newuserdata(L, sizeof(CGraph));
 	*lgraph = *graph;
+	free(graph);
 	
 	//lua_pushlightuserdata(L, graph);
 	luaL_getmetatable(L, CGRAPH);
@@ -215,6 +217,7 @@ static int lua_createVectorConstant(lua_State* L){
 	return 1;
 }
 
+// DO NOT USE YET
 static int lua_createGraphNode(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	CGNode* node = makeGraphNode(graph);

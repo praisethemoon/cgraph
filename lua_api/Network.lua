@@ -57,8 +57,6 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
     end
 
 
-    
-    print("Training")
     local points = {}
     local loss = {}
     local progress = cg.Progress:create("Training..", 1000)
@@ -95,7 +93,7 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
     flot.render(p)
     print("training complete, Testting")
 
-    local confMat = buildConfusionMatrix(3)
+    local confMat = buildConfusionMatrix(num_classes)
     for i=1,#X_test,1 do
         local x_i = _.flatten({X_test[i]})
         local y_i = _.flatten({Y_test[i]})
@@ -108,8 +106,13 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
         confMat[idx+1][Y_test[i]+1] = confMat[idx+1][Y_test[i]+1] + 1
     end
 
-    for i=1,3 do
-        print(confMat[i][1], confMat[i][2], confMat[i][3])
+    print("Confusion Matrix:")
+    for i=1,num_classes do
+        for j = 1,num_classes do
+            io.write('\t')
+            io.write(confMat[i][j])
+        end
+        io.write('\n')
     end
 
     g:plot()
