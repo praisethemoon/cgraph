@@ -66,6 +66,26 @@ function shuffle(tbl, tbl2)
   end
   return tbl, tbl2
 end
+local  function gaussian (mean, variance)
+  math.randomseed(os.time()+math.random()*1000)
+  local v1  = math.sqrt(-2 * variance * math.log(math.random()))
+  math.randomseed(os.time()+math.random()*3000)
+  local v2 = math.cos(2 * math.pi * math.random()) + mean
+  return v1 * v2
+end
+
+local function randomWeight(size)
+local vec = {}
+for i=1,size do
+  math.randomseed(os.time()+math.random()*1000)
+  local x = math.random()*3
+  math.randomseed(os.time()+math.random()*1000)
+  local y = math.random()/100
+  table.insert(vec, gaussian(x,y))
+end
+
+return vec
+end
 
 
 local function sigmoid(Z)
@@ -89,35 +109,15 @@ local y = CGraph.variable 'y'
 local relu = CGraph.ReLU
 local softplus = CGraph.softplus
 
-local A2 = softplus(CGraph.dot(X, theta1) + b1)
-local A3 = softplus(CGraph.dot(A2, theta2) + b2)
-local final = softplus(CGraph.dot(A3, theta3) + b3)
+local A2 = relu(CGraph.dot(X, theta1) + b1)
+local A3 = relu(CGraph.dot(A2, theta2) + b2)
+local final = relu(CGraph.dot(A3, theta3) + b3)
 
 local eval = CGraph.argmax(softmax(final))
 
 local g = CGraph.graph("nn", crossEntroy((final), y, 3))
 
 
-function gaussian (mean, variance)
-    math.randomseed(os.time()+math.random()*1000)
-    local v1  = math.sqrt(-2 * variance * math.log(math.random()))
-    math.randomseed(os.time()+math.random()*3000)
-    local v2 = math.cos(2 * math.pi * math.random()) + mean
-    return v1 * v2
-end
-
-function randomWeight(size)
-  vec = {}
-  for i=1,size do
-    math.randomseed(os.time()+math.random()*1000)
-    local x = math.random()*3
-    math.randomseed(os.time()+math.random()*1000)
-    local y = math.random()/100
-    table.insert(vec, gaussian(x,y))
-  end
-  
-  return vec
-end
 
 
 function updateWeights(name)
@@ -138,19 +138,6 @@ function updateWeights(name)
   else
     g:setVar(name, CGraph.matrix(t_1.rows, t_1.cols, t_1_newval))
   end
-end
-
-function argmax(t)
-  local max, max_idx = t[1], 1
-  for i=1,#t do
-    local v = t[i]
-    if v > max then
-      max = v
-      max_idx = i
-    end
-  end
-
-  return max, max_idx
 end
 
 function buildConfusionMatrix(nb_classes)
