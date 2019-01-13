@@ -68,9 +68,9 @@ Xinput, Yclass = shuffle(Xinput,Yclass)
 Xinput, Yclass = shuffle(Xinput,Yclass)
 
 local NN = {
-    Dense("L1", {4, 5}, "sigmoid"),
-    Dense('L2', {5, 5}, "sigmoid"),
-    Dense('L3', {5, 3}, "sigmoid"),
+    Dense("L1", {4, 5}, "relu"),
+    Dense('L2', {5, 5}, "relu"),
+    Dense('L3', {5, 3}, "relu"),
 }
 
 fit('iris_nn', NN, _.initial(Xinput, 100), _.initial(Yclass, 100), _.last(Xinput, 50), _.last(Yclass, 50), 3, 0.03)

@@ -1051,6 +1051,35 @@ MU_TEST(runArgMaxMat){
 }
 
 
+MU_TEST(runArgMaxMat2){
+    double value1[] = {
+            3, 1, 3, 1, 0,
+            1, 0, 9, 1, 0.5,
+            2, 6, 5, 1, 0.3,
+            1, 1, 1, 0, 1.1
+    };
+
+
+    struct CGNode* uhsNode = cg_newMatrixNode(4, 5, value1);
+
+    struct CGNode* node = cg_newAxisBoundOp(CGABOT_ARGMAX, uhsNode, 0);
+
+
+    struct CGraph* graph = cg_newGraph("runT_M", node);
+    struct CGResultNode* result = cg_evalGraph(graph);
+
+    CHECK_ERROR(result);
+    ASSERT_VECTOR(result);
+
+    CGVector* v = cg_getResultVectorVal(result);
+    double gt[] = {0, 2, 1, 0, 3};
+
+    ASSERT_VECTOR_DIM(v, 5)
+    ASSERT_VECTOR_EQ(gt, v);
+
+    cg_freeGraph(graph); free(graph);
+}
+
 MU_TEST(runArgMinMat){
 	double value1[] = {
 			3, 1, 3, 1, 0,
@@ -1112,6 +1141,7 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runReluSigmoidSoftmax);
 	
 	MU_RUN_TEST(runArgMaxMat);
+    MU_RUN_TEST(runArgMaxMat2);
 	MU_RUN_TEST(runArgMinMat);
 }
 

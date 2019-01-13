@@ -7,7 +7,7 @@ local _ = require 'underscore'
 local crossEntropy = cg.crossEntropyLoss
 
 local function softmax(Z)
-	return cg.exp(Z) / cg.sum(cg.exp(Z), 0)
+	return cg.exp(Z) / cg.sum(cg.exp(Z), 1)
 end
 
 
@@ -61,6 +61,7 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
     print("Training")
     local points = {}
     local loss = {}
+    local progress = cg.Progress:create("Training..", 1000)
     for k=1,1000 do
         local err = 0
         local X, y = shuffle(X_train, Y_train)
@@ -83,7 +84,9 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
             end
         end
         table.insert(loss, {k, err/#X})
+        progress:inc()
     end
+    progress:stop()
     local p = flot.Plot { -- legend at 'south east' corner
       legend = { position = "se" },
     }

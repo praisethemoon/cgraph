@@ -621,6 +621,24 @@ local graph = function(name, rootNode)
 	return Graph:create(name, rootNode)
 end
 
+local Progress = {}
+Progress.__index = Progress
+
+function Progress:create(label, size)
+	local prog = {}
+	setmetatable(prog, Progress)
+	prog.instance = cgraph.startProgress(label, size)
+
+	return prog
+end
+
+function Progress:inc()
+	cgraph.updateProgress(self.instance)
+end
+
+function Progress:stop()
+	cgraph.endProgress(self.instance)
+end
 
 local CGraph = {
 	dumpMem=dumpMem,
@@ -649,6 +667,10 @@ local CGraph = {
 	log=log,
 	exp=exp,
 	graph=graph,
+
+
+	-- Helper
+	Progress=Progress
 }
 
 return CGraph

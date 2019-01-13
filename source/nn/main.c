@@ -58,7 +58,7 @@ int main(int argc, char* argv[]){
     struct CGNode* L3 = cg_newUnOp(CGUOT_RELU, cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3));
     struct CGNode* H  = cg_newCrossEntropyLoss((L3), y, 3);
 
-    struct CGNode* eval  = cg_newAxisBoundOp(CGABOT_ARGMAX, L3, 1);
+    struct CGNode* eval  = cg_newAxisBoundOp(CGABOT_ARGMAX, L3, 0);
 
     struct CGraph* graph = cg_newGraph("nn", H);
 

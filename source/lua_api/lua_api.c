@@ -13,6 +13,8 @@
 #include "cg_diff.h"
 #include "cg_enums.h"
 
+#include "progressbar.h"
+
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502
 /* Compatibility for Lua 5.1.
  *
@@ -704,6 +706,28 @@ static int lua_freeGraph(lua_State* L){
 	return 1;
 }
 
+static int lua_startProgress(lua_State* L){
+    struct progressbar *progress = progressbar_new(lua_tostring(L, 1),lua_tointeger(L, 2));
+    lua_pushlightuserdata(L, progress);
+
+    return 1;
+}
+
+static int lua_updateProgress(lua_State* L){
+    struct progressbar *progress = lua_touserdata(L, 1);
+    progressbar_inc(progress);
+
+    return 1;
+}
+
+static int lua_stopProgress(lua_State* L){
+    struct progressbar *progress = lua_touserdata(L, 1);
+    progressbar_finish(progress);
+
+    lua_pushnil(L);
+    return 1;
+}
+
 int luaopen_libcgraph(lua_State *L)
 {
 	struct luaL_Reg driver[] =
@@ -734,6 +758,9 @@ int luaopen_libcgraph(lua_State *L)
 		{"freeGraph", lua_freeGraph},
 		{"freeGraphNode", lua_freeNodeFromGraph},
 		{"freeNode", lua_freeNode},
+        {"startProgress", lua_startProgress},
+        {"updateProgress", lua_updateProgress},
+        {"endProgress", lua_stopProgress},
 		{NULL, NULL}
 	};
 

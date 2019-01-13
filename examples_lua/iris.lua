@@ -113,7 +113,7 @@ local A2 = relu(CGraph.dot(X, theta1) + b1)
 local A3 = relu(CGraph.dot(A2, theta2) + b2)
 local final = relu(CGraph.dot(A3, theta3) + b3)
 
-local eval = CGraph.argmax(softmax(final))
+local eval = CGraph.argmax(softmax(final), 1)
 
 local g = CGraph.graph("nn", crossEntroy((final), y, 3))
 
