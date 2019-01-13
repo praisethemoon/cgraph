@@ -10,6 +10,9 @@
 #include "cg_api.h"
 #include "cg_enums.h"
 #include "cg_types.h"
+
+#define PROFILER_DEFINE
+#include "profiler.h"
 //#include "cg_math.h"
 
 #include "csv.h"
@@ -36,6 +39,9 @@ void updateWeight(struct CGraph* graph, char* var, struct CGNode* alpha){
 }
 
 int main(int argc, char* argv[]){
+    profiler_initialize();
+    PROFILER_START(nn);
+
     double y_val[] = {1};
 
     struct CGNode* x = cg_newVariable("x");
@@ -52,7 +58,7 @@ int main(int argc, char* argv[]){
     struct CGNode* L3 = cg_newUnOp(CGUOT_RELU, cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_DOT, L2, T_3), b_3));
     struct CGNode* H  = cg_newCrossEntropyLoss((L3), y, 3);
 
-    struct CGNode* eval  = (L3);
+    struct CGNode* eval  = cg_newAxisBoundOp(CGABOT_ARGMAX, L3, 1);
 
     struct CGraph* graph = cg_newGraph("nn", H);
 
@@ -184,54 +190,28 @@ int main(int argc, char* argv[]){
         }
     }
 
+    uint8_t confusionMat[3][3] = {0};
+
     for(i = 0; i < 50; i++) {
         cg_setVar(graph, "x", cg_newMatrixNode(1, 4, X_test[i]));
         cg_setVar(graph, "y", cg_newVectorNode(1, Y_test[i]));
 
-        printf("ground truth: %d\n", (int)Y_test[i][0]);
-
         struct CGResultNode *res = cg_evalGraphNode(graph, eval);
 
-        //printf("Result type: %d\n", cg_getResultType(res));
-
-        switch (cg_getResultType(res)) {
-            case CGVT_DOUBLE: {
-                CGDouble *d = cg_getResultDoubleVal(res);
-                printf("%f\n", d->value);
-                break;
-            }
-
-            case CGVT_VECTOR: {
-                CGVector *vec = cg_getResultVectorVal(res);
-                uint64_t i = 0;
-                printf("(");
-                for (; i < vec->len; i++) {
-                    printf("%f, ", vec->data[i]);
-                }
-                printf(")\n");
-                break;
-            }
-
-            case CGVT_MATRIX: {
-                CGMatrix *m = cg_getResultMatrixVal(res);
-                uint64_t i = 0;
-                uint64_t j = 0;
-                printf("(");
-                for (; i < m->rows; i++) {
-                    printf("\n\t");
-                    for (j = 0; j < m->cols; j++) {
-                        printf("%f, ", m->data[i * m->cols + j]);
-                    }
-                }
-                printf(")\n");
-                break;
-            }
-        }
-
+        CGDouble *d = cg_getResultDoubleVal(res);
+        uint8_t y = (uint8_t)Y_test[i][0];
+        uint8_t y_hat = (uint8_t)(d->value);
+        confusionMat[y_hat][y]++;
     }
+
+
+    for(i = 0; i < 3; i++)
+        printf("%d\t%d\t%d\n", confusionMat[i][0], confusionMat[i][1], confusionMat[i][2]);
 
     cg_freeGraph(graph);
     free(graph);
     printf("Training & testing completed.\n");
+    PROFILER_STOP(nn);
+    profiler_dump_console();
     return 0;
 }

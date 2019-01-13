@@ -8,6 +8,7 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}/../libcgraph/include/c_api
 	${PROJECT_SOURCE_DIR}/vendor/progressbar
 	${PROJECT_SOURCE_DIR}/vendor/csv
+	${PROJECT_SOURCE_DIR}/vendor/profiler
 )
 
 set (PROJECT_SRCS
