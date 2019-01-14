@@ -39,6 +39,15 @@ void updateWeight(struct CGraph* graph, char* var, struct CGNode* alpha){
 }
 
 int main(int argc, char* argv[]){
+    struct CGCPUInfo* info = cg_getCPUInformation();
+    if(info == NULL){
+        printf("whoupsi\n");
+    }
+    else
+    cg_printCPUInfo(info);
+
+    cg_selectContext();
+
     profiler_initialize();
     PROFILER_START(nn);
 

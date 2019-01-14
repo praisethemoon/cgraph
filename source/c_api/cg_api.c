@@ -13,6 +13,7 @@
 #include "cg_constants.h"
 #include "cg_diff.h"
 #include "cg_enums.h"
+#include "cg_cpu.h"
 
 CGraph* cg_newGraph(char* name, CGNode* root){
 	CGraph* graph = makeGraph(name);
@@ -191,11 +192,13 @@ CGResultNode* cg_constantToResult(CGNode* node){
 }
 
 
-#ifdef CG_USE_LIBCPUID
 struct CGCPUInfo* cg_getCPUInformation(){
     return getCPUInformation();
 }
 void cg_printCPUInfo(struct CGCPUInfo* cpuInfo){
     printCPUInfo(cpuInfo);
 }
-#endif
+
+void cg_selectContext(){
+    selectContext();
+}

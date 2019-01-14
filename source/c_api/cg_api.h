@@ -365,9 +365,14 @@ CGRAPH_API struct CGNode* cg_resultToConstantNode(struct CGResultNode* result);
 CGRAPH_API struct CGResultNode* cg_constantToResult(struct CGNode* node);
 
 
-#ifdef CG_USE_LIBCPUID
+/**
+ * TODO: Document these
+ * @return
+ */
+
 struct CGCPUInfo* cg_getCPUInformation();
 void cg_printCPUInfo(struct CGCPUInfo* cpuInfo);
-#endif
+
+void cg_selectContext();
 
 #endif

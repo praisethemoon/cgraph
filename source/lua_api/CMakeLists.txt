@@ -32,11 +32,11 @@ add_library(luacgraph SHARED
 	${PROJECT_SRCS}
 )
 
+FIND_PACKAGE(Lua 5.1 EXACT)
 
 set(CURSES_NEED_NCURSES TRUE)
 find_package(Curses)
 include_directories(${CURSES_INCLUDE_DIRS})
-
 
 target_link_libraries(luacgraph 
 	cgraphapi

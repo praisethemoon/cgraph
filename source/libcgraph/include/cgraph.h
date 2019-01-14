@@ -46,6 +46,9 @@ typedef struct CGResultNode {
 	CGError* error;
 }CGResultNode;
 
+
+int selectContext();
+
 /*
  * Reduces the dimension of a result if necessary, i.e vector of length 1 to double
  */
