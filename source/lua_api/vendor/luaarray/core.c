@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <luajit.h>
+#include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
 

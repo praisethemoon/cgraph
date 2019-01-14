@@ -1,6 +1,6 @@
-#include <luajit.h>
+#include <lua.h>
 #include <lauxlib.h>
-
+#include <stdlib.h>
 #include "array.h"
 
 #include "cg_factory.h"
@@ -12,6 +12,8 @@
 #include "cg_variables.h"
 #include "cg_diff.h"
 #include "cg_enums.h"
+
+#include "progressbar.h"
 
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502
 /* Compatibility for Lua 5.1.
@@ -101,6 +103,7 @@ static CGNode* checkNode(lua_State* L, int index){
 static void pushNode(lua_State* L, CGNode* node){
 	CGNode* lnode = (CGNode *)lua_newuserdata(L, sizeof(CGNode));
 	*lnode = *node;
+	free(node);
 	//lua_pushlightuserdata(L, node);
 	luaL_getmetatable(L, CGNODE);
 	lua_setmetatable(L, -2);
@@ -117,6 +120,7 @@ static CGraph* checkGraph(lua_State* L, int index){
 static void pushGraph(lua_State* L, CGraph* graph){
 	CGraph* lgraph= (CGraph *)lua_newuserdata(L, sizeof(CGraph));
 	*lgraph = *graph;
+	free(graph);
 	
 	//lua_pushlightuserdata(L, graph);
 	luaL_getmetatable(L, CGRAPH);
@@ -213,6 +217,7 @@ static int lua_createVectorConstant(lua_State* L){
 	return 1;
 }
 
+// DO NOT USE YET
 static int lua_createGraphNode(lua_State* L){
 	CGraph* graph = checkGraph(L, 1);
 	CGNode* node = makeGraphNode(graph);
@@ -284,13 +289,33 @@ static int lua_createUnaryOperation(lua_State* L){
 		CGUOT_TAN,
 		CGUOT_TANH,
 		CGUOT_RELU,
-		//CGUOT_SUM,
 	};
 	
 	uint8_t type = lua_tointeger(L, 1);
 	CGNode* uhs = checkNode(L, 2);
 	CGNode* node = makeUnaryOpNode(ops[type], uhs);
 	
+	pushNode(L, node);
+	return 1;
+}
+
+static int lua_createAxisBoundOp(lua_State* L){
+	const CGAxisBoundOperationType ops[] = {
+			CGABOT_SUM,
+			CGABOT_MIN,
+			CGABOT_MAX,
+			CGABOT_MEAN,
+			CGABOT_VARIANCE,
+			CGABOT_SOFTMAX,
+			CGABOT_ARGMIN,
+			CGABOT_ARGMAX
+	};
+	// TODO: Assert
+	CGNode* uhs = checkNode(L, 1);
+	uint8_t type = lua_tointeger(L, 2);
+	uint8_t axis = lua_tointeger(L, 3);
+	CGNode* node = makeAxisBoundNode(ops[type], uhs, axis);
+
 	pushNode(L, node);
 	return 1;
 }
@@ -480,6 +505,7 @@ static int lua_computeGraphNode(lua_State* L){
 	return 1;
 }
 
+//@Deprecated
 void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 	lua_newtable(L);
 	
@@ -683,6 +709,28 @@ static int lua_freeGraph(lua_State* L){
 	return 1;
 }
 
+static int lua_startProgress(lua_State* L){
+    struct progressbar *progress = progressbar_new(lua_tostring(L, 1),lua_tointeger(L, 2));
+    lua_pushlightuserdata(L, progress);
+
+    return 1;
+}
+
+static int lua_updateProgress(lua_State* L){
+    struct progressbar *progress = lua_touserdata(L, 1);
+    progressbar_inc(progress);
+
+    return 1;
+}
+
+static int lua_stopProgress(lua_State* L){
+    struct progressbar *progress = lua_touserdata(L, 1);
+    progressbar_finish(progress);
+
+    lua_pushnil(L);
+    return 1;
+}
+
 int luaopen_libcgraph(lua_State *L)
 {
 	struct luaL_Reg driver[] =
@@ -698,6 +746,7 @@ int luaopen_libcgraph(lua_State *L)
 		{"matrix", lua_createMatrixConstant},
 		{"bop", lua_createBinaryOperation},
 		{"uop", lua_createUnaryOperation},
+		{"abop", lua_createAxisBoundOp},
 		{"sum", lua_createSumOperation},
 		{"graphNode", lua_createGraphNode},
 		{"graph", lua_createGraph},
@@ -712,6 +761,9 @@ int luaopen_libcgraph(lua_State *L)
 		{"freeGraph", lua_freeGraph},
 		{"freeGraphNode", lua_freeNodeFromGraph},
 		{"freeNode", lua_freeNode},
+        {"startProgress", lua_startProgress},
+        {"updateProgress", lua_updateProgress},
+        {"endProgress", lua_stopProgress},
 		{NULL, NULL}
 	};
 

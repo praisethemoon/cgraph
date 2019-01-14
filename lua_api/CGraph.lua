@@ -31,7 +31,25 @@ local UnaryOperationType = {
 	COS=6,
 	TAN=7,
 	TANH=8,
-	RELU=9
+	RELU=9,
+	SOFTPLUS=10,
+}
+
+local AxisBoundOperationType= {
+
+	SUM = 0,
+	MIN=1,
+	MAX=2,
+
+	-- Not implemented
+	MEAN=3,
+	-- Not implemented
+	VARIANCE=4,
+	-- Not Implemented
+	SOFTMAX=5,
+
+	ARGMIN=6,
+	ARGMAX=7,
 }
 
 local function bopToString(bop)
@@ -305,11 +323,57 @@ local ReLU = function(uhs)
   return op
 end
 
+local softplus = function(uhs)
+	local node = cgraph.uop(UnaryOperationType.SOFTPLUS, uhs.node)
+	local op = {type='uop', opType=UnaryOperationType.SOFTPLUS, node = node, uhs=uhs}
+	setmetatable(op, mt)
+		
+	return op
+  end
 
--- TODO: Update
 local sum = function(uhs, axis)
 	local node = cgraph.sum(uhs.node, axis)
 	local op = {type='sum', opType=nil, node = node, uhs=uhs,axis=axis}
+	setmetatable(op, mt)
+			
+	return op
+end
+
+local sum = function(uhs, axis)
+	local node = cgraph.sum(uhs.node, axis)
+	local op = {type='sum', opType=nil, node = node, uhs=uhs,axis=axis}
+	setmetatable(op, mt)
+			
+	return op
+end
+
+local min = function(uhs, axis)
+	local node = cgraph.abop(uhs.node, AxisBoundOperationType.MIN, axis)
+	local op = {type='min', opType=nil, node = node, uhs=uhs,axis=axis}
+	setmetatable(op, mt)
+			
+	return op
+end
+
+local max = function(uhs, axis)
+	local node = cgraph.abop(uhs.node, AxisBoundOperationType.MAX, axis)
+	local op = {type='max', opType=nil, node = node, uhs=uhs,axis=axis}
+	setmetatable(op, mt)
+			
+	return op
+end
+
+local argmin = function(uhs, axis)
+	local node = cgraph.abop(uhs.node, AxisBoundOperationType.ARGMIN, axis)
+	local op = {type='argmin', opType=nil, node = node, uhs=uhs,axis=axis}
+	setmetatable(op, mt)
+			
+	return op
+end
+
+local argmax = function(uhs, axis)
+	local node = cgraph.abop(uhs.node, AxisBoundOperationType.ARGMAX, axis)
+	local op = {type='argmax', opType=nil, node = node, uhs=uhs,axis=axis}
 	setmetatable(op, mt)
 			
 	return op
@@ -557,6 +621,24 @@ local graph = function(name, rootNode)
 	return Graph:create(name, rootNode)
 end
 
+local Progress = {}
+Progress.__index = Progress
+
+function Progress:create(label, size)
+	local prog = {}
+	setmetatable(prog, Progress)
+	prog.instance = cgraph.startProgress(label, size)
+
+	return prog
+end
+
+function Progress:inc()
+	cgraph.updateProgress(self.instance)
+end
+
+function Progress:stop()
+	cgraph.endProgress(self.instance)
+end
 
 local CGraph = {
 	dumpMem=dumpMem,
@@ -572,7 +654,12 @@ local CGraph = {
 	tan=tan,
 	tanh=tanh,
 	ReLU=ReLU,
+	softplus=softplus,
 	sum=sum,
+	min=min,
+	max=max,
+	argmin=argmin,
+	argmax=argmax,
 	crossEntropyLoss=crossEntropyLoss,
 	dot=dot,
 	inv=inv,
@@ -580,6 +667,10 @@ local CGraph = {
 	log=log,
 	exp=exp,
 	graph=graph,
+
+
+	-- Helper
+	Progress=Progress
 }
 
 return CGraph

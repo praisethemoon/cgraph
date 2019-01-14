@@ -24,15 +24,15 @@ void __cg_map_array(double* src, double* dest, uint64_t len, double(*f)(double))
 }
 
 double __cg_relu(double x){
-	return x>=0.0?x:0.0;
+	return x*(x>0);
 }
 
 double __cg_dx_relu(double x){
-	return x>=0.0?1.0:0.0;
+	return 1*(x>0);
 }
 
 double __cg_sigmoid(double x){
-    return x>=0.0?1.0/(1.0 + exp(-x)):1.0/(1.0 + exp(x));
+    return 1.0/(1.0 + exp(-x));
 }
 
 double __cg_softplus(double x){

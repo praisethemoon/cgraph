@@ -27,6 +27,7 @@ set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/source/cg_diff.c
 	${PROJECT_SOURCE_DIR}/source/cg_math.c
 	${PROJECT_SOURCE_DIR}/source/cg_free.c
+	${PROJECT_SOURCE_DIR}/source/cg_cpu.c
 )
 
 include_directories(${PROJECT_INCLUDE_DIR})
@@ -41,9 +42,6 @@ target_link_libraries(cgraph
 	cpuid
 )
 
-add_library(cgraph
-	${PROJECT_SOURCE_DIR}/source/cg_cpu.c
-)
 endif()
 
 if (APPLE)

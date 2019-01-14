@@ -347,7 +347,7 @@ CGRAPH_API struct CGNode* cg_getVarDiff(struct CGraph* graph, const char*  name)
  * \brief Prints a given node, or rather, dumps it. Works only with constant node values.
  * \param[in] node node to print.
  */
-CGRAPH_API struct CGNode* cg_printNodeValue(struct CGNode* node);
+CGRAPH_API void cg_printNodeValue(struct CGNode* node);
 
 /**
  * \brief Converts a CGResultNode to a constant CGNode
@@ -366,8 +366,8 @@ CGRAPH_API struct CGResultNode* cg_constantToResult(struct CGNode* node);
 
 
 #ifdef CG_USE_LIBCPUID
-struct CGCPUInfo* getCPUInformation();
-void printCPUInfo(struct CGCPUInfo* cpuInfo);
+struct CGCPUInfo* cg_getCPUInformation();
+void cg_printCPUInfo(struct CGCPUInfo* cpuInfo);
 #endif
 
 #endif

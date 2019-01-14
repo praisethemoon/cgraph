@@ -14,8 +14,6 @@
 #include "cg_diff.h"
 #include "cg_enums.h"
 
-
-
 CGraph* cg_newGraph(char* name, CGNode* root){
 	CGraph* graph = makeGraph(name);
 	graph->root = root;
@@ -180,7 +178,7 @@ CGNode* cg_getVarDiff(CGraph* graph, const char*  name){
 	return graphGetVar(graph, name)->diff;
 }
 
-CGNode* cg_printNodeValue(CGNode* node){
+void cg_printNodeValue(CGNode* node){
 	printNode(node);
 }
 
@@ -191,3 +189,13 @@ CGNode* cg_resultToConstantNode(CGResultNode* result){
 CGResultNode* cg_constantToResult(CGNode* node){
 	return constantNodeToResultNodeCopy(node);
 }
+
+
+#ifdef CG_USE_LIBCPUID
+struct CGCPUInfo* cg_getCPUInformation(){
+    return getCPUInformation();
+}
+void cg_printCPUInfo(struct CGCPUInfo* cpuInfo){
+    printCPUInfo(cpuInfo);
+}
+#endif

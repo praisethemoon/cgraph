@@ -26,6 +26,7 @@ const char* UnaryOperationTypeString[] = {
 	"tan",
 	"tanh",
 	"relu",
+	"softplus"
 };
 
 const char* NodeTypeString[] = {
@@ -36,6 +37,18 @@ const char* NodeTypeString[] = {
 	"UNARY_OPERATION",
 	"SUM_OPERATION",
 	"CROSS_ENTROPY_LOSS_FUNC"
+};
+
+const char* AxisBoundOperationTypeString[] = {
+
+	"CGABOT_SUM",
+	"CGABOT_MIN",
+	"CGABOT_MAX",
+	"CGABOT_MEAN",
+	"CGABOT_VARIANCE",
+	"CGABOT_SOFTMAX",
+	"CGABOT_ARGMIN",
+	"CGABOT_ARGMAX",
 };
 
 const char* VariableTypeString[] = {
@@ -59,6 +72,10 @@ const char* getBinaryOperationTypeString(CGBinaryOperationType type){
 
 const char* getUnaryOperationTypeString(CGUnaryOperationType type){
 	return UnaryOperationTypeString[type];
+}
+
+const char* getAxisBoundOperationTypeString(CGAxisBoundOperationType type){
+	return AxisBoundOperationTypeString[type];
 }
 
 const char* getNodeTypeString(CGNodeType type){
