@@ -1146,6 +1146,17 @@ MU_TEST_SUITE(node_ops) {
 }
 
 void runAllTests(){
+
+	struct CGCPUInfo* info = cg_getCPUInformation();
+	if(info == NULL){
+		printf("whoupsi\n");
+	}
+	else
+		cg_printCPUInfo(info);
+
+	cg_selectContext();
+	printf("\n\n\n");
 	MU_RUN_SUITE(node_ops);
+	printf("done");
 	MU_REPORT();
 }

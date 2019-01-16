@@ -18,17 +18,30 @@
 #include "cg_math.h"
 
 #include <cf4ocl2.h>
+#define CHECK_ERROR(err) \
+    if (err != NULL) { fprintf(stderr, "\n%s\n", err->message); exit(-1); }
 
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
 CCLContext * ctx = NULL;
+CCLProgram* prg = NULL;
 
 int selectContext() {
     /* Code. */
     ctx = ccl_context_new_from_menu(NULL);
     if (ctx == NULL)
         exit(-1);
+
+    CCLErr * err = NULL;
+    prg = ccl_program_new_from_source_file(ctx, "/Users/praisethemoon/projects/cgraph/source/libcgraph/kernels/vec.cl", NULL);
+    cl_bool status = ccl_program_build(prg, NULL, &err);
+    printf("%s\n", ccl_program_get_build_log(prg, NULL));
+    CHECK_ERROR(err)
+
     return 0;
 }
+
+
 
 /*
  * *********************
@@ -53,14 +66,48 @@ CGResultNode* mulDD(CGDouble* M, CGDouble* V, CGraph* graph, CGNode* parentNode)
 /*
  * d.V == V.d
  */
-CGResultNode* mulDV(CGDouble* a, CGVector* V, CGraph* graph, CGNode* parentNode){
+CGResultNode* mulDV(CGDouble* A, CGVector* V, CGraph* graph, CGNode* parentNode){
     double* y = calloc(V->len, sizeof(double));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->len = V->len;
     Y->data = y;
 
-    if(a->value != 0){
+    if(A->value != 0){
+        CCLErr * err = NULL;
+        uint64_t len = V->len;
+        CCLBuffer * a = NULL, * c = NULL;
 
+        a = ccl_buffer_new(ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), V->data, &err);
+        CHECK_ERROR(err)
+
+        c = ccl_buffer_new(ctx, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), Y->data, &err);
+        CHECK_ERROR(err)
+
+
+        CCLDevice* dev = ccl_context_get_device(ctx, 0, &err);
+        CHECK_ERROR(err)
+
+        CCLQueue* queue  = ccl_queue_new(ctx, dev, 0, &err);
+        CHECK_ERROR(err)
+
+
+        CCLEvent* evt = NULL;
+        size_t gws = len;
+
+
+        evt = ccl_program_enqueue_kernel(prg, "mul_vd", queue, 1, NULL, &gws,
+                                         NULL, NULL, &err, a, ccl_arg_priv(A->value, cl_double), c, NULL);
+        CHECK_ERROR(err)
+
+        /* Read the output buffer from the device. */
+        evt = ccl_buffer_enqueue_read(c, queue, CL_TRUE, 0,
+                                      len * sizeof(cl_double), Y->data, NULL, NULL);
+
+        ccl_buffer_destroy(c);
+        ccl_buffer_destroy(a);
+        ccl_queue_destroy(queue);
     }
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
@@ -74,9 +121,9 @@ CGResultNode* mulDV(CGDouble* a, CGVector* V, CGraph* graph, CGNode* parentNode)
 /*
  * d.M == M.d
  */
-CGResultNode* mulDM(CGDouble* a, CGMatrix* M, CGraph* graph, CGNode* parentNode){
+CGResultNode* mulDM(CGDouble* A, CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->cols*M->rows;
-    double value = a->value;
+    double value = A->value;
 
     double* y = calloc(size, sizeof(double));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
@@ -84,9 +131,42 @@ CGResultNode* mulDM(CGDouble* a, CGMatrix* M, CGraph* graph, CGNode* parentNode)
     Y->cols = M->cols;
     Y->data = y;
 
-    if(a->value != 0){
-        cblas_dcopy(size, M->data, 1, y, 1);
-        cblas_dscal(size, a->value, y, 1);
+    if(A->value != 0){
+        CCLErr * err = NULL;
+        uint64_t len = M->rows*M->cols;
+        CCLBuffer * a = NULL, * c = NULL;
+
+        a = ccl_buffer_new(ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), M->data, &err);
+        CHECK_ERROR(err)
+
+        c = ccl_buffer_new(ctx, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), Y->data, &err);
+        CHECK_ERROR(err)
+
+
+        CCLDevice* dev = ccl_context_get_device(ctx, 0, &err);
+        CHECK_ERROR(err)
+
+        CCLQueue* queue  = ccl_queue_new(ctx, dev, 0, &err);
+        CHECK_ERROR(err)
+
+
+        CCLEvent* evt = NULL;
+        size_t gws = len;
+
+
+        evt = ccl_program_enqueue_kernel(prg, "mul_vd", queue, 1, NULL, &gws,
+                                         NULL, NULL, &err, a, ccl_arg_priv(A->value, cl_double), c, NULL);
+        CHECK_ERROR(err)
+
+        /* Read the output buffer from the device. */
+        evt = ccl_buffer_enqueue_read(c, queue, CL_TRUE, 0,
+                                      len * sizeof(cl_double), Y->data, NULL, NULL);
+
+        ccl_buffer_destroy(c);
+        ccl_buffer_destroy(a);
+        ccl_queue_destroy(queue);
     }
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
@@ -118,7 +198,50 @@ CGResultNode* mulMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
     uint64_t i = 0;
 
     for(;i<size;i++){
-        res[i] = M->data[i] * V->data[(i)%V->len];
+        //res[i] = M->data[i] * V->data[(i)%V->len];
+
+        CCLErr * err = NULL;
+        uint64_t len = M->rows*M->cols;
+        uint64_t vlen = V->len;
+
+        CCLBuffer * a = NULL, *b = NULL, * c = NULL;
+
+        a = ccl_buffer_new(ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), M->data, &err);
+        CHECK_ERROR(err)
+
+        b = ccl_buffer_new(ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                           vlen * sizeof(cl_double), V->data, &err);
+        CHECK_ERROR(err)
+
+        c = ccl_buffer_new(ctx, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), Y->data, &err);
+        CHECK_ERROR(err)
+
+
+        CCLDevice* dev = ccl_context_get_device(ctx, 0, &err);
+        CHECK_ERROR(err)
+
+        CCLQueue* queue  = ccl_queue_new(ctx, dev, 0, &err);
+        CHECK_ERROR(err)
+
+
+        CCLEvent* evt = NULL;
+        size_t gws = len;
+
+
+        evt = ccl_program_enqueue_kernel(prg, "mul_mv", queue, 1, NULL, &gws,
+                                         NULL, NULL, &err, a, b, c, ccl_arg_priv(vlen, cl_ulong), NULL);
+        CHECK_ERROR(err)
+
+        /* Read the output buffer from the device. */
+        evt = ccl_buffer_enqueue_read(c, queue, CL_TRUE, 0,
+                                      len * sizeof(cl_double), Y->data, NULL, NULL);
+
+        ccl_buffer_destroy(a);
+        ccl_buffer_destroy(b);
+        ccl_buffer_destroy(c);
+        ccl_queue_destroy(queue);
     }
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
@@ -128,38 +251,6 @@ CGResultNode* mulMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
     return result;
 }
 
-/*
- * Mv
- */
-/*
-CGResultNode* mulMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
-	if(M->cols != V->len){
-		char msg[MAX_ERR_FMT_LEN];
-		snprintf(msg, MAX_ERR_FMT_LEN, "Cannot Add M(%"PRIu64", %"PRIu64") by V(%"PRIu64")", M->rows, M->cols, V->len);
-		return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
-	}
-
-	uint64_t size = M->cols*M->rows;
-	double* res = calloc(size, sizeof(double));
-
-	CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-	Y->rows = M->rows;
-	Y->cols = M->cols;
-	Y->data = res;
-
-	uint64_t i = 0;
-
-	for(;i<size;i++){
-		res[i] = M->data[i] * V->data[(i)%V->len];
-	}
-
-	CGResultNode* result = calloc(1, sizeof(CGResultNode));
-	result->type = CGVT_MATRIX;
-	result->value = Y;
-
-	return result;
-}
-*/
 
 /*
  * M*N
@@ -184,7 +275,49 @@ CGResultNode* mulMM(CGMatrix* M1, CGMatrix* M2, CGraph* graph, CGNode* parentNod
 
 
     for(;i<size;i++){
-        res[i] = M1->data[i] * M2->data[i];
+        //res[i] = M1->data[i] * M2->data[i];
+
+        CCLErr * err = NULL;
+        uint64_t len = M1->rows*M1->cols;
+
+        CCLBuffer * a = NULL, *b = NULL, * c = NULL;
+
+        a = ccl_buffer_new(ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), M1->data, &err);
+        CHECK_ERROR(err)
+
+        b = ccl_buffer_new(ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), M2->data, &err);
+        CHECK_ERROR(err)
+
+        c = ccl_buffer_new(ctx, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR,
+                           len * sizeof(cl_double), Y->data, &err);
+        CHECK_ERROR(err)
+
+
+        CCLDevice* dev = ccl_context_get_device(ctx, 0, &err);
+        CHECK_ERROR(err)
+
+        CCLQueue* queue  = ccl_queue_new(ctx, dev, 0, &err);
+        CHECK_ERROR(err)
+
+
+        CCLEvent* evt = NULL;
+        size_t gws = len;
+
+
+        evt = ccl_program_enqueue_kernel(prg, "mul_mm", queue, 1, NULL, &gws,
+                                         NULL, NULL, &err, a, b, c, NULL);
+        CHECK_ERROR(err)
+
+        /* Read the output buffer from the device. */
+        evt = ccl_buffer_enqueue_read(c, queue, CL_TRUE, 0,
+                                      len * sizeof(cl_double), Y->data, NULL, NULL);
+
+        ccl_buffer_destroy(a);
+        ccl_buffer_destroy(b);
+        ccl_buffer_destroy(c);
+        ccl_queue_destroy(queue);
     }
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
@@ -2096,3 +2229,4 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
         }
     }
 }
+
