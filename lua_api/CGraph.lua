@@ -5,6 +5,8 @@ local cgraph = libcgraph
 local io = io
 local write = io.write
 
+cgraph.init()
+
 local TensorType = {
 	DOUBLE = 0,
 	VECTOR = 1,

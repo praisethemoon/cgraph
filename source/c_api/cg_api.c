@@ -36,7 +36,7 @@ void cg_freeResultNode(struct CGResultNode* result){
 	freeResultNode(result);
 }
 
-CGNode* cg_newDoubleNode(double v){
+CGNode* cg_newDoubleNode(CG_SCALAR_TYPE v){
 	return makeDoubleConstantNode(v);
 }
 
@@ -52,7 +52,7 @@ CGNode* cg_newDoubleRandNode(){
 	return makeRandomDoubleConstantNode();
 }
 
-CGNode* cg_newVectorNode(uint64_t len, double* v){
+CGNode* cg_newVectorNode(uint64_t len, CG_SCALAR_TYPE* v){
 	return makeVectorConstantNodeCopy(len, v);
 }
 
@@ -68,7 +68,7 @@ CGNode* cg_newVectorRandNode(uint64_t len){
 	return makeRandomVectorConstantNode(len);
 }
 
-CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, double* v){
+CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, CG_SCALAR_TYPE* v){
 	return makeMatrixConstantNodeCopy(rows, cols, v);
 }
 

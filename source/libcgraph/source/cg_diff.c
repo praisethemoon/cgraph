@@ -21,14 +21,14 @@ uint8_t nodeValueIsZero(CGNode* node){
 
 	switch(node->constant->type){
 		case CGVT_DOUBLE: {
-			double value = ((CGDouble*)node->constant->value)->value;
+			CG_SCALAR_TYPE value = ((CGDouble*)node->constant->value)->value;
 
 			return value == 0.0;
 		}
 
 		case CGVT_VECTOR: {
 			uint64_t len = ((CGVector*)node->constant->value)->len;
-			double* values = ((CGVector*)node->constant->value)->data;
+			CG_SCALAR_TYPE* values = ((CGVector*)node->constant->value)->data;
 
 			uint64_t i = 0;
 			for(; i < len; i++)
@@ -41,7 +41,7 @@ uint8_t nodeValueIsZero(CGNode* node){
 		case CGVT_MATRIX: {
 			CGMatrix* M = node->constant->value;
 			uint64_t len = M->rows * M->cols;
-			double* values = M->data;
+			CG_SCALAR_TYPE* values = M->data;
 
 			uint64_t i = 0;
 			for(; i < len; i++)

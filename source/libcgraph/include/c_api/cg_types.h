@@ -1,24 +1,6 @@
-#ifndef CG_TYPES_H
-#define CG_TYPES_H
+#ifndef CG_API_TYPES_H
+#define CG_API_TYPES_H
 
-#include <inttypes.h>
-
-#include "cg_enums.h"
-
-typedef struct CGDouble {
-	double value;
-}CGDouble;
-
-typedef struct CGVector {
-	double* data;
-	uint64_t len;
-}CGVector;
-
-typedef struct CGMatrix {
-	double* data;
-	uint64_t cols;
-	uint64_t rows;
-	CGMShape shape;
-}CGMatrix;
+#include "../cg_types.h"
 
 #endif

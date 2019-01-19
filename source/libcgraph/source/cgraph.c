@@ -60,9 +60,9 @@ CGNode* copyNode(CGNode* node){
 			CGVector* src = (CGVector*)node->constant->value;
 			
 			V->len = src->len;
-			V->data = calloc(V->len, sizeof(double));
+			V->data = calloc(V->len, sizeof(CG_SCALAR_TYPE));
 			
-			memcpy(V->data, src->data, V->len*sizeof(double));
+			memcpy(V->data, src->data, V->len*sizeof(CG_SCALAR_TYPE));
 			
 			n->constant->value = V;
 			break;
@@ -76,9 +76,9 @@ CGNode* copyNode(CGNode* node){
 			
 			M->rows = src->rows;
 			M->cols = src->cols;
-			M->data = calloc(size, sizeof(double));
+			M->data = calloc(size, sizeof(CG_SCALAR_TYPE));
 			
-			memcpy(M->data, src->data, size*sizeof(double));
+			memcpy(M->data, src->data, size*sizeof(CG_SCALAR_TYPE));
 			
 			n->constant->value = M;
 			break;
@@ -107,9 +107,9 @@ void* copyNodeValue(CGNode* node){
 			CGVector* src = (CGVector*)node->constant->value;
 			
 			V->len = src->len;
-			V->data = calloc(V->len, sizeof(double));
+			V->data = calloc(V->len, sizeof(CG_SCALAR_TYPE));
 			
-			memcpy(V->data, src->data, V->len*sizeof(double));
+			memcpy(V->data, src->data, V->len*sizeof(CG_SCALAR_TYPE));
 			return V;
 		}
 		
@@ -121,9 +121,9 @@ void* copyNodeValue(CGNode* node){
 			
 			M->rows = src->rows;
 			M->cols = src->cols;
-			M->data = calloc(size, sizeof(double));
+			M->data = calloc(size, sizeof(CG_SCALAR_TYPE));
 			
-			memcpy(M->data, src->data, size*sizeof(double));
+			memcpy(M->data, src->data, size*sizeof(CG_SCALAR_TYPE));
 			return M;
 		}
 	}
@@ -146,9 +146,9 @@ void* copyRNodeValue(CGResultNode* node){
 			CGVector* src = (CGVector*)node->value;
 			
 			V->len = src->len;
-			V->data = calloc(V->len, sizeof(double));
+			V->data = calloc(V->len, sizeof(CG_SCALAR_TYPE));
 			
-			memcpy(V->data, src->data, V->len*sizeof(double));
+			memcpy(V->data, src->data, V->len*sizeof(CG_SCALAR_TYPE));
 			return V;
 		}
 		
@@ -160,9 +160,9 @@ void* copyRNodeValue(CGResultNode* node){
 			
 			M->rows = src->rows;
 			M->cols = src->cols;
-			M->data = calloc(size, sizeof(double));
+			M->data = calloc(size, sizeof(CG_SCALAR_TYPE));
 			
-			memcpy(M->data, src->data, size*sizeof(double));
+			memcpy(M->data, src->data, size*sizeof(CG_SCALAR_TYPE));
 			return M;
 		}
 	}
@@ -187,9 +187,9 @@ CGResultNode* copyResultNode(CGResultNode* node){
 			CGVector* src = (CGVector*)node->value;
 			
 			V->len = src->len;
-			V->data = calloc(V->len, sizeof(double));
+			V->data = calloc(V->len, sizeof(CG_SCALAR_TYPE));
 			
-			memcpy(V->data, src->data, V->len*sizeof(double));
+			memcpy(V->data, src->data, V->len*sizeof(CG_SCALAR_TYPE));
 			
 			res->value = V;
 			break;
@@ -203,9 +203,9 @@ CGResultNode* copyResultNode(CGResultNode* node){
 			
 			M->rows = src->rows;
 			M->cols = src->cols;
-			M->data = calloc(size, sizeof(double));
+			M->data = calloc(size, sizeof(CG_SCALAR_TYPE));
 			
-			memcpy(M->data, src->data, size*sizeof(double));
+			memcpy(M->data, src->data, size*sizeof(CG_SCALAR_TYPE));
 			
 			res->value = M;
 			break;

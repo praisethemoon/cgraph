@@ -46,14 +46,14 @@
  * Test Matrix vector multiplication broadcast
  */
 MU_TEST(runMult_MV){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3,
 		1, 5, 9, 
 		2, 6, 5,
 		1, 1, 1
 	};
 	
-	double value2 []= {
+	CG_SCALAR_TYPE value2 []= {
 		-1.0, -1.0, 1.0,
 	};
 	
@@ -71,7 +71,7 @@ MU_TEST(runMult_MV){
 	CGMatrix* m = cg_getResultMatrixVal(result);
 	ASSERT_MATRIX_DIM(m, 4, 3);
 	
-	double gt[] = {-3, -1,  3,
+	CG_SCALAR_TYPE gt[] = {-3, -1,  3,
        -1, -5,  9,
        -2, -6,  5,
        -1, -1,  1
@@ -86,12 +86,12 @@ MU_TEST(runMult_MV){
  * Test matrix-matrix multiplication broadcast
  */
 MU_TEST(runMult_MM){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		1, 2, 3,
 		4, 5, 6
 	};
 	
-	double value2 []= {
+	CG_SCALAR_TYPE value2 []= {
 		1, 2, 3,
 		4, 5, 6
 	};
@@ -108,7 +108,7 @@ MU_TEST(runMult_MM){
 	
 	CGMatrix* m = cg_getResultMatrixVal(result);
 	ASSERT_MATRIX_DIM(m, 2, 3);
-	double gt[] = {1, 4, 9, 16, 25, 36};
+	CG_SCALAR_TYPE gt[] = {1, 4, 9, 16, 25, 36};
 	ASSERT_MATRIX_EQ(gt, m);
 	
 	cg_freeGraph(graph); free(graph);
@@ -116,12 +116,12 @@ MU_TEST(runMult_MM){
 
 
 MU_TEST(runDot_MM){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		1, 2, 3,
 		4, 5, 6
 	};
 	
-	double value2 []= {
+	CG_SCALAR_TYPE value2 []= {
 		7, 8,
 		9, 10,
 		11, 12
@@ -139,7 +139,7 @@ MU_TEST(runDot_MM){
 	
 	CGMatrix* m = cg_getResultMatrixVal(result);
 	ASSERT_MATRIX_DIM(m, 2, 2);
-	double gt[] = {58, 64, 139, 154};
+	CG_SCALAR_TYPE gt[] = {58, 64, 139, 154};
 	ASSERT_MATRIX_EQ(gt, m);
 	
 	cg_freeGraph(graph); free(graph);
@@ -147,12 +147,12 @@ MU_TEST(runDot_MM){
 
 
 MU_TEST(runMult_Md){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		1, 2, 3,
 		4, 5, 6
 	};
 	
-	double value2 = -0.5;
+	CG_SCALAR_TYPE value2 = -0.5;
 	
 	struct CGNode* lhsNode = cg_newMatrixNode(2, 3, value1);
 	struct CGNode* rhsNode = cg_newDoubleNode(value2);
@@ -167,7 +167,7 @@ MU_TEST(runMult_Md){
 	
 	CGMatrix* m = cg_getResultMatrixVal(result);
 	ASSERT_MATRIX_DIM(m, 2, 3);
-	double gt[] = {-0.5, -1, -1.5, -2, -2.5, -3};
+	CG_SCALAR_TYPE gt[] = {-0.5, -1, -1.5, -2, -2.5, -3};
 	ASSERT_MATRIX_EQ(gt, m);
 	
 	cg_freeGraph(graph); free(graph);
@@ -175,9 +175,9 @@ MU_TEST(runMult_Md){
 
 
 MU_TEST(runMult_dd){
-	double value1 = 3.14;
+	CG_SCALAR_TYPE value1 = 3.14;
 	
-	double value2 = 0.5;
+	CG_SCALAR_TYPE value2 = 0.5;
 	
 	struct CGNode* lhsNode = cg_newDoubleNode(value1);
 	struct CGNode* rhsNode = cg_newDoubleNode(value2);
@@ -198,9 +198,9 @@ MU_TEST(runMult_dd){
 }
 
 MU_TEST(runMult_dV){
-	double value1 = 3.14;
+	CG_SCALAR_TYPE value1 = 3.14;
 	
-	double value2 []= {
+	CG_SCALAR_TYPE value2 []= {
 		-1.0, -1.0, 1.0,
 	};
 	
@@ -218,7 +218,7 @@ MU_TEST(runMult_dV){
 	CGVector* v = cg_getResultVectorVal(result);
 	ASSERT_VECTOR_DIM(v, 3);
 	
-	double gt[] = {-3.14, -3.14, 3.14};
+	CG_SCALAR_TYPE gt[] = {-3.14, -3.14, 3.14};
 	
 	ASSERT_VECTOR_EQ(gt, v);
 	
@@ -226,17 +226,17 @@ MU_TEST(runMult_dV){
 }
 
 MU_TEST(runMult_MvM){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3,
 		1, 5, 9, 
 		2, 6, 5,
 		1, 1, 1
 	};
 	
-	double value2[]= {
+	CG_SCALAR_TYPE value2[]= {
 		-1.0, -1.0, 1.0,
 	};
-	double value3[] = {
+	CG_SCALAR_TYPE value3[] = {
 		1, 2, 3, -1,
 		4, 5, 6, 0.5,
 		4, 5, 6, 0.5
@@ -259,7 +259,7 @@ MU_TEST(runMult_MvM){
 	
 	CGMatrix* m = cg_getResultMatrixVal(result);
 	ASSERT_MATRIX_DIM(m, 3, 3);
-	double gt[] = { -10. , -28. ,  35. ,
+	CG_SCALAR_TYPE gt[] = { -10. , -28. ,  35. ,
        -29.5, -65.5,  87.5,
        -29.5, -65.5,  87.5 };
 	
@@ -269,13 +269,13 @@ MU_TEST(runMult_MvM){
 }
 
 MU_TEST(runCross_VV){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3,
 		1, 
 		5
 	};
 	
-	double value2[] = {
+	CG_SCALAR_TYPE value2[] = {
 		-3,
 		-1, 
 		0.5
@@ -295,7 +295,7 @@ MU_TEST(runCross_VV){
 	CGVector* v = cg_getResultVectorVal(result);
 	ASSERT_VECTOR_DIM(v, 3);
 	
-	double gt[] = {-9, -1, 2.5};
+	CG_SCALAR_TYPE gt[] = {-9, -1, 2.5};
 	
 	ASSERT_VECTOR_EQ(gt, v);
 	
@@ -303,13 +303,13 @@ MU_TEST(runCross_VV){
 }
 
 MU_TEST(runDot_VV){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3,
 		1, 
 		5
 	};
 	
-	double value2[] = {
+	CG_SCALAR_TYPE value2[] = {
 		-3,
 		-1, 
 		0.5
@@ -335,9 +335,9 @@ MU_TEST(runDot_VV){
 
 
 MU_TEST(runDiv_dd){
-	double value1 = 1;
+	CG_SCALAR_TYPE value1 = 1;
 	
-	double value2 = 2;
+	CG_SCALAR_TYPE value2 = 2;
 	
 	
 	struct CGNode* lhsNode = cg_newDoubleNode(value1);
@@ -352,7 +352,7 @@ MU_TEST(runDiv_dd){
 	
 	CGDouble* Y = cg_getResultDoubleVal(result);
 
-	double gt = 0.5;
+	CG_SCALAR_TYPE gt = 0.5;
 	
 	mu_assert_double_eq(gt, Y->value);
 	
@@ -360,13 +360,13 @@ MU_TEST(runDiv_dd){
 }
 
 MU_TEST(runDiv_Vd){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3,
 		1, 
 		5
 	};
 	
-	double value2 = 2;
+	CG_SCALAR_TYPE value2 = 2;
 	
 	
 	struct CGNode* lhsNode = cg_newVectorNode(3, value1);
@@ -381,7 +381,7 @@ MU_TEST(runDiv_Vd){
 	
 	CGVector* Y = cg_getResultVectorVal(result);
 
-	double gt[] = {1.5, 0.5, 2.5};
+	CG_SCALAR_TYPE gt[] = {1.5, 0.5, 2.5};
 	
 	ASSERT_VECTOR_EQ(gt, Y);
 	
@@ -390,14 +390,14 @@ MU_TEST(runDiv_Vd){
 
 
 MU_TEST(runDiv_Md){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3,
 		1, 5, 9, 
 		2, 6, 5,
 		1, 1, 1
 	};
 	
-	double value2 = 0.5;
+	CG_SCALAR_TYPE value2 = 0.5;
 	
 	struct CGNode* lhsNode = cg_newMatrixNode(4, 3, value1);
 	struct CGNode* rhsNode = cg_newDoubleNode(value2);
@@ -412,7 +412,7 @@ MU_TEST(runDiv_Md){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 
-	double gt[] = {6, 2, 6, 2, 10, 18, 4, 12, 10, 2, 2, 2};
+	CG_SCALAR_TYPE gt[] = {6, 2, 6, 2, 10, 18, 4, 12, 10, 2, 2, 2};
 	
 	ASSERT_MATRIX_EQ(gt, M);
 	
@@ -421,8 +421,8 @@ MU_TEST(runDiv_Md){
 
 
 MU_TEST(runAdd_dd){
-	double value1 = 3;
-	double value2 = 2;
+	CG_SCALAR_TYPE value1 = 3;
+	CG_SCALAR_TYPE value2 = 2;
 	
 	
 	struct CGNode* lhsNode = cg_newDoubleNode(value1);
@@ -437,7 +437,7 @@ MU_TEST(runAdd_dd){
 	
 	CGDouble* Y = cg_getResultDoubleVal(result);
 	
-	double gt = 5;
+	CG_SCALAR_TYPE gt = 5;
 	
 	mu_assert_double_eq(5, Y->value);
 	
@@ -445,13 +445,13 @@ MU_TEST(runAdd_dd){
 }
 
 MU_TEST(runAdd_Vd){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3,
 		1, 
 		5
 	};
 	
-	double value2 = 2;
+	CG_SCALAR_TYPE value2 = 2;
 	
 	
 	struct CGNode* lhsNode = cg_newVectorNode(3, value1);
@@ -466,7 +466,7 @@ MU_TEST(runAdd_Vd){
 	
 	CGVector* Y = cg_getResultVectorVal(result);
 	
-	double gt[] = {5, 3, 7};
+	CG_SCALAR_TYPE gt[] = {5, 3, 7};
 	
 	ASSERT_VECTOR_EQ(gt, Y);
 	
@@ -474,14 +474,14 @@ MU_TEST(runAdd_Vd){
 }
 
 MU_TEST(runAdd_Md){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3,
 		1, 5, 9, 
 		2, 6, 5,
 		1, 1, 1
 	};
 	
-	double value2 = 0.5;
+	CG_SCALAR_TYPE value2 = 0.5;
 	
 	struct CGNode* lhsNode = cg_newMatrixNode(4, 3, value1);
 	struct CGNode* rhsNode = cg_newDoubleNode(value2);
@@ -498,7 +498,7 @@ MU_TEST(runAdd_Md){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
-	double gt[] = {3.5, 1.5, 3.5, 1.5, 5.5, 9.5, 2.5, 6.5, 5.5, 1.5, 1.5, 1.5};
+	CG_SCALAR_TYPE gt[] = {3.5, 1.5, 3.5, 1.5, 5.5, 9.5, 2.5, 6.5, 5.5, 1.5, 1.5, 1.5};
 	
 	ASSERT_MATRIX_EQ(gt, M);
 	
@@ -507,14 +507,14 @@ MU_TEST(runAdd_Md){
 
 
 MU_TEST(runAdd_MV){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3,
 		1, 5, 9, 
 		2, 6, 5,
 		1, 1, 1
 	};
 	
-	double value2 []= {
+	CG_SCALAR_TYPE value2 []= {
 		-1.0, 0.0, 1.0
 	};
 	
@@ -530,7 +530,7 @@ MU_TEST(runAdd_MV){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
-	double gt[] = {
+	CG_SCALAR_TYPE gt[] = {
 		2, 1, 4,
 		0, 5, 10,
 		1, 6, 6,
@@ -543,13 +543,13 @@ MU_TEST(runAdd_MV){
 }
 
 MU_TEST(runAdd_VV){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3,
 		1, 
 		5
 	};
 	
-	double value2[] = {
+	CG_SCALAR_TYPE value2[] = {
 		-3,
 		-1, 
 		1
@@ -569,7 +569,7 @@ MU_TEST(runAdd_VV){
 	
 	CGVector* V = cg_getResultVectorVal(result);
 	
-	double gt[] = {0, 0, 6};
+	CG_SCALAR_TYPE gt[] = {0, 0, 6};
 	
 	ASSERT_VECTOR_EQ(gt, V);
 	
@@ -577,14 +577,14 @@ MU_TEST(runAdd_VV){
 }
 
 MU_TEST(runAdd_MM){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3, 1,
 		1, 5, 9, 1,
 		2, 6, 5, 1,
 		1, 1, 1, 0,
 	};
 	
-	double value2[] = {
+	CG_SCALAR_TYPE value2[] = {
 		-2, -1, -3, -1,
 		-1, -4, -9, -1,
 		-2, -6, -4, -1,
@@ -605,7 +605,7 @@ MU_TEST(runAdd_MM){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
-	double gt[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+	CG_SCALAR_TYPE gt[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 	
 	ASSERT_MATRIX_EQ(gt, M);
 	
@@ -613,8 +613,8 @@ MU_TEST(runAdd_MM){
 }
 
 MU_TEST(runSub_dd){
-	double value1 = 3;
-	double value2 = 2;
+	CG_SCALAR_TYPE value1 = 3;
+	CG_SCALAR_TYPE value2 = 2;
 	
 	
 	struct CGNode* lhsNode = cg_newDoubleNode(value1);
@@ -630,7 +630,7 @@ MU_TEST(runSub_dd){
 	
 	CGDouble* D = cg_getResultDoubleVal(result);
 	
-	double gt = 1;
+	CG_SCALAR_TYPE gt = 1;
 	
 	mu_assert_double_eq(gt, D->value);
 	
@@ -638,13 +638,13 @@ MU_TEST(runSub_dd){
 }
 
 MU_TEST(runSub_Vd){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3,
 		1, 
 		5
 	};
 	
-	double value2 = 2;
+	CG_SCALAR_TYPE value2 = 2;
 	
 	struct CGNode* lhsNode = cg_newVectorNode(3, value1);
 	struct CGNode* rhsNode = cg_newDoubleNode(value2);
@@ -659,7 +659,7 @@ MU_TEST(runSub_Vd){
 	
 	CGVector* V = cg_getResultVectorVal(result);
 	
-	double gt[] = {1, -1, 3};
+	CG_SCALAR_TYPE gt[] = {1, -1, 3};
 	
 	ASSERT_VECTOR_EQ(gt, V);
 	
@@ -667,14 +667,14 @@ MU_TEST(runSub_Vd){
 }
 
 MU_TEST(runSub_Md){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3,
 		1, 5, 9, 
 		2, 6, 5,
 		1, 1, 1
 	};
 	
-	double value2 = 0.5;
+	CG_SCALAR_TYPE value2 = 0.5;
 	
 	struct CGNode* lhsNode = cg_newMatrixNode(4, 3, value1);
 	struct CGNode* rhsNode = cg_newDoubleNode(value2);
@@ -689,7 +689,7 @@ MU_TEST(runSub_Md){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
-	double gt[] = {2.5, 0.5, 2.5, 0.5, 4.5, 8.5, 1.5, 5.5, 4.5, 0.5, 0.5, 0.5};
+	CG_SCALAR_TYPE gt[] = {2.5, 0.5, 2.5, 0.5, 4.5, 8.5, 1.5, 5.5, 4.5, 0.5, 0.5, 0.5};
 	
 	ASSERT_MATRIX_EQ(gt, M);
 	
@@ -698,13 +698,13 @@ MU_TEST(runSub_Md){
 
 
 MU_TEST(runSub_VV){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3,
 		1, 
 		5
 	};
 	
-	double value2[] = {
+	CG_SCALAR_TYPE value2[] = {
 		-3,
 		-1, 
 		1
@@ -723,7 +723,7 @@ MU_TEST(runSub_VV){
 	
 	CGVector* V = cg_getResultVectorVal(result);
 	
-	double gt[] = {6, 2, 4};
+	CG_SCALAR_TYPE gt[] = {6, 2, 4};
 	
 	ASSERT_VECTOR_EQ(gt, V);
 	
@@ -731,14 +731,14 @@ MU_TEST(runSub_VV){
 }
 
 MU_TEST(runSub_MM){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3, 1,
 		1, 5, 9, 1,
 		2, 6, 5, 1,
 		1, 1, 1, 0,
 	};
 	
-	double value2[] = {
+	CG_SCALAR_TYPE value2[] = {
 		3, 1, 3, 1,
 		1, 5, 9, 1,
 		2, 6, 5, 1,
@@ -760,7 +760,7 @@ MU_TEST(runSub_MM){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
-	double gt[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	CG_SCALAR_TYPE gt[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	
 	ASSERT_MATRIX_EQ(gt, M);
 	
@@ -768,7 +768,7 @@ MU_TEST(runSub_MM){
 }
 
 MU_TEST(runExp_M){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3, 1,
 		1, 0, 9, 1,
 		2, 6, 5, 1,
@@ -787,7 +787,7 @@ MU_TEST(runExp_M){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
-	double gt[16];
+	CG_SCALAR_TYPE gt[16];
 	
 	uint64_t i = 0;
 	for(; i < 16; i++){
@@ -801,7 +801,7 @@ MU_TEST(runExp_M){
 
 
 MU_TEST(runExpLog_M){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3, 1,
 		1, 0, 9, 1,
 		2, 6, 5, 1,
@@ -828,7 +828,7 @@ MU_TEST(runExpLog_M){
 }
 
 MU_TEST(runT_M){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3, 1, 0,
 		1, 0, 9, 1, 0.5,
 		2, 6, 5, 1, 0.3,
@@ -849,7 +849,7 @@ MU_TEST(runT_M){
 	
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
-	double gt[] = {3, 1, 2, 1, 1, 0, 6, 1, 3, 9, 5, 1, 1, 1, 1, 0, 0, 0.5, 0.3, 1.1};
+	CG_SCALAR_TYPE gt[] = {3, 1, 2, 1, 1, 0, 6, 1, 3, 9, 5, 1, 1, 1, 1, 0, 0, 0.5, 0.3, 1.1};
 	
 	mu_assert_int_eq(5, M->rows);
 	mu_assert_int_eq(4, M->cols);
@@ -863,14 +863,14 @@ MU_TEST(runT_M){
  * it should fail with an error of invalid operation div for (matrix, vector)
  */
 MU_TEST(runDiv_MV_FAIL){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3,
 		1, 5, 9, 
 		2, 6, 5,
 		1, 1, 1
 	};
 	
-	double value2[]= {
+	CG_SCALAR_TYPE value2[]= {
 		-1.0, -1.0, 1.0,
 	};
 	
@@ -890,8 +890,8 @@ MU_TEST(runDiv_MV_FAIL){
 }
 
 MU_TEST(diffSimpleNN){
-	double x_val[] = {0.2, 0.4};
-	double T1_val[] = {0.1, 0.5, -0.3, 0.8};
+	CG_SCALAR_TYPE x_val[] = {0.2, 0.4};
+	CG_SCALAR_TYPE T1_val[] = {0.1, 0.5, -0.3, 0.8};
 	
 	
 	
@@ -920,7 +920,7 @@ MU_TEST(diffSimpleNN){
 	ASSERT_MATRIX(res1);
 	CGMatrix* M = cg_getResultMatrixVal(res1);
 	
-	double gt[] = {	0.088000, 0.176000, 0.104000, 0.208000};
+	CG_SCALAR_TYPE gt[] = {	0.088000, 0.176000, 0.104000, 0.208000};
 	
 	ASSERT_MATRIX_DIM(M, 2, 2);
 	ASSERT_MATRIX_EQ(gt, M);
@@ -930,7 +930,7 @@ MU_TEST(diffSimpleNN){
 	ASSERT_VECTOR(res2);
 	CGVector* V = cg_getResultVectorVal(res2);
 	
-	double gt2[] = {-0.112000, 0.636000};
+	CG_SCALAR_TYPE gt2[] = {-0.112000, 0.636000};
 	
 	ASSERT_VECTOR_DIM(V, 2);
 	ASSERT_VECTOR_EQ(gt2, V);
@@ -940,8 +940,8 @@ MU_TEST(diffSimpleNN){
 
 
 MU_TEST(runCrossEntropyLossVec){
-	double y_val[] = {0};
-	double y_hat_val[] = {0.26980, 0.32235, 0.40784};
+	CG_SCALAR_TYPE y_val[] = {0};
+	CG_SCALAR_TYPE y_hat_val[] = {0.26980, 0.32235, 0.40784};
 	
 	
 	struct CGNode* y = cg_newVariable("y");
@@ -972,14 +972,14 @@ struct CGNode* softmax_node_tmp(struct CGNode* x){
 }
 
 MU_TEST(runReluSigmoidSoftmax){
-	double x_val[] = {0.1, 0.2, 0.7};
-	double T1_val[] = {0.1, 0.4, 0.3, 0.3, 0.7, 0.7,0.5,0.2,0.9 };
-	double b1_val[] = {1.0, 1.0, 1.0};
-	double T2_val[] =  {0.2, 0.3, 0.5, 0.3, 0.5, 0.7,0.6,0.4,0.8 };
-	double b2_val[] = {1.0, 1.0, 1.0};
-	double T3_val[] =  {0.1,0.4,0.8,0.3,0.7,0.2,0.5,0.2,0.9 };
-	double b3_val[] = {1.0, 1.0, 1.0};
-	double y_val[] = {0, 1};
+	CG_SCALAR_TYPE x_val[] = {0.1, 0.2, 0.7};
+	CG_SCALAR_TYPE T1_val[] = {0.1, 0.4, 0.3, 0.3, 0.7, 0.7,0.5,0.2,0.9 };
+	CG_SCALAR_TYPE b1_val[] = {1.0, 1.0, 1.0};
+	CG_SCALAR_TYPE T2_val[] =  {0.2, 0.3, 0.5, 0.3, 0.5, 0.7,0.6,0.4,0.8 };
+	CG_SCALAR_TYPE b2_val[] = {1.0, 1.0, 1.0};
+	CG_SCALAR_TYPE T3_val[] =  {0.1,0.4,0.8,0.3,0.7,0.2,0.5,0.2,0.9 };
+	CG_SCALAR_TYPE b3_val[] = {1.0, 1.0, 1.0};
+	CG_SCALAR_TYPE y_val[] = {0, 1};
 	
 	struct CGNode* x = cg_newVariable("x");
 	//struct CGNode* y = cg_newVariable("y");
@@ -1013,7 +1013,7 @@ MU_TEST(runReluSigmoidSoftmax){
 	
 	ASSERT_VECTOR_DIM(vec, 3);
 	
-	double gt[] = {0.198241, 0.285387, 0.516372};
+	CG_SCALAR_TYPE gt[] = {0.198241, 0.285387, 0.516372};
 	
 	ASSERT_VECTOR_EQ(gt, vec);
 	
@@ -1022,7 +1022,7 @@ MU_TEST(runReluSigmoidSoftmax){
 
 
 MU_TEST(runArgMaxMat){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 			3, 1, 3, 1, 0,
 			1, 0, 9, 1, 0.5,
 			2, 6, 5, 1, 0.3,
@@ -1042,7 +1042,7 @@ MU_TEST(runArgMaxMat){
 	ASSERT_VECTOR(result);
 
 	CGVector* v = cg_getResultVectorVal(result);
-	double gt[] = {0, 2, 1, 4};
+	CG_SCALAR_TYPE gt[] = {0, 2, 1, 4};
 
 	ASSERT_VECTOR_DIM(v, 4)
 	ASSERT_VECTOR_EQ(gt, v);
@@ -1052,7 +1052,7 @@ MU_TEST(runArgMaxMat){
 
 
 MU_TEST(runArgMaxMat2){
-    double value1[] = {
+    CG_SCALAR_TYPE value1[] = {
             3, 1, 3, 1, 0,
             1, 0, 9, 1, 0.5,
             2, 6, 5, 1, 0.3,
@@ -1072,7 +1072,7 @@ MU_TEST(runArgMaxMat2){
     ASSERT_VECTOR(result);
 
     CGVector* v = cg_getResultVectorVal(result);
-    double gt[] = {0, 2, 1, 0, 3};
+    CG_SCALAR_TYPE gt[] = {0, 2, 1, 0, 3};
 
     ASSERT_VECTOR_DIM(v, 5)
     ASSERT_VECTOR_EQ(gt, v);
@@ -1081,7 +1081,7 @@ MU_TEST(runArgMaxMat2){
 }
 
 MU_TEST(runArgMinMat){
-	double value1[] = {
+	CG_SCALAR_TYPE value1[] = {
 			3, 1, 3, 1, 0,
 			1, 0, 9, 1, 0.5,
 			2, 6, 5, 1, 0.3,
@@ -1100,7 +1100,7 @@ MU_TEST(runArgMinMat){
 	ASSERT_VECTOR(result);
 
 	CGVector* v = cg_getResultVectorVal(result);
-	double gt[] = {1, 1, 3, 3, 0};
+	CG_SCALAR_TYPE gt[] = {1, 1, 3, 3, 0};
 
 	ASSERT_VECTOR_DIM(v, 5)
 	ASSERT_VECTOR_EQ(gt, v);

@@ -17,29 +17,29 @@
 #include "cg_math.h"
 #include "cg_diff.h"
 
-void __cg_map_array(double* src, double* dest, uint64_t len, double(*f)(double)){
+void __cg_map_array(CG_SCALAR_TYPE* src, CG_SCALAR_TYPE* dest, uint64_t len, CG_SCALAR_TYPE(*f)(CG_SCALAR_TYPE)){
 	uint64_t i = 0;
 	for(;i<len;i++)
 		dest[i] = f(src[i]);
 }
 
-double __cg_relu(double x){
+CG_SCALAR_TYPE __cg_relu(CG_SCALAR_TYPE x){
 	return x*(x>0);
 }
 
-double __cg_dx_relu(double x){
+CG_SCALAR_TYPE __cg_dx_relu(CG_SCALAR_TYPE x){
 	return 1*(x>0);
 }
 
-double __cg_sigmoid(double x){
+CG_SCALAR_TYPE __cg_sigmoid(CG_SCALAR_TYPE x){
     return 1.0/(1.0 + exp(-x));
 }
 
-double __cg_softplus(double x){
+CG_SCALAR_TYPE __cg_softplus(CG_SCALAR_TYPE x){
     return log(1 + exp(x));
 }
 
-double __cg_dx_softplus(double x){
+CG_SCALAR_TYPE __cg_dx_softplus(CG_SCALAR_TYPE x){
     return __cg_sigmoid(x);
 }
 
@@ -64,12 +64,12 @@ CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classe
 	// TODO: ASSERT
 	
 	
-	double* x_val = NULL;
-	double* y_val = NULL;
+	CG_SCALAR_TYPE* x_val = NULL;
+	CG_SCALAR_TYPE* y_val = NULL;
 	
 	if(y->type == CGVT_DOUBLE){
 		CGDouble* raw_val = (CGDouble*)y->value;
-		y_val = calloc(1, sizeof(double));
+		y_val = calloc(1, sizeof(CG_SCALAR_TYPE));
 		y_val[0] = raw_val->value;
 	}
 	else
@@ -89,14 +89,14 @@ CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classe
 	}
 	else {
 		CGDouble* raw_val = (CGDouble*)x->value;
-		x_val = calloc(1, sizeof(double));
+		x_val = calloc(1, sizeof(CG_SCALAR_TYPE));
 		num_samples = 1;
 		x_val[0] = raw_val->value;
 	}
 	
 	uint64_t i = 0;
 	uint64_t j = 0;
-	double sum = 0.0;
+	CG_SCALAR_TYPE sum = 0.0;
 	
 	//printf("num samples %lu, %lu\n", num_samples, num_classes);
 	
@@ -117,12 +117,12 @@ CGResultNode* crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classe
 CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
 	// TODO: ASSERT
 	
-	double* x_val = NULL;
-	double* y_val = NULL;
+	CG_SCALAR_TYPE* x_val = NULL;
+	CG_SCALAR_TYPE* y_val = NULL;
 	
 	if(y->type == CGVT_DOUBLE){
 		CGDouble* raw_val = (CGDouble*)y->value;
-		y_val = calloc(1, sizeof(double));
+		y_val = calloc(1, sizeof(CG_SCALAR_TYPE));
 		y_val[0] = raw_val->value;
 	}
 	else
@@ -142,13 +142,13 @@ CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
 	}
 	else {
 		CGDouble* raw_val = (CGDouble*)x->value;
-		x_val = calloc(1, sizeof(double));
+		x_val = calloc(1, sizeof(CG_SCALAR_TYPE));
 		num_samples = 1;
 		x_val[0] = raw_val->value;
 	}
 	
-	double* out = calloc(num_samples*num_classes, sizeof(double));
-	memcpy(out, x_val, num_samples*num_classes*sizeof(double));
+	CG_SCALAR_TYPE* out = calloc(num_samples*num_classes, sizeof(CG_SCALAR_TYPE));
+	memcpy(out, x_val, num_samples*num_classes*sizeof(CG_SCALAR_TYPE));
 	
 	uint64_t i = 0;
 	uint64_t j = 0;
@@ -171,14 +171,14 @@ CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
 CGResultNode* relu(CGResultNode* x){
 	switch(x->type){
 		case CGVT_DOUBLE:{
-			double val = ((CGDouble*)x->value)->value;
+			CG_SCALAR_TYPE val = ((CGDouble*)x->value)->value;
 			return makeDoubleResultNode(__cg_relu(val));
 		}
 		
 		case CGVT_VECTOR: {
 			CGVector* v = (CGVector*)x->value;
 			
-			double* y = calloc(v->len, sizeof(double));
+			CG_SCALAR_TYPE* y = calloc(v->len, sizeof(CG_SCALAR_TYPE));
 			__cg_map_array(v->data, y, v->len, __cg_relu);
 			return makeVectorResultNode(v->len, y);
 		}
@@ -187,7 +187,7 @@ CGResultNode* relu(CGResultNode* x){
 			CGMatrix* m = (CGMatrix*)x->value;
 			uint64_t len = m->cols*m->rows;
 			
-			double* y = calloc(len, sizeof(double));
+			CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
 			__cg_map_array(m->data, y, len, __cg_relu);
 			return makeMatrixResultNode(m->rows, m->cols, y);
 		}
@@ -200,14 +200,14 @@ CGResultNode* relu(CGResultNode* x){
 CGNode* dx_relu(CGResultNode* x){
 	switch(x->type){
 		case CGVT_DOUBLE:{
-			double val = ((CGDouble*)x->value)->value;
+			CG_SCALAR_TYPE val = ((CGDouble*)x->value)->value;
 			return makeDoubleConstantNode(__cg_dx_relu(val));
 		}
 		
 		case CGVT_VECTOR: {
 			CGVector* v = (CGVector*)x->value;
 			
-			double* y = calloc(v->len, sizeof(double));
+			CG_SCALAR_TYPE* y = calloc(v->len, sizeof(CG_SCALAR_TYPE));
 			__cg_map_array(v->data, y, v->len, __cg_dx_relu);
 			return makeVectorConstantNode(v->len, y);
 		}
@@ -216,7 +216,7 @@ CGNode* dx_relu(CGResultNode* x){
 			CGMatrix* m = (CGMatrix*)x->value;
 			uint64_t len = m->cols*m->rows;
 			
-			double* y = calloc(len, sizeof(double));
+			CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
 			__cg_map_array(m->data, y, len, __cg_dx_relu);
 			return makeMatrixConstantNode(m->rows, m->cols, y);
 		}
@@ -226,14 +226,14 @@ CGNode* dx_relu(CGResultNode* x){
 CGResultNode* softplus(CGResultNode* x){
     switch(x->type){
         case CGVT_DOUBLE:{
-            double val = ((CGDouble*)x->value)->value;
+            CG_SCALAR_TYPE val = ((CGDouble*)x->value)->value;
             return makeDoubleResultNode(__cg_softplus(val));
         }
 
         case CGVT_VECTOR: {
             CGVector* v = (CGVector*)x->value;
 
-            double* y = calloc(v->len, sizeof(double));
+            CG_SCALAR_TYPE* y = calloc(v->len, sizeof(CG_SCALAR_TYPE));
             __cg_map_array(v->data, y, v->len, __cg_softplus);
             return makeVectorResultNode(v->len, y);
         }
@@ -242,7 +242,7 @@ CGResultNode* softplus(CGResultNode* x){
             CGMatrix* m = (CGMatrix*)x->value;
             uint64_t len = m->cols*m->rows;
 
-            double* y = calloc(len, sizeof(double));
+            CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
             __cg_map_array(m->data, y, len, __cg_softplus);
             return makeMatrixResultNode(m->rows, m->cols, y);
         }
@@ -253,14 +253,14 @@ CGResultNode* softplus(CGResultNode* x){
 CGNode* dx_softplus(CGResultNode* x){
     switch(x->type){
         case CGVT_DOUBLE:{
-            double val = ((CGDouble*)x->value)->value;
+            CG_SCALAR_TYPE val = ((CGDouble*)x->value)->value;
             return makeDoubleConstantNode(__cg_dx_softplus(val));
         }
 
         case CGVT_VECTOR: {
             CGVector* v = (CGVector*)x->value;
 
-            double* y = calloc(v->len, sizeof(double));
+            CG_SCALAR_TYPE* y = calloc(v->len, sizeof(CG_SCALAR_TYPE));
             __cg_map_array(v->data, y, v->len, __cg_dx_softplus);
             return makeVectorConstantNode(v->len, y);
         }
@@ -269,7 +269,7 @@ CGNode* dx_softplus(CGResultNode* x){
             CGMatrix* m = (CGMatrix*)x->value;
             uint64_t len = m->cols*m->rows;
 
-            double* y = calloc(len, sizeof(double));
+            CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
             __cg_map_array(m->data, y, len, __cg_dx_softplus);
             return makeMatrixConstantNode(m->rows, m->cols, y);
         }

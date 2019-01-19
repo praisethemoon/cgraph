@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(cgraph)
 
 option(CG_USE_LIBCPUID "Use CPUID to detect CPU Features" ON)
-option(CG_USE_OPENCL "OpenCL acceleration" ON)
+option(CG_USE_OPENCL "OpenCL acceleration" OFF)
 
 set (PROJECT_INCLUDE_DIR
 	/usr/local/include #for blas

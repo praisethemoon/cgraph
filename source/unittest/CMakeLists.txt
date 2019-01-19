@@ -7,6 +7,7 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}/../libcgraph/include/c_api
 	${PROJECT_SOURCE_DIR}/vendor/minunit/
 	${PROJECT_SOURCE_DIR}/vendor/remotery/
+	${PROJECT_SOURCE_DIR}/vendor/profiler/
 )
 
 

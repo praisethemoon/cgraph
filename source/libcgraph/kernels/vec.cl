@@ -1,16 +1,18 @@
 
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-/*
-__kernel void sigmoid_vec(__global double *input, __global double *output)
+#ifndef CL_SCALAR_TYPE
+#define CL_SCALAR_TYPE float
+#endif
+
+__kernel void sigmoid_vec(__global CL_SCALAR_TYPE *input, __global CL_SCALAR_TYPE *output)
 {
     uint idx = get_global_id(0);
-    double x = input[idx];
+    CL_SCALAR_TYPE x = input[idx];
     output[idx] = 1.0/(1.0 + exp(-x));
 }
- */
 
-__kernel void mul_vd(__global const double *a, const double b, __global double * c  ) {
+__kernel void mul_vd(__global const CL_SCALAR_TYPE *a, const CL_SCALAR_TYPE b, __global CL_SCALAR_TYPE * c  ) {
     uint gid = get_global_id(0);
     c[gid] = a[gid] * b;
 }
@@ -18,7 +20,7 @@ __kernel void mul_vd(__global const double *a, const double b, __global double *
 /*
  * Broadcast Matrix-vector multiplication
  */
-__kernel void mul_mv(__global const double *M, __global const double *V, __global double * c, ulong len) {
+__kernel void mul_mv(__global const CL_SCALAR_TYPE *M, __global const CL_SCALAR_TYPE *V, __global CL_SCALAR_TYPE * c, ulong len) {
     uint gid = get_global_id(0);
     c[gid] = M[gid] * V[gid%len];
 }
@@ -26,7 +28,7 @@ __kernel void mul_mv(__global const double *M, __global const double *V, __globa
 /*
  * Broadcast Matrix-Matrix multiplication
  */
-__kernel void mul_mm(__global const double *a, __global const double *b, __global double * c) {
+__kernel void mul_mm(__global const CL_SCALAR_TYPE *a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
     uint gid = get_global_id(0);
     c[gid] = a[gid] * b[gid];
 }

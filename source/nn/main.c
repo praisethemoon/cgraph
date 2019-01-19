@@ -39,23 +39,23 @@ void updateWeight(struct CGraph* graph, char* var, struct CGNode* alpha){
 }
 
 int main(int argc, char* argv[]){
-    struct CGCPUInfo* info = cg_getCPUInformation();
+    /*struct CGCPUInfo* info = cg_getCPUInformation();
     if(info == NULL){
         printf("whoupsi\n");
     }
     else
-    cg_printCPUInfo(info);
+    cg_printCPUInfo(info);*/
 
     cg_selectContext();
 
     profiler_initialize();
     PROFILER_START(nn);
 
-    double y_val[] = {1};
+    CG_SCALAR_TYPE y_val[] = {1};
 
     struct CGNode* x = cg_newVariable("x");
 
-    struct CGNode* eval  = cg_newBinOp(CGBOT_MULT, x, cg_newDoubleNode(0.5));
+    struct CGNode* eval  = cg_newBinOp(CGBOT_MULT, sigmoid_node(x), cg_newDoubleNode(0.5));
 
     struct CGraph* graph = cg_newGraph("nn", eval);
 
