@@ -5,6 +5,7 @@
 #include <time.h>
 #include <assert.h>
 
+
 #include "cgraph.h"
 #include "cg_operation.h"
 #include "cg_types.h"
@@ -17,6 +18,13 @@
 #include "random.h"
 
 
+#define CHECK_ERROR(err) \
+    if (err != NULL) { fprintf(stderr, "\n%s\n", err->message); exit(-1); }
+
+#ifdef CG_USE_OPENCL
+#include <cf4ocl2.h>
+extern CCLContext * ctx;
+#endif
 
 CG_SCALAR_TYPE* vcopy(uint64_t len, const CG_SCALAR_TYPE* data){
 	CG_SCALAR_TYPE* newdata = calloc(len, sizeof(CG_SCALAR_TYPE));
@@ -60,7 +68,7 @@ CGNode* makeVectorConstantNode(uint64_t  len, CG_SCALAR_TYPE* value){
 	CGVector* v = calloc(1, sizeof(CGVector));
 	v->data = value;
 	v->len = len;
-	
+
 	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_VECTOR;
 	c->value = v;
@@ -81,7 +89,7 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, CG_SCALAR_TYPE* va
 	m->data = value;
 	m->rows = rows;
 	m->cols = cols;
-	
+
 	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_MATRIX;
 	c->value = m;
@@ -126,7 +134,7 @@ CGNode* makeZeroVectorConstantNode(uint64_t  len){
 	CGVector* v = calloc(1, sizeof(CGVector));
 	v->len = len;
 	v->data = calloc(len, sizeof(CG_SCALAR_TYPE));
-	
+
 	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_VECTOR;
 	c->value = v;
@@ -147,7 +155,7 @@ CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	m->data = calloc(rows*cols, sizeof(CG_SCALAR_TYPE));
 	m->rows = rows;
 	m->cols = cols;
-	
+
 	CGPConstant* c = calloc(1, sizeof(CGPConstant));
 	c->type = CGVT_MATRIX;
 	c->value = m;
@@ -271,7 +279,7 @@ CGNode* makeOnesVectorConstantNode(uint64_t  len){
 	CGVector* v = calloc(1, sizeof(CGVector));
 	v->len = len;
 	v->data = calloc(len, sizeof(CG_SCALAR_TYPE));
-	
+
 	uint64_t i = 0;
 	for(;i<len;v->data[i++]=1);
 	
@@ -295,7 +303,7 @@ CGNode* makeOnesMatrixConstantNode(uint64_t  rows, uint64_t cols){
 	m->data = calloc(rows*cols, sizeof(CG_SCALAR_TYPE));
 	m->rows = rows;
 	m->cols = cols;
-	
+
 	uint64_t i = 0;
 	for(;i<cols*rows;m->data[i++]=1);
 
@@ -399,7 +407,14 @@ CGResultNode* makeVectorResultNode(uint64_t len, CG_SCALAR_TYPE* val){
 	CGVector* v = calloc(1, sizeof(CGVector));
 	v->data = val;
 	v->len = len;
-	
+
+#ifdef CG_USE_OPENCL
+    CCLErr * err = NULL;
+	v->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+					   len * sizeof(CG_CL_SCALAR_TYPE), v->data, &err);
+	CHECK_ERROR(err)
+#endif
+
 	CGResultNode* result = calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_VECTOR;
 	result->value = v;
@@ -412,7 +427,14 @@ CGResultNode* makeMatrixResultNode(uint64_t rows, uint64_t cols, CG_SCALAR_TYPE*
 	m->data = val;
 	m->rows = rows;
 	m->cols = cols;
-	
+
+#ifdef CG_USE_OPENCL
+    CCLErr * err = NULL;
+	m->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+					   cols*rows * sizeof(CG_CL_SCALAR_TYPE), m->data, &err);
+	CHECK_ERROR(err)
+#endif
+
 	CGResultNode* result = calloc(1, sizeof(CGResultNode));
 	result->type = CGVT_MATRIX;
 	result->value = m;

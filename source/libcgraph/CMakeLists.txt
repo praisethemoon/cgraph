@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 project(cgraph)
 
-option(CG_USE_LIBCPUID "Use CPUID to detect CPU Features" ON)
-option(CG_USE_OPENCL "OpenCL acceleration" OFF)
-
 set (PROJECT_INCLUDE_DIR
 	/usr/local/include #for blas
 	${PROJECT_SOURCE_DIR}/include
@@ -114,7 +111,11 @@ if(CG_USE_OPENCL)
 	FIND_LIBRARY(CF4OCL2_LIB NAMES cf4ocl2 PATHS ${CF4OCL2_LIB_SEARCH_PATHS})
 
 	# Library include directories
-	include_directories(${CF4OCL2_INCLUDE_DIR})
+	include_directories(${CF4OCL2_INCLUDE_DIR}
+
+            /usr/local/include)
+		message('Found CF4OCL2 Dir')
+        message(${CF4OCL2_INCLUDE_DIR})
 
 
 	find_package(PkgConfig REQUIRED)

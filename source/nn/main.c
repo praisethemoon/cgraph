@@ -48,6 +48,7 @@ int main(int argc, char* argv[]){
 
     cg_selectContext();
 
+
     profiler_initialize();
     PROFILER_START(nn);
 
@@ -55,11 +56,11 @@ int main(int argc, char* argv[]){
 
     struct CGNode* x = cg_newVariable("x");
 
-    struct CGNode* eval  = cg_newBinOp(CGBOT_MULT, sigmoid_node(x), cg_newDoubleNode(0.5));
+    struct CGNode* eval  = cg_newBinOp(CGBOT_MULT, x, cg_newVectorRandNode(1080));
 
     struct CGraph* graph = cg_newGraph("nn", eval);
 
-    struct CGNode* x_val = cg_newVectorRandNode(19200*1080);
+    struct CGNode* x_val = cg_newMatrixRandNode(1920,1080);
     cg_setVar(graph, "x", x_val);
 
     //cg_printNodeValue(x_val);

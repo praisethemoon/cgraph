@@ -11,6 +11,7 @@
 #include <cblas.h>
 #include <string.h> // memcpy
 #include <math.h>
+#include <stdarg.h>
 
 #include "cgraph.h"
 #include "cg_operation.h"
@@ -23,6 +24,23 @@
 #include "cg_math.h"
 #include "cg_ops.h"
 
+
+void cg_assert(int cond, const char * rawcond, const char * fmt, ...)
+{
+	if(cond)
+		return;
+
+	char temp[1024];
+	va_list vl;
+	va_start(vl, fmt);
+	vsprintf(temp, fmt, vl);
+	va_end(vl);
+	fprintf(stdout, "Fatal error, assertion failed: %s\n", rawcond);
+	fprintf(stdout, temp);
+	fprintf(stdout, "\n");
+
+	exit(-1);
+}
 
 
 #define CHECK_RESULT(node) \
@@ -188,7 +206,10 @@ CGResultNode* copyResultNode(CGResultNode* node){
 			
 			V->len = src->len;
 			V->data = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-			
+
+#ifdef CG_USE_OPENCL
+			V->buf = src->buf;
+#endif
 			memcpy(V->data, src->data, V->len*sizeof(CG_SCALAR_TYPE));
 			
 			res->value = V;
@@ -204,6 +225,9 @@ CGResultNode* copyResultNode(CGResultNode* node){
 			M->rows = src->rows;
 			M->cols = src->cols;
 			M->data = calloc(size, sizeof(CG_SCALAR_TYPE));
+#ifdef CG_USE_OPENCL
+            M->buf = src->buf;
+#endif
 			
 			memcpy(M->data, src->data, size*sizeof(CG_SCALAR_TYPE));
 			
