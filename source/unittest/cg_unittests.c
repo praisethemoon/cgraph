@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+#include <stdint.h>
 
 #include "cg_api.h"
 #include "cg_enums.h"
@@ -71,12 +72,18 @@ MU_TEST(runMult_MV){
 	CGMatrix* m = cg_getResultMatrixVal(result);
 	ASSERT_MATRIX_DIM(m, 4, 3);
 	
-	CG_SCALAR_TYPE gt[] = {-3, -1,  3,
+	CG_SCALAR_TYPE gt[] = {
+       -3, -1,  3,
        -1, -5,  9,
        -2, -6,  5,
        -1, -1,  1
 	};
-	
+
+	/*uint64_t i = 0;
+	for(;i<12;i++){
+		printf("%f, ", m->data[i]);
+	}*/
+
 	ASSERT_MATRIX_EQ(gt, m);
 	
 	cg_freeGraph(graph); free(graph);
@@ -86,6 +93,7 @@ MU_TEST(runMult_MV){
  * Test matrix-matrix multiplication broadcast
  */
 MU_TEST(runMult_MM){
+	//printf("running runMult_MM\n");
 	CG_SCALAR_TYPE value1[] = {
 		1, 2, 3,
 		4, 5, 6
@@ -107,6 +115,11 @@ MU_TEST(runMult_MM){
 	ASSERT_MATRIX(result);
 	
 	CGMatrix* m = cg_getResultMatrixVal(result);
+
+	/*uint64_t i = 0;
+	for(;i<6;i++){
+		printf("%f, ", m->data[i]);
+	}*/
 	ASSERT_MATRIX_DIM(m, 2, 3);
 	CG_SCALAR_TYPE gt[] = {1, 4, 9, 16, 25, 36};
 	ASSERT_MATRIX_EQ(gt, m);
@@ -1133,7 +1146,8 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runSub_Md);
 	MU_RUN_TEST(runSub_VV);
 	MU_RUN_TEST(runSub_MM);
-	MU_RUN_TEST(runExp_M);
+
+	/*MU_RUN_TEST(runExp_M);
 	MU_RUN_TEST(runExpLog_M);
 	MU_RUN_TEST(runT_M);
 	MU_RUN_TEST(diffSimpleNN);
@@ -1142,7 +1156,7 @@ MU_TEST_SUITE(node_ops) {
 	
 	MU_RUN_TEST(runArgMaxMat);
     MU_RUN_TEST(runArgMaxMat2);
-	MU_RUN_TEST(runArgMinMat);
+	MU_RUN_TEST(runArgMinMat);*/
 }
 
 void runAllTests(){

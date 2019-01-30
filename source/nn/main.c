@@ -54,17 +54,55 @@ int main(int argc, char* argv[]){
 
     CG_SCALAR_TYPE y_val[] = {1};
 
-    struct CGNode* x = cg_newVariable("x");
+    ///struct CGNode* x = cg_newVariable("x");
 
-    struct CGNode* eval  = cg_newBinOp(CGBOT_MULT, x, cg_newVectorRandNode(1080));
+    // Good for evaluating performance
+    // struct CGNode* eval  = cg_newBinOp(CGBOT_DOT, cg_newBinOp(CGBOT_MULT, cg_newMatrixRandNode(10000,1080), cg_newMatrixRandNode(10000,1080)), cg_newMatrixRandNode(1080,10000) );
+    //struct CGNode* eval  = cg_newBinOp(CGBOT_MULT, cg_newMatrixRandNode(10000,1080), cg_newMatrixRandNode(10000,1080));
 
+//struct CGNode* eval  = cg_newBinOp(CGBOT_DOT, cg_newVectorRandNode(1080*10000),cg_newVectorRandNode(1080*10000) );
+    struct CGNode* eval  = cg_newBinOp(CGBOT_DOT, cg_newBinOp(CGBOT_MULT, cg_newBinOp(CGBOT_MULT, cg_newMatrixRandNode(10000,1080), cg_newBinOp(CGBOT_MULT, cg_newMatrixRandNode(10000,1080), cg_newMatrixRandNode(10000,1080))), cg_newBinOp(CGBOT_MULT, cg_newMatrixRandNode(10000,1080), cg_newMatrixRandNode(10000,1080))), cg_newMatrixRandNode(1080,10000) );
     struct CGraph* graph = cg_newGraph("nn", eval);
-
-    struct CGNode* x_val = cg_newMatrixRandNode(1920,1080);
-    cg_setVar(graph, "x", x_val);
 
     //cg_printNodeValue(x_val);
     struct CGResultNode* res = cg_evalGraph(graph);
+
+    switch(cg_getResultType(res)){
+        case CGVT_DOUBLE:
+        {
+            CGDouble* d = cg_getResultDoubleVal(res);
+            printf("%f\n",  d->value);
+            break;
+        }
+
+        case CGVT_VECTOR:
+        {
+            CGVector* vec = cg_getResultVectorVal(res);
+            uint64_t i = 0;
+            printf("(");
+            for(; i < vec->len; i++){
+                printf("%f, ", vec->data[i]);
+            }
+            printf(")\n");
+            break;
+        }
+
+        case CGVT_MATRIX:
+        {
+            CGMatrix* m = cg_getResultMatrixVal(res);
+            uint64_t i = 0;
+            uint64_t j = 0;
+            printf("(");
+            for(; i < m->rows; i++){
+                printf("\n\t");
+                for(j = 0; j < m->cols; j++){
+                    printf("%f, ", m->data[i*m->cols+j]);
+                }
+            }
+            printf(")\n");
+            break;
+        }
+    }
 
     PROFILER_STOP(nn);
     profiler_dump_console();

@@ -1000,6 +1000,8 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 }
 
 CGResultNode* reduceDim(CGResultNode* result){
+    return result;
+    /*
 	switch(result->type){
 		case CGVT_DOUBLE:{
 			return result;
@@ -1009,6 +1011,8 @@ CGResultNode* reduceDim(CGResultNode* result){
 			CGVector* vec = (CGVector*)result->value;
 			if (vec->len > 1)
 				return result;
+
+			copyDataToHost(result);
 			
 			CGDouble* d = calloc(1, sizeof(CGDouble));
 			d->value = vec->data[0];
@@ -1029,7 +1033,8 @@ CGResultNode* reduceDim(CGResultNode* result){
 				return result;
 			
 			if((mat->rows == 1) && (mat->cols == 1)){
-				
+                copyDataToHost(result);
+
 				CGDouble* d = calloc(1, sizeof(CGDouble));
 				d->value = mat->data[0];
 				
@@ -1044,10 +1049,12 @@ CGResultNode* reduceDim(CGResultNode* result){
 			}
 			
 			if(mat->rows == 1){
-				
 				CGVector* vec = calloc(1, sizeof(CGVector));
 				vec->len = mat->cols;
 				vec->data = mat->data;
+				//TODO: Memory leak here
+				vec->buf = mat->buf;
+
 				
 				//freeMatrixValue(result->value);
 				free(result->value);
@@ -1060,12 +1067,15 @@ CGResultNode* reduceDim(CGResultNode* result){
 			
 			return result;
 		}
-	}
+	}*/
 }
 
 CGResultNode* computeGraph(CGraph* graph){
 	resetGraphResultNodes(graph, graph->root);
-	return computeCGNode(graph, graph->root);
+	CGResultNode* res = computeCGNode(graph, graph->root);
+	copyDataToHost(res);
+
+	return res;
 }
 
 CGResultNode* computeGraphNode(CGraph* graph, CGNode* node){

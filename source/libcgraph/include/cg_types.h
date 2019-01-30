@@ -3,9 +3,16 @@
 
 #include <inttypes.h>
 
+//#define CG_USE_OPENCL
 
 #ifdef CG_USE_OPENCL
 #include <cf4ocl2.h>
+
+typedef enum CGDataLocation {
+    CG_DATALOC_HOST_MEM=0,
+    CG_DATALOC_DEVICE_MEM
+}CGDataLocation;
+
 #endif
 
 #include "cg_enums.h"
@@ -18,6 +25,10 @@
  */
 typedef struct CGDouble {
 	CG_SCALAR_TYPE value;
+#ifdef CG_USE_OPENCL
+	CCLBuffer* buf;
+	CGDataLocation loc;
+#endif
 }CGDouble;
 
 /**
@@ -29,6 +40,7 @@ typedef struct CGVector {
 
 #ifdef CG_USE_OPENCL
 	CCLBuffer* buf;
+	CGDataLocation loc;
 #endif
 
 	//CG_SCALAR_TYPE* (*getSub)(uint64_t start, uint64_t end);
@@ -44,6 +56,7 @@ typedef struct CGMatrix {
 
 #ifdef CG_USE_OPENCL
 	CCLBuffer* buf;
+	CGDataLocation loc;
 #endif
 
 	//CG_SCALAR_TYPE* (*getRow)(uint64_t row);

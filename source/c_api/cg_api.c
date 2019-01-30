@@ -168,7 +168,7 @@ CGVector* cg_getResultVectorVal(CGResultNode* result){
 }
 
 CGMatrix* cg_getResultMatrixVal(CGResultNode* result){
-	return result->value;
+	return (CGMatrix*)result->value;
 }
 
 void cg_autoDiffGraph(CGraph* graph){

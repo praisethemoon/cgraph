@@ -33,6 +33,9 @@ int selectContext() {
 }
 
 
+void copyDataToHost(CGResultNode* res){}
+
+
 /*
  * *********************
  * Multiplication

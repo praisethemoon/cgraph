@@ -37,7 +37,7 @@ add_subdirectory(libcgraph)
 add_subdirectory(c_api)
 add_subdirectory(unittest)
 add_subdirectory(lua_api)
-#add_subdirectory(clgraph)
+add_subdirectory(clgraph)
 #add_subdirectory(cldevices)
 add_subdirectory(nn)
 

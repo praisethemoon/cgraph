@@ -99,4 +99,6 @@ CGResultNode* copyResultNode(CGResultNode* node);
 
 void graphSetVar_lua(CGraph* graph, const char* name, CGNode* value);
 
+void copyDataToHost(CGResultNode* res);
+
 #endif
