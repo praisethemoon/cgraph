@@ -1933,7 +1933,6 @@ CGResultNode* transposeD(CGDouble* D, CGraph* graph, CGNode* parentNode){
 CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
     uint64_t size = V->len;
 
-
     CCLErr * err = NULL;
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = 1;
@@ -1942,6 +1941,7 @@ CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
 
     Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR ,
                             V->len * sizeof(CG_CL_SCALAR_TYPE), Y->data, &err);
+
     CHECK_ERROR(err)
 
     Y->loc = CG_DATALOC_DEVICE_MEM;
