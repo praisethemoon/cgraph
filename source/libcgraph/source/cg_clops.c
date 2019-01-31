@@ -44,6 +44,7 @@ CCLDevice* dev = NULL;
 #define CLBlastDscal CLBlastSscal
 #define CLBlastDgemm CLBlastSgemm
 #define CLBlastDdot CLBlastSdot
+#define CLBlastDomatcopy CLBlastSomatcopy
 #endif
 
 
@@ -1417,18 +1418,21 @@ CGResultNode* powDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNod
  * V^d
  */
 CGResultNode* powVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* res = calloc(V->len, sizeof(CG_SCALAR_TYPE));
     CG_SCALAR_TYPE value = D->value;
 
-    CGVector* Y = calloc(1, sizeof(CGVector));
-    Y->data = res;
-    Y->len = V->len;
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
+    CGVector* Y = makeDeviceVector(V->len);
 
-    for(;i<V->len;i++){
-        res[i] = pow(V->data[i], value);
-    }
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "pow_vd", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), ccl_arg_priv(value, CG_CL_SCALAR_TYPE), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_VECTOR;
@@ -1441,20 +1445,21 @@ CGResultNode* powVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode)
  * M^d
  */
 CGResultNode* powMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode){
-    uint64_t size = M->rows*M->cols;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
     CG_SCALAR_TYPE value = D->value;
 
-    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->rows = M->rows;
-    Y->cols = M->cols;
-    Y->data = res;
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
 
-    for(;i<size;i++){
-        res[i] = pow(M->data[i], value);
-    }
+    uint64_t len = M->rows*M->cols;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "pow_vd", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), ccl_arg_priv(value, CG_CL_SCALAR_TYPE), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
@@ -1470,6 +1475,7 @@ CGResultNode* powMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode)
  */
 /*
  * M^T.v
+ * TODO
  */
 CGResultNode* mulMtV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
     CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
@@ -1508,16 +1514,18 @@ CGResultNode* expD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * exp(v)
  */
 CGResultNode* expV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CGVector* Y = calloc(1, sizeof(CGVector));
-    Y->data = y;
-    Y->len = V->len;
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
+    CGVector* Y = makeDeviceVector(V->len);
 
-    for(;i<V->len;i++){
-        y[i] = exp(V->data[i]);
-    }
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "exp_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_VECTOR;
@@ -1530,19 +1538,17 @@ CGResultNode* expV(CGVector* V, CGraph* graph, CGNode* parentNode){
  * exp(M)
  */
 CGResultNode* expM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
-    uint64_t size = M->rows*M->cols;
+    CCLErr * err = NULL;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->data = y;
-    Y->rows = M->rows;
-    Y->cols = M->cols;
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
+    uint64_t len = M->rows*M->cols;
 
-    uint64_t i = 0;
+    CCLEvent* evt = NULL;
+    size_t gws = len;
 
-    for(;i<size;i++){
-        y[i] = exp(M->data[i]);
-    }
+    evt = ccl_program_enqueue_kernel(prg, "exp_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
@@ -1571,16 +1577,18 @@ CGResultNode* logD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * log(V)
  */
 CGResultNode* logV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CGVector* Y = calloc(1, sizeof(CGVector));
-    Y->data = y;
-    Y->len = V->len;
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
+    CGVector* Y = makeDeviceVector(V->len);
 
-    for(;i<V->len;i++){
-        y[i] = log(V->data[i]);
-    }
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "log_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_VECTOR;
@@ -1593,19 +1601,17 @@ CGResultNode* logV(CGVector* V, CGraph* graph, CGNode* parentNode){
  * exp(M)
  */
 CGResultNode* logM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
-    uint64_t size = M->rows*M->cols;
+    CCLErr * err = NULL;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->data = y;
-    Y->rows = M->rows;
-    Y->cols = M->cols;
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
+    uint64_t len = M->rows*M->cols;
 
-    uint64_t i = 0;
+    CCLEvent* evt = NULL;
+    size_t gws = len;
 
-    for(;i<size;i++){
-        y[i] = log(M->data[i]);
-    }
+    evt = ccl_program_enqueue_kernel(prg, "log_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
@@ -1639,16 +1645,19 @@ CGResultNode* sinD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * sin(V)
  */
 CGResultNode* sinV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CGVector* Y = calloc(1, sizeof(CGVector));
-    Y->data = y;
-    Y->len = V->len;
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
+    CGVector* Y = makeDeviceVector(V->len);
 
-    for(;i<V->len;i++){
-        y[i] = sin(V->data[i]);
-    }
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "sin_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_VECTOR;
@@ -1661,19 +1670,17 @@ CGResultNode* sinV(CGVector* V, CGraph* graph, CGNode* parentNode){
  * sin(M)
  */
 CGResultNode* sinM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
-    uint64_t size = M->rows*M->cols;
+    CCLErr * err = NULL;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->data = y;
-    Y->rows = M->rows;
-    Y->cols = M->cols;
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
+    uint64_t len = M->rows*M->cols;
 
-    uint64_t i = 0;
+    CCLEvent* evt = NULL;
+    size_t gws = len;
 
-    for(;i<size;i++){
-        y[i] = sin(M->data[i]);
-    }
+    evt = ccl_program_enqueue_kernel(prg, "sin_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
@@ -1707,16 +1714,19 @@ CGResultNode* cosD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * cos(V)
  */
 CGResultNode* cosV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CGVector* Y = calloc(1, sizeof(CGVector));
-    Y->data = y;
-    Y->len = V->len;
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
+    CGVector* Y = makeDeviceVector(V->len);
 
-    for(;i<V->len;i++){
-        y[i] = cos(V->data[i]);
-    }
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "cos_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_VECTOR;
@@ -1726,22 +1736,20 @@ CGResultNode* cosV(CGVector* V, CGraph* graph, CGNode* parentNode){
 }
 
 /*
- * cos(M)
+ * sin(M)
  */
 CGResultNode* cosM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
-    uint64_t size = M->rows*M->cols;
+    CCLErr * err = NULL;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->data = y;
-    Y->rows = M->rows;
-    Y->cols = M->cols;
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
+    uint64_t len = M->rows*M->cols;
 
-    uint64_t i = 0;
+    CCLEvent* evt = NULL;
+    size_t gws = len;
 
-    for(;i<size;i++){
-        y[i] = cos(M->data[i]);
-    }
+    evt = ccl_program_enqueue_kernel(prg, "cos_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
@@ -1776,16 +1784,19 @@ CGResultNode* tanD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * tan(V)
  */
 CGResultNode* tanV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CGVector* Y = calloc(1, sizeof(CGVector));
-    Y->data = y;
-    Y->len = V->len;
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
+    CGVector* Y = makeDeviceVector(V->len);
 
-    for(;i<V->len;i++){
-        y[i] = tan(V->data[i]);
-    }
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "tan_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_VECTOR;
@@ -1798,19 +1809,17 @@ CGResultNode* tanV(CGVector* V, CGraph* graph, CGNode* parentNode){
  * tan(M)
  */
 CGResultNode* tanM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
-    uint64_t size = M->rows*M->cols;
+    CCLErr * err = NULL;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->data = y;
-    Y->rows = M->rows;
-    Y->cols = M->cols;
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
+    uint64_t len = M->rows*M->cols;
 
-    uint64_t i = 0;
+    CCLEvent* evt = NULL;
+    size_t gws = len;
 
-    for(;i<size;i++){
-        y[i] = tan(M->data[i]);
-    }
+    evt = ccl_program_enqueue_kernel(prg, "tan_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
@@ -1845,16 +1854,19 @@ CGResultNode* tanhD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * tanh(V)
  */
 CGResultNode* tanhV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CGVector* Y = calloc(1, sizeof(CGVector));
-    Y->data = y;
-    Y->len = V->len;
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
+    CGVector* Y = makeDeviceVector(V->len);
 
-    for(;i<V->len;i++){
-        y[i] = tanh(V->data[i]);
-    }
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "tanh_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_VECTOR;
@@ -1867,19 +1879,17 @@ CGResultNode* tanhV(CGVector* V, CGraph* graph, CGNode* parentNode){
  * tanh(M)
  */
 CGResultNode* tanhM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
-    uint64_t size = M->rows*M->cols;
+    CCLErr * err = NULL;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->data = y;
-    Y->rows = M->rows;
-    Y->cols = M->cols;
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
+    uint64_t len = M->rows*M->cols;
 
-    uint64_t i = 0;
+    CCLEvent* evt = NULL;
+    size_t gws = len;
 
-    for(;i<size;i++){
-        y[i] = tanh(M->data[i]);
-    }
+    evt = ccl_program_enqueue_kernel(prg, "tanh_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
@@ -1923,18 +1933,18 @@ CGResultNode* transposeD(CGDouble* D, CGraph* graph, CGNode* parentNode){
 CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
     uint64_t size = V->len;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+
+    CCLErr * err = NULL;
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->data = y;
-    Y->rows = V->len;
-    Y->cols = 1;
-    Y->data = y;
+    Y->rows = 1;
+    Y->cols = V->len;
+    Y->data = NULL;
 
-    uint64_t i = 0;
-    uint64_t j = 0;
+    Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR ,
+                            V->len * sizeof(CG_CL_SCALAR_TYPE), Y->data, &err);
+    CHECK_ERROR(err)
 
-    memcpy(Y->data, V->data, V->len*sizeof(CG_SCALAR_TYPE));
-
+    Y->loc = CG_DATALOC_DEVICE_MEM;
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
     result->value = Y;
@@ -1947,23 +1957,32 @@ CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
  * M^t
  */
 CGResultNode* transposeM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
-    uint64_t size = M->rows*M->cols;
+    uint64_t size = M->cols*M->rows;
+    CGMatrix* Y = makeDeviceMatrix(M->cols, M->rows);
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->data = y;
-    Y->rows = M->cols;
-    Y->cols = M->rows;
-    Y->data = y;
+    //if(A->value != 0){
+    CCLErr * err = NULL;
 
-    uint64_t i = 0;
-    uint64_t j = 0;
+    CCLBuffer * a = M->buf;
 
-    for(;i<M->rows;i++){
-        for(j = 0;j<M->cols;j++){
-            y[j*Y->cols+i] = M->data[i*M->cols +j];
-        }
-    }
+
+    CHECK_ERROR(err)
+
+
+    CHECK_ERROR(err)
+
+
+    cl_mem M_mem = ccl_buffer_unwrap(M->buf);
+    cl_mem Y_mem = ccl_buffer_unwrap(Y->buf);
+
+    cl_command_queue q = ccl_queue_unwrap(queue);
+
+    //cblas_dcopy(V->len, V->data, 1, y, 1);
+    //cblas_dscal(V->len, a->value, y, 1);
+
+    //CLBlastDcopy(size, M_mem, 0.0, 1, Y_mem, 0.0, 1, &q, NULL);
+    CLBlastDomatcopy(CLBlastLayoutRowMajor, CLBlastTransposeYes, M->rows, M->cols, 1.0f, M_mem, 0, M->cols, Y_mem, 0, Y->cols, &q, NULL);
+
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;

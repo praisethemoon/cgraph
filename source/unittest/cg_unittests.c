@@ -780,6 +780,39 @@ MU_TEST(runSub_MM){
 	cg_freeGraph(graph); free(graph);
 }
 
+MU_TEST(runPOW_MV){
+    CG_SCALAR_TYPE value1[] = {
+            3, 1, 3, 1,
+            1, 5, 9, 1,
+            2, 6, 5, 1,
+            1, 1, 1, 0,
+    };
+
+    CG_SCALAR_TYPE value2[] = {
+            3, 1, 3, 1,
+    };
+
+
+    struct CGNode* lhsNode = cg_newMatrixNode(4, 4, value1);
+    struct CGNode* rhsNode = cg_newVectorNode(4, value2);
+
+    struct CGNode* node = cg_newBinOp(CGBOT_ADD, cg_newBinOp(CGBOT_POW, lhsNode, cg_newDoubleNode(2.0)), cg_newBinOp(CGBOT_POW, rhsNode, cg_newDoubleNode(3.0)));
+
+    struct CGraph* graph = cg_newGraph("runPOW_MV", node);
+    struct CGResultNode* result = cg_evalGraph(graph);
+
+    CHECK_ERROR(result);
+    ASSERT_MATRIX(result);
+
+    CGMatrix* M = cg_getResultMatrixVal(result);
+
+    CG_SCALAR_TYPE gt[] = {36, 2, 36, 2, 28, 26, 108, 2, 31,  37,  52,  2, 28, 2, 28, 1};
+
+    ASSERT_MATRIX_EQ(gt, M);
+
+    cg_freeGraph(graph); free(graph);
+}
+
 MU_TEST(runExp_M){
 	CG_SCALAR_TYPE value1[] = {
 		3, 1, 3, 1,
@@ -853,13 +886,12 @@ MU_TEST(runT_M){
 
 	struct CGNode* node = cg_newUnOp(CGUOT_TRANSPOSE, uhsNode);
 	
-	
 	struct CGraph* graph = cg_newGraph("runT_M", node);
 	struct CGResultNode* result = cg_evalGraph(graph);
 	
 	CHECK_ERROR(result);
 	ASSERT_MATRIX(result);
-	
+
 	CGMatrix* M = cg_getResultMatrixVal(result);
 	
 	CG_SCALAR_TYPE gt[] = {3, 1, 2, 1, 1, 0, 6, 1, 3, 9, 5, 1, 1, 1, 1, 0, 0, 0.5, 0.3, 1.1};
@@ -1147,9 +1179,11 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runSub_VV);
 	MU_RUN_TEST(runSub_MM);
 
+	MU_RUN_TEST(runPOW_MV);
+    MU_RUN_TEST(runT_M);
+
 	/*MU_RUN_TEST(runExp_M);
 	MU_RUN_TEST(runExpLog_M);
-	MU_RUN_TEST(runT_M);
 	MU_RUN_TEST(diffSimpleNN);
 	MU_RUN_TEST(runCrossEntropyLossVec);
 	MU_RUN_TEST(runReluSigmoidSoftmax);

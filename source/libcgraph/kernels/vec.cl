@@ -215,7 +215,6 @@ __kernel void pow_vd(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE
     if(gid >= size){
         return;
     }
-
     c[gid] = pow(b[gid], a);
 }
 
@@ -262,7 +261,7 @@ __kernel void sin_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SC
 /*
  * cos(V)
  */
-__kernel void log_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void cos_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
