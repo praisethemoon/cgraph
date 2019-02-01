@@ -45,6 +45,7 @@ CCLDevice* dev = NULL;
 #define CLBlastDgemm CLBlastSgemm
 #define CLBlastDdot CLBlastSdot
 #define CLBlastDomatcopy CLBlastSomatcopy
+#define CLBlastDsum CLBlastSsum
 #endif
 
 
@@ -52,7 +53,6 @@ CCLDevice* dev = NULL;
 void copyDataToHost(CGResultNode* res){
     CCLEvent* evt = NULL;
     CCLErr * err = NULL;
-    
 
     switch(res->type){
         case CGVT_VECTOR:{
@@ -93,8 +93,8 @@ void copyDataToHost(CGResultNode* res){
 CGDouble* makeDeviceDouble(){
     CCLErr * err = NULL;
     CGDouble* Y = calloc(1, sizeof(CGDouble));
-
-    Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
+    CG_SCALAR_TYPE* ptr = &Y->value;
+    Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE,
                             sizeof(CG_CL_SCALAR_TYPE), NULL, &err);
     CHECK_ERROR(err)
 
@@ -565,9 +565,9 @@ CGResultNode* dotVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentNod
     CGDouble* Y = makeDeviceDouble();
 
 
-    
+
     CHECK_ERROR(err)
-    
+
     CHECK_ERROR(err)
 
 
@@ -1935,12 +1935,12 @@ CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
 
     CCLErr * err = NULL;
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
-    Y->rows = 1;
-    Y->cols = V->len;
+    Y->rows = V->len;
+    Y->cols = 1;
     Y->data = NULL;
 
     Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR ,
-                            V->len * sizeof(CG_CL_SCALAR_TYPE), Y->data, &err);
+                            V->len * sizeof(CG_CL_SCALAR_TYPE), V->data, &err);
 
     CHECK_ERROR(err)
 
@@ -1977,10 +1977,6 @@ CGResultNode* transposeM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
 
     cl_command_queue q = ccl_queue_unwrap(queue);
 
-    //cblas_dcopy(V->len, V->data, 1, y, 1);
-    //cblas_dscal(V->len, a->value, y, 1);
-
-    //CLBlastDcopy(size, M_mem, 0.0, 1, Y_mem, 0.0, 1, &q, NULL);
     CLBlastDomatcopy(CLBlastLayoutRowMajor, CLBlastTransposeYes, M->rows, M->cols, 1.0f, M_mem, 0, M->cols, Y_mem, 0, Y->cols, &q, NULL);
 
 
@@ -2017,16 +2013,26 @@ CGResultNode* sumD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * sum(V)
  */
 CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = 0;
-    CGDouble* Y = calloc(1, sizeof(CGDouble));
+    CGDouble* Y = makeDeviceDouble();
+    CCLEvent* evt = NULL;
+    cl_command_queue q = ccl_queue_unwrap(queue);
+    cl_mem V_mem = ccl_buffer_unwrap(V->buf);
+    cl_mem Y_mem = ccl_buffer_unwrap(Y->buf);
 
-    uint64_t i = 0;
+    uint64_t  size = V->len;
 
-    for(;i<V->len;i++){
-        y += V->data[i];
-    }
+    CLBlastDsum(size, Y_mem, 0, V_mem, 0, 1, &q, NULL);
 
-    Y->value = y;
+
+    evt = ccl_buffer_enqueue_read(Y->buf, queue, CL_TRUE, 0,
+                                  sizeof(cl_double), &Y->value, NULL, NULL);
+
+
+    //ccl_queue_destroy(queue);
+    ccl_buffer_destroy(Y->buf);
+
+    Y->loc = CG_DATALOC_HOST_MEM;
+
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_DOUBLE;
     result->value = Y;
@@ -2558,8 +2564,9 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
 
 
 #if CG_SCALAR_TYPE == float
-#undef CLBlastDcopy CLBlastScopy
-#undef CLBlastDscal CLBlastSscal
-#undef CLBlastDgemm CLBlastSgemm
-#undef CLBlastDdot CLBlastSdot
+#undef CLBlastDcopy
+#undef CLBlastDscal
+#undef CLBlastDgemm
+#undef CLBlastDdot
+#undef CLBlastDsum
 #endif

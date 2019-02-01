@@ -903,6 +903,31 @@ MU_TEST(runT_M){
 	cg_freeGraph(graph); free(graph);
 }
 
+MU_TEST(runSUM_V){
+    CG_SCALAR_TYPE value1[] = {
+            3, 1, 3, 1, 0,
+    };
+
+
+    struct CGNode* uhsNode = cg_newVectorNode(5, value1);
+
+    struct CGNode* node = cg_newAxisBoundOp(CGABOT_SUM, uhsNode, 0);
+
+    struct CGraph* graph = cg_newGraph("runT_M", node);
+    struct CGResultNode* result = cg_evalGraph(graph);
+
+    CHECK_ERROR(result);
+    ASSERT_DOUBLE(result);
+
+    CGDouble* D = cg_getResultDoubleVal(result);
+
+    CG_SCALAR_TYPE gt = 8;
+
+    mu_assert_double_eq(gt, D->value);
+
+    cg_freeGraph(graph); free(graph);
+}
+
 /*
  * the following function will fail on purpose,
  * it should fail with an error of invalid operation div for (matrix, vector)
@@ -961,11 +986,12 @@ MU_TEST(diffSimpleNN){
 	cg_autoDiffGraph(graph);
 	
 	struct CGNode* dT_1 = cg_getVarDiff(graph, "T_1");
+
 	struct CGResultNode* res1 = cg_constantToResult(dT_1);
 	ASSERT_MATRIX(res1);
 	CGMatrix* M = cg_getResultMatrixVal(res1);
 	
-	CG_SCALAR_TYPE gt[] = {	0.088000, 0.176000, 0.104000, 0.208000};
+	CG_SCALAR_TYPE gt[] = {0.088000, 0.176000, 0.104000, 0.208000};
 	
 	ASSERT_MATRIX_DIM(M, 2, 2);
 	ASSERT_MATRIX_EQ(gt, M);
@@ -974,12 +1000,12 @@ MU_TEST(diffSimpleNN){
 	struct CGResultNode* res2 = cg_constantToResult(dx);
 	ASSERT_VECTOR(res2);
 	CGVector* V = cg_getResultVectorVal(res2);
-	
+
 	CG_SCALAR_TYPE gt2[] = {-0.112000, 0.636000};
-	
+
 	ASSERT_VECTOR_DIM(V, 2);
 	ASSERT_VECTOR_EQ(gt2, V);
-	
+
 	cg_freeGraph(graph); free(graph);
 }
 
@@ -1181,10 +1207,13 @@ MU_TEST_SUITE(node_ops) {
 
 	MU_RUN_TEST(runPOW_MV);
     MU_RUN_TEST(runT_M);
+    MU_RUN_TEST(runSUM_V);
 
-	/*MU_RUN_TEST(runExp_M);
+	MU_RUN_TEST(runExp_M);
 	MU_RUN_TEST(runExpLog_M);
+
 	MU_RUN_TEST(diffSimpleNN);
+	/*
 	MU_RUN_TEST(runCrossEntropyLossVec);
 	MU_RUN_TEST(runReluSigmoidSoftmax);
 	

@@ -54,7 +54,8 @@ if(node->error != NULL){\
 CGNode* copyNode(CGNode* node){
 	CGNode* n = calloc(1, sizeof(CGNode));
 	if(node->type != CGNT_CONSTANT){
-		fprintf(stderr, "Call to copyNodeValue with a non-constant node.\n... This should not happen, but who knows these days.");
+		fprintf(stderr, "Call to copyNode with a non-constant node.\n... This should not happen, but who knows these days.\n");
+		fprintf(stderr, "copy node with nodetype = %d\n", node->type);
 		exit(-1);
 	}
 	
@@ -78,10 +79,15 @@ CGNode* copyNode(CGNode* node){
 			CGVector* src = (CGVector*)node->constant->value;
 			
 			V->len = src->len;
-			V->data = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-			
-			memcpy(V->data, src->data, V->len*sizeof(CG_SCALAR_TYPE));
-			
+			if(src->data != NULL) {
+				V->data = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+				memcpy(V->data, src->data, V->len * sizeof(CG_SCALAR_TYPE));
+			}
+
+#ifdef CG_USE_OPENCL
+	        V->buf = NULL;
+	        V->loc = CG_DATALOC_HOST_MEM;
+#endif
 			n->constant->value = V;
 			break;
 		}
@@ -94,10 +100,16 @@ CGNode* copyNode(CGNode* node){
 			
 			M->rows = src->rows;
 			M->cols = src->cols;
-			M->data = calloc(size, sizeof(CG_SCALAR_TYPE));
-			
-			memcpy(M->data, src->data, size*sizeof(CG_SCALAR_TYPE));
-			
+
+			if(src->data != NULL) {
+				M->data = calloc(size, sizeof(CG_SCALAR_TYPE));
+				memcpy(M->data, src->data, size*sizeof(CG_SCALAR_TYPE));
+			}
+
+#ifdef CG_USE_OPENCL
+			M->buf = NULL;
+			M->loc = CG_DATALOC_HOST_MEM;
+#endif
 			n->constant->value = M;
 			break;
 		}
@@ -106,6 +118,7 @@ CGNode* copyNode(CGNode* node){
 	return n;
 }
 
+// @Deprecated @NotUsed
 void* copyNodeValue(CGNode* node){
 	if(node->type != CGNT_CONSTANT){
 		fprintf(stderr, "Call to copyNodeValue with a non-constant node.\n... This should not happen, but who knows these days.");
