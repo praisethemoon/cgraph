@@ -20,7 +20,7 @@
 
 
 
-#if CG_SCALAR_TYPE == float
+#if cg_float == float
 #define cblas_dcopy cblas_scopy
 #define cblas_dscal cblas_sscal
 #define cblas_dgemm cblas_sgemm
@@ -60,7 +60,7 @@ CGResultNode* mulDD(CGDouble* M, CGDouble* V, CGraph* graph, CGNode* parentNode)
  * d.V == V.d
  */
 CGResultNode* mulDV(CGDouble* a, CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(V->len, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->len = V->len;
     Y->data = y;
@@ -83,9 +83,9 @@ CGResultNode* mulDV(CGDouble* a, CGVector* V, CGraph* graph, CGNode* parentNode)
  */
 CGResultNode* mulDM(CGDouble* a, CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->cols*M->rows;
-    CG_SCALAR_TYPE value = a->value;
+    cg_float value = a->value;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
     Y->cols = M->cols;
@@ -115,7 +115,7 @@ CGResultNode* mulMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
     }
 
     uint64_t size = M->cols*M->rows;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -147,7 +147,7 @@ CGResultNode* mulMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
 	}
 
 	uint64_t size = M->cols*M->rows;
-	CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+	cg_float* res = calloc(size, sizeof(cg_float));
 
 	CGMatrix* Y = calloc(1, sizeof(CGMatrix));
 	Y->rows = M->rows;
@@ -180,7 +180,7 @@ CGResultNode* mulMM(CGMatrix* M1, CGMatrix* M2, CGraph* graph, CGNode* parentNod
     }
 
     uint64_t size = M1->cols*M1->rows;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M1->rows;
@@ -211,7 +211,7 @@ CGResultNode* dotMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
         return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
     }
 
-    CG_SCALAR_TYPE* y = calloc(M->rows*V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(M->rows*V->len, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows= M->rows;
     Y->cols  = V->len;
@@ -247,7 +247,7 @@ CGResultNode* dotVM(CGVector* V, CGMatrix* M, CGraph* graph, CGNode* parentNode)
         return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
     }
 
-    CG_SCALAR_TYPE* y = calloc(M->cols, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(M->cols, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->len = M->cols;
     Y->data = y;
@@ -277,7 +277,7 @@ CGResultNode* dotMM(CGMatrix* M, CGMatrix* N, CGraph* graph, CGNode* parentNode)
         return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
     }
 
-    CG_SCALAR_TYPE* z = calloc(M->rows*N->cols, sizeof(CG_SCALAR_TYPE));
+    cg_float* z = calloc(M->rows*N->cols, sizeof(cg_float));
 
     CGMatrix* Z = calloc(1, sizeof(CGMatrix));
     Z->rows = M->rows;
@@ -308,7 +308,7 @@ CGResultNode* crossVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentN
     }
 
     uint64_t size = V1->len;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->len = V1->len;
@@ -345,7 +345,7 @@ CGResultNode* dotVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentNod
     }
 
     uint64_t size = V1->len;
-    CG_SCALAR_TYPE res = 0;
+    cg_float res = 0;
 
     CGDouble* Y = calloc(1, sizeof(CGDouble));
 
@@ -374,7 +374,7 @@ CGResultNode* divDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNod
         return returnResultError(graph, CGET_DIVIDE_BY_ZERO, parentNode, msg);
     }
 
-    CG_SCALAR_TYPE res = D1->value / D2->value;
+    cg_float res = D1->value / D2->value;
 
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = res;
@@ -396,8 +396,8 @@ CGResultNode* divVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode)
         return returnResultError(graph, CGET_DIVIDE_BY_ZERO, parentNode, msg);
     }
 
-    CG_SCALAR_TYPE* res = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(V->len, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = res;
@@ -423,7 +423,7 @@ CGResultNode* divVV(CGVector* V, CGVector* D, CGraph* graph, CGNode* parentNode)
         return returnResultError(graph, CGET_INCOMPATIBLE_DIMENTIONS_EXCEPTION, parentNode, msg);
     }
 
-    CG_SCALAR_TYPE* res = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(V->len, sizeof(cg_float));
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = res;
@@ -445,8 +445,8 @@ CGResultNode* divVV(CGVector* V, CGVector* D, CGraph* graph, CGNode* parentNode)
  *  d/V element-wise
  */
 CGResultNode* divDV(CGDouble* D, CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* res = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(V->len, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = res;
@@ -476,8 +476,8 @@ CGResultNode* divMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode)
     }
 
     uint64_t size = M->rows*M->cols;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(size, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -505,7 +505,7 @@ CGResultNode* divMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
     }
 
     uint64_t size = M->rows*M->cols;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -531,8 +531,8 @@ CGResultNode* divMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
  */
 CGResultNode* divDM(CGDouble* D, CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(size, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -562,7 +562,7 @@ CGResultNode* divDM(CGDouble* D, CGMatrix* M, CGraph* graph, CGNode* parentNode)
  * d+d
  */
 CGResultNode* addDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE res = D1->value + D2->value;
+    cg_float res = D1->value + D2->value;
 
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = res;
@@ -578,8 +578,8 @@ CGResultNode* addDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNod
  * V+d
  */
 CGResultNode* addVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* res = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(V->len, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = res;
@@ -603,8 +603,8 @@ CGResultNode* addVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode)
  */
 CGResultNode* addMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(size, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -635,7 +635,7 @@ CGResultNode* addVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentNod
     }
 
     uint64_t size = V1->len;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->len = V1->len;
@@ -667,7 +667,7 @@ CGResultNode* addMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
     }
 
     uint64_t size = M->cols*M->rows;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -698,7 +698,7 @@ CGResultNode* addMM(CGMatrix* M1, CGMatrix* M2, CGraph* graph, CGNode* parentNod
     }
 
     uint64_t size = M1->cols*M1->rows;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M1->rows;
@@ -729,7 +729,7 @@ CGResultNode* addMM(CGMatrix* M1, CGMatrix* M2, CGraph* graph, CGNode* parentNod
  * d-d
  */
 CGResultNode* subDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE res = D1->value - D2->value;
+    cg_float res = D1->value - D2->value;
 
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = res;
@@ -745,8 +745,8 @@ CGResultNode* subDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNod
  * V-d
  */
 CGResultNode* subVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* res = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(V->len, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = res;
@@ -769,8 +769,8 @@ CGResultNode* subVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode)
  * d-V
  */
 CGResultNode* subDV(CGDouble* D, CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* res = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(V->len, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = res;
@@ -795,8 +795,8 @@ CGResultNode* subDV(CGDouble* D, CGVector* V, CGraph* graph, CGNode* parentNode)
  */
 CGResultNode* subMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(size, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -821,8 +821,8 @@ CGResultNode* subMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode)
  */
 CGResultNode* subDM(CGDouble* D, CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(size, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -854,7 +854,7 @@ CGResultNode* subVV(CGVector* V1, CGVector* V2, CGraph* graph, CGNode* parentNod
     }
 
     uint64_t size = V1->len;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->len = V1->len;
@@ -884,7 +884,7 @@ CGResultNode* subMM(CGMatrix* M1, CGMatrix* M2, CGraph* graph, CGNode* parentNod
     }
 
     uint64_t size = M1->cols*M1->rows;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M1->rows;
@@ -915,7 +915,7 @@ CGResultNode* subMV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode)
     }
 
     uint64_t size = M->cols*M->rows;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -947,7 +947,7 @@ CGResultNode* subVM(CGVector* V, CGMatrix* M, CGraph* graph, CGNode* parentNode)
     }
 
     uint64_t size = M->cols*M->rows;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* res = calloc(size, sizeof(cg_float));
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -978,7 +978,7 @@ CGResultNode* subVM(CGVector* V, CGMatrix* M, CGraph* graph, CGNode* parentNode)
  * d^d
  */
 CGResultNode* powDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE res = pow(D1->value, D2->value);
+    cg_float res = pow(D1->value, D2->value);
 
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = res;
@@ -994,8 +994,8 @@ CGResultNode* powDD(CGDouble* D1, CGDouble* D2, CGraph* graph, CGNode* parentNod
  * V^d
  */
 CGResultNode* powVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* res = calloc(V->len, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(V->len, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = res;
@@ -1019,8 +1019,8 @@ CGResultNode* powVD(CGVector* V, CGDouble* D, CGraph* graph, CGNode* parentNode)
  */
 CGResultNode* powMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
-    CG_SCALAR_TYPE* res = calloc(size, sizeof(CG_SCALAR_TYPE));
-    CG_SCALAR_TYPE value = D->value;
+    cg_float* res = calloc(size, sizeof(cg_float));
+    cg_float value = D->value;
 
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = M->rows;
@@ -1049,7 +1049,7 @@ CGResultNode* powMD(CGMatrix* M, CGDouble* D, CGraph* graph, CGNode* parentNode)
  * M^T.v
  */
 CGResultNode* mulMtV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(V->len, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->len = V->len;
     Y->data = y;
@@ -1070,7 +1070,7 @@ CGResultNode* mulMtV(CGMatrix* M, CGVector* V, CGraph* graph, CGNode* parentNode
  * exp(d)
  */
 CGResultNode* expD(CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = exp(D->value);
+    cg_float y = exp(D->value);
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = y;
 
@@ -1085,7 +1085,7 @@ CGResultNode* expD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * exp(v)
  */
 CGResultNode* expV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(V->len, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = y;
     Y->len = V->len;
@@ -1109,7 +1109,7 @@ CGResultNode* expV(CGVector* V, CGraph* graph, CGNode* parentNode){
 CGResultNode* expM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->data = y;
     Y->rows = M->rows;
@@ -1133,7 +1133,7 @@ CGResultNode* expM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
  * log(d)
  */
 CGResultNode* logD(CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = log(D->value);
+    cg_float y = log(D->value);
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = y;
 
@@ -1148,7 +1148,7 @@ CGResultNode* logD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * log(V)
  */
 CGResultNode* logV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(V->len, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = y;
     Y->len = V->len;
@@ -1172,7 +1172,7 @@ CGResultNode* logV(CGVector* V, CGraph* graph, CGNode* parentNode){
 CGResultNode* logM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->data = y;
     Y->rows = M->rows;
@@ -1201,7 +1201,7 @@ CGResultNode* logM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
  * sin(d)
  */
 CGResultNode* sinD(CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = sin(D->value);
+    cg_float y = sin(D->value);
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = y;
 
@@ -1216,7 +1216,7 @@ CGResultNode* sinD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * sin(V)
  */
 CGResultNode* sinV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(V->len, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = y;
     Y->len = V->len;
@@ -1240,7 +1240,7 @@ CGResultNode* sinV(CGVector* V, CGraph* graph, CGNode* parentNode){
 CGResultNode* sinM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->data = y;
     Y->rows = M->rows;
@@ -1269,7 +1269,7 @@ CGResultNode* sinM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
  * cos(d)
  */
 CGResultNode* cosD(CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = cos(D->value);
+    cg_float y = cos(D->value);
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = y;
 
@@ -1284,7 +1284,7 @@ CGResultNode* cosD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * cos(V)
  */
 CGResultNode* cosV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(V->len, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = y;
     Y->len = V->len;
@@ -1308,7 +1308,7 @@ CGResultNode* cosV(CGVector* V, CGraph* graph, CGNode* parentNode){
 CGResultNode* cosM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->data = y;
     Y->rows = M->rows;
@@ -1338,7 +1338,7 @@ CGResultNode* cosM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
  * tan(d)
  */
 CGResultNode* tanD(CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = tan(D->value);
+    cg_float y = tan(D->value);
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = y;
 
@@ -1353,7 +1353,7 @@ CGResultNode* tanD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * tan(V)
  */
 CGResultNode* tanV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(V->len, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = y;
     Y->len = V->len;
@@ -1377,7 +1377,7 @@ CGResultNode* tanV(CGVector* V, CGraph* graph, CGNode* parentNode){
 CGResultNode* tanM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->data = y;
     Y->rows = M->rows;
@@ -1407,7 +1407,7 @@ CGResultNode* tanM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
  * tanh(d)
  */
 CGResultNode* tanhD(CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = tanh(D->value);
+    cg_float y = tanh(D->value);
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = y;
 
@@ -1422,7 +1422,7 @@ CGResultNode* tanhD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * tanh(V)
  */
 CGResultNode* tanhV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE* y = calloc(V->len, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(V->len, sizeof(cg_float));
     CGVector* Y = calloc(1, sizeof(CGVector));
     Y->data = y;
     Y->len = V->len;
@@ -1446,7 +1446,7 @@ CGResultNode* tanhV(CGVector* V, CGraph* graph, CGNode* parentNode){
 CGResultNode* tanhM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->data = y;
     Y->rows = M->rows;
@@ -1500,7 +1500,7 @@ CGResultNode* transposeD(CGDouble* D, CGraph* graph, CGNode* parentNode){
 CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
     uint64_t size = V->len;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->data = y;
     Y->rows = V->len;
@@ -1510,7 +1510,7 @@ CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
     uint64_t i = 0;
     uint64_t j = 0;
 
-    memcpy(Y->data, V->data, V->len*sizeof(CG_SCALAR_TYPE));
+    memcpy(Y->data, V->data, V->len*sizeof(cg_float));
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_MATRIX;
@@ -1526,7 +1526,7 @@ CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
 CGResultNode* transposeM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
     uint64_t size = M->rows*M->cols;
 
-    CG_SCALAR_TYPE* y = calloc(size, sizeof(CG_SCALAR_TYPE));
+    cg_float* y = calloc(size, sizeof(cg_float));
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->data = y;
     Y->rows = M->cols;
@@ -1560,7 +1560,7 @@ CGResultNode* transposeM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
  * sum(D)
  */
 CGResultNode* sumD(CGDouble* D, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = D->value;
+    cg_float y = D->value;
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = y;
 
@@ -1575,7 +1575,7 @@ CGResultNode* sumD(CGDouble* D, CGraph* graph, CGNode* parentNode){
  * sum(V)
  */
 CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
-    CG_SCALAR_TYPE y = 0;
+    cg_float y = 0;
     CGDouble* Y = calloc(1, sizeof(CGDouble));
 
     uint64_t i = 0;
@@ -1602,7 +1602,7 @@ CGResultNode* sumM(CGMatrix* M, CGraph* graph, CGNode* parentNode, uint8_t axis)
 
     if(axis == 0){
         uint64_t len = M->cols;
-        CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+        cg_float* y = calloc(len, sizeof(cg_float));
 
         V->data = y;
         V->len = len;
@@ -1615,7 +1615,7 @@ CGResultNode* sumM(CGMatrix* M, CGraph* graph, CGNode* parentNode, uint8_t axis)
     }
     else {
         uint64_t len = M->rows;
-        CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+        cg_float* y = calloc(len, sizeof(cg_float));
 
         V->data = y;
         V->len = len;
@@ -1641,7 +1641,7 @@ CGResultNode* max(CGNode* X, CGraph* graph){
     switch(res->type){
         case CGVT_DOUBLE:
         {
-            CG_SCALAR_TYPE y = 0;
+            cg_float y = 0;
             CGDouble* Y = calloc(1, sizeof(CGDouble));
 
             Y->value = ((CGDouble*)res->value)->value;
@@ -1658,7 +1658,7 @@ CGResultNode* max(CGNode* X, CGraph* graph){
             CGDouble* Y = calloc(1, sizeof(CGDouble));
 
             uint64_t i = 1;
-            CG_SCALAR_TYPE m = v->data[0];
+            cg_float m = v->data[0];
 
             for (;i < v->len; i++){
                 if(v->data[i] > m)
@@ -1679,7 +1679,7 @@ CGResultNode* max(CGNode* X, CGraph* graph){
 
             if(X->axop->axis == 0){
                 uint64_t len = M->cols;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -1697,7 +1697,7 @@ CGResultNode* max(CGNode* X, CGraph* graph){
             }
             else {
                 uint64_t len = M->rows;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -1731,7 +1731,7 @@ CGResultNode* min(CGNode* X, CGraph* graph){
     switch(res->type){
         case CGVT_DOUBLE:
         {
-            CG_SCALAR_TYPE y = 0;
+            cg_float y = 0;
             CGDouble* Y = calloc(1, sizeof(CGDouble));
 
             Y->value = ((CGDouble*)res->value)->value;
@@ -1748,7 +1748,7 @@ CGResultNode* min(CGNode* X, CGraph* graph){
             CGDouble* Y = calloc(1, sizeof(CGDouble));
 
             uint64_t i = 1;
-            CG_SCALAR_TYPE m = v->data[0];
+            cg_float m = v->data[0];
 
             for (;i < v->len; i++){
                 if(v->data[i] > m)
@@ -1769,7 +1769,7 @@ CGResultNode* min(CGNode* X, CGraph* graph){
 
             if(X->axop->axis == 0){
                 uint64_t len = M->cols;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -1787,7 +1787,7 @@ CGResultNode* min(CGNode* X, CGraph* graph){
             }
             else {
                 uint64_t len = M->rows;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -1821,7 +1821,7 @@ CGResultNode* argmax(CGNode* X, CGraph* graph){
     switch(res->type){
         case CGVT_DOUBLE:
         {
-            CG_SCALAR_TYPE y = 0;
+            cg_float y = 0;
             CGDouble* Y = calloc(1, sizeof(CGDouble));
 
             Y->value = ((CGDouble*)res->value)->value;
@@ -1859,7 +1859,7 @@ CGResultNode* argmax(CGNode* X, CGraph* graph){
 
             if(X->axop->axis == 0){
                 uint64_t len = M->cols;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -1882,7 +1882,7 @@ CGResultNode* argmax(CGNode* X, CGraph* graph){
             }
             else {
                 uint64_t len = M->rows;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -1921,7 +1921,7 @@ CGResultNode* argmin(CGNode* X, CGraph* graph){
     switch(res->type){
         case CGVT_DOUBLE:
         {
-            CG_SCALAR_TYPE y = 0;
+            cg_float y = 0;
             CGDouble* Y = calloc(1, sizeof(CGDouble));
 
             Y->value = 0;
@@ -1942,7 +1942,7 @@ CGResultNode* argmin(CGNode* X, CGraph* graph){
 
             for (;i < v->len; i++){
                 if(v->data[i] > v->data[minIdx])
-                    minIdx = (CG_SCALAR_TYPE)i;
+                    minIdx = (cg_float)i;
             }
 
             Y->value = minIdx;
@@ -1959,7 +1959,7 @@ CGResultNode* argmin(CGNode* X, CGraph* graph){
 
             if(X->axop->axis == 0){
                 uint64_t len = M->cols;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -1972,7 +1972,7 @@ CGResultNode* argmin(CGNode* X, CGraph* graph){
 
                 for(i=0;i<M->rows*M->cols;i++){
                     if(M->data[(uint64_t)y[i%len]] > M->data[i])
-                        y[i%len] = (CG_SCALAR_TYPE)i;
+                        y[i%len] = (cg_float)i;
                 }
 
                 // transform vector representation into matrix
@@ -1982,7 +1982,7 @@ CGResultNode* argmin(CGNode* X, CGraph* graph){
             }
             else {
                 uint64_t len = M->rows;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -1995,7 +1995,7 @@ CGResultNode* argmin(CGNode* X, CGraph* graph){
 
                 for(i=0;i<M->rows*M->cols;i++){
                     if(M->data[(uint64_t)y[i/M->cols]] > M->data[i])
-                        y[i/M->cols] = (CG_SCALAR_TYPE)i;
+                        y[i/M->cols] = (cg_float)i;
                 }
 
 
@@ -2021,7 +2021,7 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
     switch(res->type){
         case CGVT_DOUBLE:
         {
-            CG_SCALAR_TYPE y = 0;
+            cg_float y = 0;
             CGDouble* Y = calloc(1, sizeof(CGDouble));
 
             Y->value = ((CGDouble*)res->value)->value;
@@ -2038,7 +2038,7 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
             CGDouble* Y = calloc(1, sizeof(CGDouble));
 
             uint64_t i = 0;
-            CG_SCALAR_TYPE m = v->data[0];
+            cg_float m = v->data[0];
 
             for (;i < v->len; i++){
                 m += v->data[i];
@@ -2060,7 +2060,7 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
 
             if(X->axop->axis == 0){
                 uint64_t len = M->cols;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -2078,7 +2078,7 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
             }
             else {
                 uint64_t len = M->rows;
-                CG_SCALAR_TYPE* y = calloc(len, sizeof(CG_SCALAR_TYPE));
+                cg_float* y = calloc(len, sizeof(cg_float));
 
                 V->data = y;
                 V->len = len;
@@ -2105,7 +2105,7 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
 }
 
 
-#if CG_SCALAR_TYPE == float
+#if cg_float == float
 #undef cblas_dcopy
 #undef cblas_dscal
 #undef cblas_dgemm

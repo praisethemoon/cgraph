@@ -26,9 +26,9 @@
 extern CCLContext * ctx;
 #endif
 
-CG_SCALAR_TYPE* vcopy(uint64_t len, const CG_SCALAR_TYPE* data){
-    CG_SCALAR_TYPE* newdata = calloc(len, sizeof(CG_SCALAR_TYPE));
-    memcpy(newdata, data, len*sizeof(CG_SCALAR_TYPE));
+cg_float* vcopy(uint64_t len, const cg_float* data){
+    cg_float* newdata = calloc(len, sizeof(cg_float));
+    memcpy(newdata, data, len*sizeof(cg_float));
     return newdata;
 }
 
@@ -46,7 +46,7 @@ CGNode* makeVarNode(char* name){
     return node;
 }
 
-CGNode* makeDoubleConstantNode(CG_SCALAR_TYPE value){
+CGNode* makeDoubleConstantNode(cg_float value){
     CGDouble* d = calloc(1, sizeof(CGDouble));
     d->value = value;
 
@@ -64,7 +64,7 @@ CGNode* makeDoubleConstantNode(CG_SCALAR_TYPE value){
     return node;
 }
 
-CGNode* makeVectorConstantNode(uint64_t  len, CG_SCALAR_TYPE* value){
+CGNode* makeVectorConstantNode(uint64_t  len, cg_float* value){
     CGVector* v = calloc(1, sizeof(CGVector));
     v->data = value;
     v->len = len;
@@ -84,7 +84,7 @@ CGNode* makeVectorConstantNode(uint64_t  len, CG_SCALAR_TYPE* value){
 }
 
 
-CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, CG_SCALAR_TYPE* value){
+CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, cg_float* value){
     CGMatrix* m = calloc(1, sizeof(CGMatrix));
     m->data = value;
     m->rows = rows;
@@ -105,11 +105,11 @@ CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, CG_SCALAR_TYPE* va
 }
 
 
-CGNode* makeVectorConstantNodeCopy(uint64_t  len, CG_SCALAR_TYPE* value){
+CGNode* makeVectorConstantNodeCopy(uint64_t  len, cg_float* value){
     return makeVectorConstantNode(len, cg_raw_copy(value, len));
 }
 
-CGNode* makeMatrixConstantNodeCopy(uint64_t  rows, uint64_t cols, CG_SCALAR_TYPE* value){
+CGNode* makeMatrixConstantNodeCopy(uint64_t  rows, uint64_t cols, cg_float* value){
     return makeMatrixConstantNode(rows, cols, cg_raw_copy(value, cols*rows));
 }
 
@@ -133,7 +133,7 @@ CGNode* makeZeroDoubleConstantNode(){
 CGNode* makeZeroVectorConstantNode(uint64_t  len){
     CGVector* v = calloc(1, sizeof(CGVector));
     v->len = len;
-    v->data = calloc(len, sizeof(CG_SCALAR_TYPE));
+    v->data = calloc(len, sizeof(cg_float));
 
     CGPConstant* c = calloc(1, sizeof(CGPConstant));
     c->type = CGVT_VECTOR;
@@ -152,7 +152,7 @@ CGNode* makeZeroVectorConstantNode(uint64_t  len){
 
 CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols){
     CGMatrix* m = calloc(1, sizeof(CGMatrix));
-    m->data = calloc(rows*cols, sizeof(CG_SCALAR_TYPE));
+    m->data = calloc(rows*cols, sizeof(cg_float));
     m->rows = rows;
     m->cols = cols;
 
@@ -198,7 +198,7 @@ CGNode* makeRandomDoubleConstantNode(){
 CGNode* makeRandomVectorConstantNode(uint64_t  len){
     CGVector* v = calloc(1, sizeof(CGVector));
     v->len = len;
-    v->data = calloc(len, sizeof(CG_SCALAR_TYPE));
+    v->data = calloc(len, sizeof(cg_float));
 
     uint64_t i = 0;
 
@@ -226,7 +226,7 @@ CGNode* makeRandomVectorConstantNode(uint64_t  len){
 
 CGNode* makeRandomMatrixConstantNode(uint64_t  rows, uint64_t cols){
     CGMatrix* m = calloc(1, sizeof(CGMatrix));
-    m->data = calloc(rows*cols, sizeof(CG_SCALAR_TYPE));
+    m->data = calloc(rows*cols, sizeof(cg_float));
     m->rows = rows;
     m->cols = cols;
 
@@ -278,7 +278,7 @@ CGNode* makeOnesDoubleConstantNode(){
 CGNode* makeOnesVectorConstantNode(uint64_t  len){
     CGVector* v = calloc(1, sizeof(CGVector));
     v->len = len;
-    v->data = calloc(len, sizeof(CG_SCALAR_TYPE));
+    v->data = calloc(len, sizeof(cg_float));
 
     uint64_t i = 0;
     for(;i<len;v->data[i++]=1);
@@ -300,7 +300,7 @@ CGNode* makeOnesVectorConstantNode(uint64_t  len){
 
 CGNode* makeOnesMatrixConstantNode(uint64_t  rows, uint64_t cols){
     CGMatrix* m = calloc(1, sizeof(CGMatrix));
-    m->data = calloc(rows*cols, sizeof(CG_SCALAR_TYPE));
+    m->data = calloc(rows*cols, sizeof(cg_float));
     m->rows = rows;
     m->cols = cols;
 
@@ -392,7 +392,7 @@ CGNode* makeCrossEntropyLossFunc(CGNode* x, CGNode* y, uint64_t num_classes){
     return node;
 }
 
-CGResultNode* makeDoubleResultNode(CG_SCALAR_TYPE val){
+CGResultNode* makeDoubleResultNode(cg_float val){
     CGDouble* Y = calloc(1, sizeof(CGDouble));
     Y->value = val;
 
@@ -403,7 +403,7 @@ CGResultNode* makeDoubleResultNode(CG_SCALAR_TYPE val){
     return result;
 }
 
-CGResultNode* makeVectorResultNode(uint64_t len, CG_SCALAR_TYPE* val){
+CGResultNode* makeVectorResultNode(uint64_t len, cg_float* val){
     CGVector* v = calloc(1, sizeof(CGVector));
     v->data = val;
     v->len = len;
@@ -414,7 +414,7 @@ CGResultNode* makeVectorResultNode(uint64_t len, CG_SCALAR_TYPE* val){
         printf("computer says no.\n");
     }
     v->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-                            len * sizeof(CG_CL_SCALAR_TYPE), v->data, &err);
+                            len * sizeof(cgcl_float), v->data, &err);
     CHECK_ERROR(err)
 #endif
 
@@ -425,7 +425,7 @@ CGResultNode* makeVectorResultNode(uint64_t len, CG_SCALAR_TYPE* val){
     return result;
 }
 
-CGResultNode* makeMatrixResultNode(uint64_t rows, uint64_t cols, CG_SCALAR_TYPE* val){
+CGResultNode* makeMatrixResultNode(uint64_t rows, uint64_t cols, cg_float* val){
     CGMatrix* m = calloc(1, sizeof(CGMatrix));
     m->data = val;
     m->rows = rows;
@@ -437,7 +437,7 @@ CGResultNode* makeMatrixResultNode(uint64_t rows, uint64_t cols, CG_SCALAR_TYPE*
 #ifdef CG_USE_OPENCL
     CCLErr * err = NULL;
     m->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-                            cols*rows * sizeof(CG_CL_SCALAR_TYPE), m->data, &err);
+                            cols*rows * sizeof(cgcl_float), m->data, &err);
     CHECK_ERROR(err)
 #endif
 
@@ -480,9 +480,9 @@ void graphUnsetVar(CGraph* graph, const char* name){
 }
 
 
-CG_SCALAR_TYPE* cg_raw_copy(CG_SCALAR_TYPE* src, uint64_t len){
-    CG_SCALAR_TYPE* dest = calloc(len, sizeof(CG_SCALAR_TYPE));
-    memcpy(dest, src, len*sizeof(CG_SCALAR_TYPE));
+cg_float* cg_raw_copy(cg_float* src, uint64_t len){
+    cg_float* dest = calloc(len, sizeof(cg_float));
+    memcpy(dest, src, len*sizeof(cg_float));
     return dest;
 }
 

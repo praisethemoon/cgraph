@@ -17,14 +17,14 @@ typedef enum CGDataLocation {
 
 #include "cg_enums.h"
 
-#define CG_SCALAR_TYPE float
-#define CG_CL_SCALAR_TYPE cl_float
+#define cg_float float
+#define cgcl_float cl_float
 
 /**
  * \brief Double  object.
  */
 typedef struct CGDouble {
-	CG_SCALAR_TYPE value;
+	cg_float value;
 #ifdef CG_USE_OPENCL
 	CCLBuffer* buf;
 	CGDataLocation loc;
@@ -35,7 +35,7 @@ typedef struct CGDouble {
  * \brief Vector object metadata and values
  */
 typedef struct CGVector {
-	CG_SCALAR_TYPE* data;
+	cg_float* data;
 	uint64_t len;
 
 #ifdef CG_USE_OPENCL
@@ -43,14 +43,14 @@ typedef struct CGVector {
 	CGDataLocation loc;
 #endif
 
-	//CG_SCALAR_TYPE* (*getSub)(uint64_t start, uint64_t end);
+	//cg_float* (*getSub)(uint64_t start, uint64_t end);
 }CGVector;
 
 /**
  * \brief Matrix object metadata and values
  */
 typedef struct CGMatrix {
-	CG_SCALAR_TYPE* data;
+	cg_float* data;
 	uint64_t cols;
 	uint64_t rows;
 
@@ -59,9 +59,9 @@ typedef struct CGMatrix {
 	CGDataLocation loc;
 #endif
 
-	//CG_SCALAR_TYPE* (*getRow)(uint64_t row);
-	//CG_SCALAR_TYPE* (*getCol)(uint64_t col);
-	//CG_SCALAR_TYPE* (*getPatch)(uint64_t row, uint64_t x_size, uint64_t col, uint64_t y_size);
+	//cg_float* (*getRow)(uint64_t row);
+	//cg_float* (*getCol)(uint64_t col);
+	//cg_float* (*getPatch)(uint64_t row, uint64_t x_size, uint64_t col, uint64_t y_size);
 }CGMatrix;
 
 
@@ -69,7 +69,7 @@ typedef struct CGMatrix {
  * \brief 3D Matrix object metadata and values
  */
 typedef struct CG3DMatrix {
-	CG_SCALAR_TYPE* data;
+	cg_float* data;
 
 #ifdef CG_USE_OPENCL
 	CCLBuffer* buf;

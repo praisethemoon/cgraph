@@ -51,7 +51,7 @@ int main_iris(int argc, char* argv[]){
     profiler_initialize();
     PROFILER_START(nn);
 
-    CG_SCALAR_TYPE y_val[] = {1};
+    cg_float y_val[] = {1};
 
     struct CGNode* x = cg_newVariable("x");
     struct CGNode* y = cg_newVariable("y");
@@ -82,11 +82,11 @@ int main_iris(int argc, char* argv[]){
 
     int max_len_size = 1024;
     int i=0;
-    CG_SCALAR_TYPE X[100][4] = {0};
-    CG_SCALAR_TYPE Y[100][1] = {0};
+    cg_float X[100][4] = {0};
+    cg_float Y[100][1] = {0};
 
-    CG_SCALAR_TYPE X_test[50][4] = {0};
-    CG_SCALAR_TYPE Y_test[50][1] = {0};
+    cg_float X_test[50][4] = {0};
+    cg_float Y_test[50][1] = {0};
 
     struct csv file;
     char** fields;

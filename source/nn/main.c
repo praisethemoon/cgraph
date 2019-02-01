@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
     profiler_initialize();
     PROFILER_START(nn);
 
-    CG_SCALAR_TYPE y_val[] = {1};
+    cg_float y_val[] = {1};
 
     ///struct CGNode* x = cg_newVariable("x");
 

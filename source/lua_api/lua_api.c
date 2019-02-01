@@ -17,7 +17,7 @@
 
 
 
-#if CG_SCALAR_TYPE == float
+#if cg_float == float
 	#define LUA_C_TYPE ARRAY_TFLOAT
 #else
 	#define LUA_C_TYPE ARRAY_TDOUBLE
@@ -205,7 +205,7 @@ static int lua_createVariable(lua_State* L){
 }
 
 static int lua_createDoubleConstant(lua_State* L){
-	CG_SCALAR_TYPE value = lua_tonumber(L, 1);
+	cg_float value = lua_tonumber(L, 1);
 	//printf("Creating constant with value %f\n", value);
 	CGNode* node = makeDoubleConstantNode(value);
 	
@@ -225,8 +225,8 @@ static int lua_createVectorConstant(lua_State* L){
 		printf("\t%f\n", values->values.doubles[i]);
 	}
 	*/
-	CG_SCALAR_TYPE* data = calloc(len, sizeof(CG_SCALAR_TYPE));
-	memcpy(data, values->values.doubles, len*sizeof(CG_SCALAR_TYPE));
+	cg_float* data = calloc(len, sizeof(cg_float));
+	memcpy(data, values->values.doubles, len*sizeof(cg_float));
 	
 	CGNode* node = makeVectorConstantNode(len, data);
 	
@@ -261,8 +261,8 @@ static int lua_createMatrixConstant(lua_State* L){
 	}
 	*/
 	
-	CG_SCALAR_TYPE* data = calloc( rows*cols, sizeof(CG_SCALAR_TYPE));
-	memcpy(data, values->values.doubles, rows*cols*sizeof(CG_SCALAR_TYPE));
+	cg_float* data = calloc( rows*cols, sizeof(cg_float));
+	memcpy(data, values->values.doubles, rows*cols*sizeof(cg_float));
 	CGNode* node = makeMatrixConstantNode(rows, cols, data);
 	
 	pushNode(L, node);
