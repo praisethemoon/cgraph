@@ -366,7 +366,7 @@ __kernel void sum_matrix_rows(ulong size, ulong cols, __global const cg_float *M
         return;
     }
 
-    printf("%lu, idx: %lu\n", gid, gid%cols);
+    //printf("%lu, idx: %lu\n", gid, gid%cols);
 
     Y[gid%cols] += M[gid];
 }

@@ -30,8 +30,16 @@
 #define cl_double cl_float
 #endif
 
+void checkErr(CCLErr* err){
+    if (err != NULL) {
+        fprintf(stderr, "\n%s\n", err->message);
+        exit(-1);
+    }
+}
+
 #define CHECK_ERROR(err) \
-    if (err != NULL) { fprintf(stderr, "\n%s\n", err->message); exit(-1); }
+    checkErr(err);
+    //if (err != NULL) { fprintf(stderr, "\n%s\n", err->message); exit(-1); }
 
 CCLContext * ctx = NULL;
 CCLProgram* prg = NULL;
@@ -55,6 +63,9 @@ void copyDataToHost(CGResultNode* res){
     CCLErr * err = NULL;
 
     switch(res->type){
+        case CGVT_DOUBLE:
+            break;
+
         case CGVT_VECTOR:{
             CGVector* V = (CGVector*)res->value;
             V->data = malloc(V->len* sizeof(cgcl_float));
@@ -1968,14 +1979,22 @@ CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode){
     uint64_t size = V->len;
 
     CCLErr * err = NULL;
+    CCLEvent* evt = NULL;
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
     Y->rows = V->len;
     Y->cols = 1;
     Y->data = NULL;
 
-    Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR ,
-                            V->len * sizeof(cgcl_float), V->data, &err);
+    Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE ,
+                            V->len * sizeof(cgcl_float), NULL, &err);
 
+    CHECK_ERROR(err)
+
+    CCLEventWaitList ewl = NULL;
+    evt = ccl_buffer_enqueue_copy(V->buf, Y->buf, queue, 0, 0, V->len * sizeof(cgcl_float), NULL, &err);
+
+    CHECK_ERROR(err)
+    ccl_event_wait(ccl_ewl(&ewl, evt, NULL), &err);
     CHECK_ERROR(err)
 
     Y->loc = CG_DATALOC_DEVICE_MEM;

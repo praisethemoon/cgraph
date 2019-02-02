@@ -950,11 +950,14 @@ MU_TEST(runSUM_M1){
     CGVector* V = cg_getResultVectorVal(result);
 
     ASSERT_VECTOR_DIM(V, 5);
+
+    /*
     printf("\n\n");
     uint64_t i = 0;
+
     for(;i<5;i++){
         printf("%f, ", V->data[i]);
-    }
+    }*/
 
     cg_float gt[] = {6, 2, 6, 2, 1};
 
@@ -1106,7 +1109,7 @@ struct CGNode* sigmoid_node(struct CGNode* x){
 }
 
 struct CGNode* softmax_node_tmp(struct CGNode* x){
-	return cg_newUnOp(CGUOT_TRANSPOSE, cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_TRANSPOSE, cg_newUnOp(CGUOT_EXP, x)), cg_newAxisBoundOp(CGABOT_SUM,cg_newUnOp(CGUOT_EXP, x), 0)));
+    return cg_newBinOp(CGBOT_DIV, cg_newUnOp(CGUOT_EXP, x), cg_newAxisBoundOp(CGABOT_SUM, cg_newUnOp(CGUOT_EXP, x), 1));
 }
 
 MU_TEST(runReluSigmoidSoftmax){
@@ -1148,7 +1151,14 @@ MU_TEST(runReluSigmoidSoftmax){
 	ASSERT_VECTOR(res);
 	
 	CGVector* vec = cg_getResultVectorVal(res);
-	
+
+
+	printf("\n\n");
+    uint64_t i = 0;
+    for(;i<3;i++){
+        printf("%f, ", vec->data[i]);
+    }
+
 	ASSERT_VECTOR_DIM(vec, 3);
 	
 	cg_float gt[] = {0.198241, 0.285387, 0.516372};
@@ -1282,9 +1292,10 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runExpLog_M);
 
 	MU_RUN_TEST(diffSimpleNN);
+    MU_RUN_TEST(runReluSigmoidSoftmax);
+
 	/*
 	MU_RUN_TEST(runCrossEntropyLossVec);
-	MU_RUN_TEST(runReluSigmoidSoftmax);
 	
 	MU_RUN_TEST(runArgMaxMat);
     MU_RUN_TEST(runArgMaxMat2);

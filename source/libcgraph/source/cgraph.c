@@ -327,7 +327,7 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 				
 				CGResultNode* res = mulDD((CGDouble*)uhsValue, rhs, graph, parentNode);
 				
-				freeDoubleValue(&rhs);
+				freeDoubleValue(rhs);
 				
 				parentNode->result = res;
 				return res;
@@ -1102,8 +1102,9 @@ CGResultNode* reduceDim(CGResultNode* result){
 				vec->len = mat->cols;
 				vec->data = mat->data;
 				//TODO: Memory leak here
+#ifdef CG_USE_OPENCL
 				vec->buf = mat->buf;
-
+#endif
 				
 				//freeMatrixValue(result->value);
 				free(result->value);
