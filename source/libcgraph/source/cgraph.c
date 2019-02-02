@@ -472,15 +472,49 @@ CGResultNode* processUnaryOperation(CGraph* graph, CGUnaryOperationType type, CG
 		}
 	
 		case CGUOT_RELU:{
-			newres = relu(lhsResult);
-			parentNode->result = newres;
-			return newres;
+			if(uhsType == CGVT_DOUBLE){
+				newres = reluD((CGDouble*)uhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+
+			if(uhsType == CGVT_VECTOR){
+				newres = reluV((CGVector*)uhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+
+
+			if(uhsType == CGVT_MATRIX){
+				newres = reluM((CGMatrix*)uhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+
+			break;
 		}
 
         case CGUOT_SOFTPLUS:{
-            newres = softplus(lhsResult);
-            parentNode->result = newres;
-            return newres;
+			if(uhsType == CGVT_DOUBLE){
+				newres = softplusD((CGDouble*)uhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+
+			if(uhsType == CGVT_VECTOR){
+				newres = softplusV((CGVector*)uhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+
+
+			if(uhsType == CGVT_MATRIX){
+				newres = softplusM((CGMatrix*)uhsValue, graph, parentNode);
+				parentNode->result = newres;
+				return newres;
+			}
+
+			break;
         }
 	}
 	char msg[MAX_ERR_FMT_LEN];
@@ -1013,8 +1047,8 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 }
 
 CGResultNode* reduceDim(CGResultNode* result){
-    return result;
-    /*
+    //return result;
+
 	switch(result->type){
 		case CGVT_DOUBLE:{
 			return result;
@@ -1025,7 +1059,9 @@ CGResultNode* reduceDim(CGResultNode* result){
 			if (vec->len > 1)
 				return result;
 
+#ifdef CG_USE_OPENCL
 			copyDataToHost(result);
+#endif
 			
 			CGDouble* d = calloc(1, sizeof(CGDouble));
 			d->value = vec->data[0];
@@ -1080,7 +1116,7 @@ CGResultNode* reduceDim(CGResultNode* result){
 			
 			return result;
 		}
-	}*/
+	}
 }
 
 CGResultNode* computeGraph(CGraph* graph){

@@ -928,6 +928,73 @@ MU_TEST(runSUM_V){
     cg_freeGraph(graph); free(graph);
 }
 
+
+MU_TEST(runSUM_M1){
+    cg_float value1[] = {
+            3, 1, 3, 1, 0,
+            3, 1, 3, 1, 1,
+    };
+
+
+    struct CGNode* uhsNode = cg_newMatrixNode(2, 5, value1);
+
+    struct CGNode* node = cg_newAxisBoundOp(CGABOT_SUM, uhsNode, 0);
+
+    struct CGraph* graph = cg_newGraph("runSUM_M1", node);
+    struct CGResultNode* result = cg_evalGraph(graph);
+
+
+    CHECK_ERROR(result);
+    ASSERT_VECTOR(result);
+
+    CGVector* V = cg_getResultVectorVal(result);
+
+    ASSERT_VECTOR_DIM(V, 5);
+    printf("\n\n");
+    uint64_t i = 0;
+    for(;i<5;i++){
+        printf("%f, ", V->data[i]);
+    }
+
+    cg_float gt[] = {6, 2, 6, 2, 1};
+
+    ASSERT_VECTOR_EQ(gt, V);
+
+    cg_freeGraph(graph); free(graph);
+}
+
+
+MU_TEST(runSUM_M2){
+    cg_float value1[] = {
+            3, 1, 3, 1, 0,
+            3, 1, 3, 1, 1,
+    };
+
+
+    struct CGNode* uhsNode = cg_newMatrixNode(2, 5, value1);
+
+    struct CGNode* node = cg_newAxisBoundOp(CGABOT_SUM, uhsNode, 1);
+
+    struct CGraph* graph = cg_newGraph("runSUM_M1", node);
+    struct CGResultNode* result = cg_evalGraph(graph);
+
+
+    CHECK_ERROR(result);
+    ASSERT_VECTOR(result);
+
+    CGVector* V = cg_getResultVectorVal(result);
+
+    ASSERT_VECTOR_DIM(V, 2);
+
+
+    cg_float gt[] = {8, 9};
+
+    ASSERT_VECTOR_EQ(gt, V);
+
+    cg_freeGraph(graph); free(graph);
+}
+
+
 /*
  * the following function will fail on purpose,
  * it should fail with an error of invalid operation div for (matrix, vector)
@@ -1208,6 +1275,8 @@ MU_TEST_SUITE(node_ops) {
 	MU_RUN_TEST(runPOW_MV);
     MU_RUN_TEST(runT_M);
     MU_RUN_TEST(runSUM_V);
+    MU_RUN_TEST(runSUM_M1);
+    MU_RUN_TEST(runSUM_M2);
 
 	MU_RUN_TEST(runExp_M);
 	MU_RUN_TEST(runExpLog_M);

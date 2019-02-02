@@ -62,6 +62,7 @@ void copyDataToHost(CGResultNode* res){
                 evt = ccl_buffer_enqueue_read(V->buf, queue, CL_TRUE, 0,
                                               V->len * sizeof(cgcl_float), V->data, NULL, NULL);
                 if (!evt) exit(-1);
+                ccl_buffer_destroy(V->buf);
             }
             else
                 printf("FUCK\n");
@@ -76,7 +77,8 @@ void copyDataToHost(CGResultNode* res){
             if (M->loc == CG_DATALOC_DEVICE_MEM) {
                 evt = ccl_buffer_enqueue_read(M->buf, queue, CL_TRUE, 0,
                                               M->rows * M->cols * sizeof(cgcl_float), M->data, NULL, NULL);
-                //if (!evt) exit(-1);
+                if (!evt) exit(-1);
+                ccl_buffer_destroy(M->buf);
             }
             else
             printf("FUCK2\n");
@@ -120,6 +122,22 @@ CGVector* makeDeviceVector(uint64_t len){
     return Y;
 }
 
+CGVector* makeDeviceVectorZeros(uint64_t len){
+    CCLErr * err = NULL;
+    CGVector* Y = calloc(1, sizeof(CGVector));
+    Y->len = len;
+    Y->data = calloc(len, sizeof(cg_float));
+
+    Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
+                            len * sizeof(cgcl_float), Y->data, &err);
+
+    CHECK_ERROR(err)
+
+    Y->loc = CG_DATALOC_DEVICE_MEM;
+
+    return Y;
+}
+
 CGMatrix* makeDeviceMatrix(uint64_t rows, uint64_t cols){
     CCLErr * err = NULL;
     CGMatrix* Y = calloc(1, sizeof(CGMatrix));
@@ -128,6 +146,22 @@ CGMatrix* makeDeviceMatrix(uint64_t rows, uint64_t cols){
     Y->data = NULL; //calloc(rows*cols, sizeof(cg_float));
 
     Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE ,
+                            rows*cols * sizeof(cgcl_float), Y->data, &err);
+    CHECK_ERROR(err)
+
+    Y->loc = CG_DATALOC_DEVICE_MEM;
+
+    return Y;
+}
+
+CGMatrix* makeDeviceMatrixZeros(uint64_t rows, uint64_t cols){
+    CCLErr * err = NULL;
+    CGMatrix* Y = calloc(1, sizeof(CGMatrix));
+    Y->rows = rows;
+    Y->cols = cols;
+    Y->data = calloc(rows*cols, sizeof(cg_float));
+
+    Y->buf = ccl_buffer_new(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
                             rows*cols * sizeof(cgcl_float), Y->data, &err);
     CHECK_ERROR(err)
 
@@ -1998,15 +2032,7 @@ CGResultNode* transposeM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
  * sum(D)
  */
 CGResultNode* sumD(CGDouble* D, CGraph* graph, CGNode* parentNode){
-    cg_float y = D->value;
-    CGDouble* Y = calloc(1, sizeof(CGDouble));
-    Y->value = y;
-
-    CGResultNode* result = calloc(1, sizeof(CGResultNode));
-    result->type = CGVT_DOUBLE;
-    result->value = Y;
-
-    return result;
+    return makeDoubleResultNode(D->value);
 }
 
 /*
@@ -2046,38 +2072,36 @@ CGResultNode* sumV(CGVector* V, CGraph* graph, CGNode* parentNode){
  */
 
 CGResultNode* sumM(CGMatrix* M, CGraph* graph, CGNode* parentNode, uint8_t axis){
-    CGVector* V = calloc(1, sizeof(CGVector));
-
+    CCLErr * err = NULL;
+    CGVector* Y = NULL;
+    CCLEvent* evt = NULL;
+    uint64_t  size = M->rows*M->cols;
     if(axis == 0){
         uint64_t len = M->cols;
-        cg_float* y = calloc(len, sizeof(cg_float));
+        Y = makeDeviceVectorZeros(len);
 
-        V->data = y;
-        V->len = len;
+        size_t gws = size;
 
-        uint64_t i = 0;
+        evt = ccl_program_enqueue_kernel(prg, "sum_matrix_rows", queue, 1, NULL, &gws,
+                                         NULL, NULL, &err, ccl_arg_priv(size, cl_uint), ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
 
-        for(;i<M->rows*M->cols;i++){
-            y[i%len] += M->data[i];
-        }
+        CHECK_ERROR(err)
     }
     else {
         uint64_t len = M->rows;
-        cg_float* y = calloc(len, sizeof(cg_float));
+        Y = makeDeviceVectorZeros(len);
 
-        V->data = y;
-        V->len = len;
+        size_t gws = size;
 
-        uint64_t i = 0;
+        evt = ccl_program_enqueue_kernel(prg, "sum_matrix_cols", queue, 1, NULL, &gws,
+                                         NULL, NULL, &err, ccl_arg_priv(size, cl_uint), ccl_arg_priv(M->cols, cl_uint), M->buf, Y->buf, NULL);
 
-        for(;i<M->rows*M->cols;i++){
-            y[i/M->cols] += M->data[i];
-        }
+        CHECK_ERROR(err)
     }
 
     CGResultNode* result = calloc(1, sizeof(CGResultNode));
     result->type = CGVT_VECTOR;
-    result->value = V;
+    result->value = Y;
 
     return result;
 }
@@ -2552,6 +2576,120 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
     }
 }
 
+
+/*
+ * relu(d)
+ */
+CGResultNode* reluD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+    cg_float val = D->value;
+    return makeDoubleResultNode(__cg_relu(val));
+}
+
+
+/*
+ * relu(V)
+ */
+CGResultNode* reluV(CGVector* V, CGraph* graph, CGNode* parentNode){
+    CCLErr * err = NULL;
+
+    CGVector* Y = makeDeviceVector(V->len);
+
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "relu_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
+
+    CGResultNode* result = calloc(1, sizeof(CGResultNode));
+    result->type = CGVT_VECTOR;
+    result->value = Y;
+
+    return result;
+}
+
+/*
+ * relu(M)
+ */
+CGResultNode* reluM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
+    CCLErr * err = NULL;
+
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
+    uint64_t len = M->rows*M->cols;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "relu_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
+    CGResultNode* result = calloc(1, sizeof(CGResultNode));
+    result->type = CGVT_MATRIX;
+    result->value = Y;
+
+    return result;
+}
+
+/*
+ * softplus(d)
+ */
+CGResultNode* softplusD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+    cg_float val = D->value;
+    return makeDoubleResultNode(__cg_softplus(val));
+}
+
+
+/*
+ * softplus(V)
+ */
+CGResultNode* softplusV(CGVector* V, CGraph* graph, CGNode* parentNode){
+    CCLErr * err = NULL;
+
+    CGVector* Y = makeDeviceVector(V->len);
+
+    uint64_t len = V->len;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "softplus_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), V->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
+
+    CGResultNode* result = calloc(1, sizeof(CGResultNode));
+    result->type = CGVT_VECTOR;
+    result->value = Y;
+
+    return result;
+}
+
+/*
+ * softplus(M)
+ */
+CGResultNode* softplusM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
+    CCLErr * err = NULL;
+
+    CGMatrix* Y = makeDeviceMatrix(M->rows, M->cols);
+    uint64_t len = M->rows*M->cols;
+
+    CCLEvent* evt = NULL;
+    size_t gws = len;
+
+    evt = ccl_program_enqueue_kernel(prg, "softplus_v", queue, 1, NULL, &gws,
+                                     NULL, NULL, &err, ccl_arg_priv(len, cl_uint), M->buf, Y->buf, NULL);
+    CHECK_ERROR(err)
+
+    CGResultNode* result = calloc(1, sizeof(CGResultNode));
+    result->type = CGVT_MATRIX;
+    result->value = Y;
+
+    return result;
+}
 
 #if cg_float == float
 #undef cblas_dcopy

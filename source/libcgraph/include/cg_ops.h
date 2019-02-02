@@ -78,4 +78,13 @@ CGResultNode* transposeD(CGDouble* D, CGraph* graph, CGNode* parentNode);
 CGResultNode* transposeM(CGMatrix* M, CGraph* graph, CGNode* parentNode);
 CGResultNode* transposeV(CGVector* V, CGraph* graph, CGNode* parentNode);
 
+CGResultNode* reluD(CGDouble* D, CGraph* graph, CGNode* parentNode);
+CGResultNode* reluV(CGVector* V, CGraph* graph, CGNode* parentNode);
+CGResultNode* reluM(CGMatrix* M, CGraph* graph, CGNode* parentNode);
+
+CGResultNode* softplusD(CGDouble* D, CGraph* graph, CGNode* parentNode);
+CGResultNode* softplusV(CGVector* V, CGraph* graph, CGNode* parentNode);
+CGResultNode* softplusM(CGMatrix* M, CGraph* graph, CGNode* parentNode);
+
+
 #endif

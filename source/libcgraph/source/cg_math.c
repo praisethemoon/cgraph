@@ -17,6 +17,8 @@
 #include "cg_math.h"
 #include "cg_diff.h"
 
+
+
 void __cg_map_array(cg_float* src, cg_float* dest, uint64_t len, cg_float(*f)(cg_float)){
 	uint64_t i = 0;
 	for(;i<len;i++)
@@ -32,16 +34,17 @@ cg_float __cg_dx_relu(cg_float x){
 }
 
 cg_float __cg_sigmoid(cg_float x){
-    return 1.0/(1.0 + exp(-x));
+	return 1.0/(1.0 + exp(-x));
 }
 
 cg_float __cg_softplus(cg_float x){
-    return log(1 + exp(x));
+	return log(1 + exp(x));
 }
 
 cg_float __cg_dx_softplus(cg_float x){
-    return __cg_sigmoid(x);
+	return __cg_sigmoid(x);
 }
+
 
 
 /*
@@ -168,31 +171,6 @@ CGNode* dx_crossEntropy(CGResultNode* x, CGResultNode* y, uint64_t num_classes){
 	return res;
 }
 
-CGResultNode* relu(CGResultNode* x){
-	switch(x->type){
-		case CGVT_DOUBLE:{
-			cg_float val = ((CGDouble*)x->value)->value;
-			return makeDoubleResultNode(__cg_relu(val));
-		}
-		
-		case CGVT_VECTOR: {
-			CGVector* v = (CGVector*)x->value;
-			
-			cg_float* y = calloc(v->len, sizeof(cg_float));
-			__cg_map_array(v->data, y, v->len, __cg_relu);
-			return makeVectorResultNode(v->len, y);
-		}
-		
-		case CGVT_MATRIX: {
-			CGMatrix* m = (CGMatrix*)x->value;
-			uint64_t len = m->cols*m->rows;
-			
-			cg_float* y = calloc(len, sizeof(cg_float));
-			__cg_map_array(m->data, y, len, __cg_relu);
-			return makeMatrixResultNode(m->rows, m->cols, y);
-		}
-	}
-}
 
 /*
  * Used in back-prop
@@ -222,33 +200,6 @@ CGNode* dx_relu(CGResultNode* x){
 		}
 	}
 }
-
-CGResultNode* softplus(CGResultNode* x){
-    switch(x->type){
-        case CGVT_DOUBLE:{
-            cg_float val = ((CGDouble*)x->value)->value;
-            return makeDoubleResultNode(__cg_softplus(val));
-        }
-
-        case CGVT_VECTOR: {
-            CGVector* v = (CGVector*)x->value;
-
-            cg_float* y = calloc(v->len, sizeof(cg_float));
-            __cg_map_array(v->data, y, v->len, __cg_softplus);
-            return makeVectorResultNode(v->len, y);
-        }
-
-        case CGVT_MATRIX: {
-            CGMatrix* m = (CGMatrix*)x->value;
-            uint64_t len = m->cols*m->rows;
-
-            cg_float* y = calloc(len, sizeof(cg_float));
-            __cg_map_array(m->data, y, len, __cg_softplus);
-            return makeMatrixResultNode(m->rows, m->cols, y);
-        }
-    }
-}
-
 
 CGNode* dx_softplus(CGResultNode* x){
     switch(x->type){

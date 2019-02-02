@@ -3,7 +3,7 @@
 
 #include <inttypes.h>
 
-//#define CG_USE_OPENCL
+#define CG_USE_OPENCL
 
 #ifdef CG_USE_OPENCL
 #include <cf4ocl2.h>

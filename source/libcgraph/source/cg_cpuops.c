@@ -35,7 +35,6 @@ int selectContext() {
 
 void copyDataToHost(CGResultNode* res){}
 
-
 /*
  * *********************
  * Multiplication
@@ -2102,6 +2101,63 @@ CGResultNode* mean(CGNode* X, CGraph* graph){
 
         }
     }
+}
+
+
+/*
+ * relu(d)
+ */
+CGResultNode* reluD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+    cg_float val = D->value;
+    return makeDoubleResultNode(__cg_relu(val));
+}
+
+
+/*
+ * relu(V)
+ */
+CGResultNode* reluV(CGVector* V, CGraph* graph, CGNode* parentNode){
+    cg_float* y = calloc(V->len, sizeof(cg_float));
+    __cg_map_array(V->data, y, V->len, __cg_relu);
+    return makeVectorResultNode(V->len, y);
+}
+
+/*
+ * relu(M)
+ */
+CGResultNode* reluM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
+    uint64_t len = M->cols*M->rows;
+    cg_float* y = calloc(len, sizeof(cg_float));
+    __cg_map_array(M->data, y, len, __cg_relu);
+    return makeMatrixResultNode(M->rows, M->cols, y);
+}
+
+/*
+ * softplus(d)
+ */
+CGResultNode* softplusD(CGDouble* D, CGraph* graph, CGNode* parentNode){
+    cg_float val = D->value;
+    return makeDoubleResultNode(__cg_softplus(val));
+}
+
+
+/*
+ * softplus(V)
+ */
+CGResultNode* softplusV(CGVector* V, CGraph* graph, CGNode* parentNode){
+    cg_float* y = calloc(V->len, sizeof(cg_float));
+    __cg_map_array(V->data, y, V->len, __cg_softplus);
+    return makeVectorResultNode(V->len, y);
+}
+
+/*
+ * softplus(M)
+ */
+CGResultNode* softplusM(CGMatrix* M, CGraph* graph, CGNode* parentNode){
+    uint64_t len = M->cols*M->rows;
+    cg_float* y = calloc(len, sizeof(cg_float));
+    __cg_map_array(M->data, y, len, __cg_softplus);
+    return makeMatrixResultNode(M->rows, M->cols, y);
 }
 
 

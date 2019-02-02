@@ -1,11 +1,35 @@
 
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-#ifndef CL_SCALAR_TYPE
-#define CL_SCALAR_TYPE float
+#ifndef cg_float
+#define cg_float float
 #endif
 
-__kernel void sigmoid_vec(ulong size, __global CL_SCALAR_TYPE *input, __global CL_SCALAR_TYPE *output)
+typedef cg_float(*ActivationFunc)(cg_float);
+
+cg_float relu_activ(cg_float x){
+    return  x*(x>0);
+}
+
+cg_float sigmoid_activ(cg_float x){
+    return 1/(1+exp(-x));
+}
+
+cg_float softplus_activ(cg_float x){
+    return log(1 + exp(x));
+}
+
+cg_float tanh_activ(cg_float x){
+    return tanh(x);
+}
+
+/*
+static ActivationFunc[]={
+    relu_activ,
+    sigmoid_activ,
+};
+*/
+__kernel void sigmoid_vec(ulong size, __global cg_float *input, __global cg_float *output)
 {
     uint idx = get_global_id(0);
 
@@ -13,14 +37,14 @@ __kernel void sigmoid_vec(ulong size, __global CL_SCALAR_TYPE *input, __global C
         return;
     }
 
-    CL_SCALAR_TYPE x = input[idx];
+    cg_float x = input[idx];
     output[idx] = 1.0/(1.0 + exp(-x));
 }
 
 /*
  * Broadcast Matrix-vector multiplication
  */
-__kernel void mul_mv(ulong size, __global const CL_SCALAR_TYPE *M, __global const CL_SCALAR_TYPE *V, __global CL_SCALAR_TYPE * c, ulong len) {
+__kernel void mul_mv(ulong size, __global const cg_float *M, __global const cg_float *V, __global cg_float * c, ulong len) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -33,7 +57,7 @@ __kernel void mul_mv(ulong size, __global const CL_SCALAR_TYPE *M, __global cons
 /*
  * Broadcast Matrix-Matrix / vector-vector multiplication
  */
-__kernel void mul_vv(ulong size, __global const CL_SCALAR_TYPE *a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void mul_vv(ulong size, __global const cg_float *a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -46,7 +70,7 @@ __kernel void mul_vv(ulong size, __global const CL_SCALAR_TYPE *a, __global cons
 /*
  * Broadcast Matrix-Matrix / vector-vector division
  */
-__kernel void div_vv(ulong size, __global const CL_SCALAR_TYPE *a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void div_vv(ulong size, __global const cg_float *a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -65,7 +89,7 @@ __kernel void div_vv(ulong size, __global const CL_SCALAR_TYPE *a, __global cons
 /*
  * Broadcast double-Matrix / double-vector division
  */
-__kernel void div_dv(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void div_dv(ulong size, cg_float a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -85,7 +109,7 @@ __kernel void div_dv(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE
 /*
  * Broadcast Matrix-vector multiplication
  */
-__kernel void div_mv(ulong size, __global const CL_SCALAR_TYPE *M, __global const CL_SCALAR_TYPE *V, __global CL_SCALAR_TYPE * c, ulong len) {
+__kernel void div_mv(ulong size, __global const cg_float *M, __global const cg_float *V, __global cg_float * c, ulong len) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -100,7 +124,7 @@ __kernel void div_mv(ulong size, __global const CL_SCALAR_TYPE *M, __global cons
 /*
  * Broadcast double-vector addition
  */
-__kernel void add_dv(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void add_dv(ulong size, cg_float a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -114,7 +138,7 @@ __kernel void add_dv(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE
 /*
  * Broadcast Matrix-Matrix / vector-vector addition
  */
-__kernel void add_vv(ulong size, __global const CL_SCALAR_TYPE *a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void add_vv(ulong size, __global const cg_float *a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -128,7 +152,7 @@ __kernel void add_vv(ulong size, __global const CL_SCALAR_TYPE *a, __global cons
 /*
  * Broadcast Matrix-vector multiplication
  */
-__kernel void add_mv(ulong size, __global const CL_SCALAR_TYPE *M, __global const CL_SCALAR_TYPE *V, __global CL_SCALAR_TYPE * c, ulong len) {
+__kernel void add_mv(ulong size, __global const cg_float *M, __global const cg_float *V, __global cg_float * c, ulong len) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -142,7 +166,7 @@ __kernel void add_mv(ulong size, __global const CL_SCALAR_TYPE *M, __global cons
 /*
  * Broadcast double-vector substraction
  */
-__kernel void sub_dv(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void sub_dv(ulong size, cg_float a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -155,7 +179,7 @@ __kernel void sub_dv(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE
 /*
  * Broadcast vector-double substraction
  */
-__kernel void sub_vd(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void sub_vd(ulong size, cg_float a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -168,7 +192,7 @@ __kernel void sub_vd(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE
 /*
  * Broadcast Matrix-Matrix / vector-vector substraction
  */
-__kernel void sub_vv(ulong size, __global const CL_SCALAR_TYPE *a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void sub_vv(ulong size, __global const cg_float *a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -182,7 +206,7 @@ __kernel void sub_vv(ulong size, __global const CL_SCALAR_TYPE *a, __global cons
 /*
  * Broadcast Matrix-vector substraction
  */
-__kernel void sub_mv(ulong size, __global const CL_SCALAR_TYPE *M, __global const CL_SCALAR_TYPE *V, __global CL_SCALAR_TYPE * c, ulong len) {
+__kernel void sub_mv(ulong size, __global const cg_float *M, __global const cg_float *V, __global cg_float * c, ulong len) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -196,7 +220,7 @@ __kernel void sub_mv(ulong size, __global const CL_SCALAR_TYPE *M, __global cons
 /*
  * Broadcast Matrix-vector substraction
  */
-__kernel void sub_vm(ulong size, __global const CL_SCALAR_TYPE *M, __global const CL_SCALAR_TYPE *V, __global CL_SCALAR_TYPE * c, ulong len) {
+__kernel void sub_vm(ulong size, __global const cg_float *M, __global const cg_float *V, __global cg_float * c, ulong len) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -209,7 +233,7 @@ __kernel void sub_vm(ulong size, __global const CL_SCALAR_TYPE *M, __global cons
 /*
  * V^d
  */
-__kernel void pow_vd(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void pow_vd(ulong size, cg_float a, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -221,7 +245,7 @@ __kernel void pow_vd(ulong size, CL_SCALAR_TYPE a, __global const CL_SCALAR_TYPE
 /*
  * exp(V)
  */
-__kernel void exp_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void exp_v(ulong size, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -234,7 +258,7 @@ __kernel void exp_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SC
 /*
  * log(V)
  */
-__kernel void log_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void log_v(ulong size, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -247,7 +271,7 @@ __kernel void log_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SC
 /*
  * sin(V)
  */
-__kernel void sin_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void sin_v(ulong size, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -261,7 +285,7 @@ __kernel void sin_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SC
 /*
  * cos(V)
  */
-__kernel void cos_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void cos_v(ulong size, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -275,7 +299,7 @@ __kernel void cos_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SC
 /*
  * tan(V)
  */
-__kernel void tan_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void tan_v(ulong size, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -289,7 +313,7 @@ __kernel void tan_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SC
 /*
  * tanh(V)
  */
-__kernel void tanh_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_SCALAR_TYPE * c) {
+__kernel void tanh_v(ulong size, __global const cg_float *b, __global cg_float * c) {
     uint gid = get_global_id(0);
 
     if(gid >= size){
@@ -297,4 +321,67 @@ __kernel void tanh_v(ulong size, __global const CL_SCALAR_TYPE *b, __global CL_S
     }
 
     c[gid] = tanh(b[gid]);
+}
+
+
+
+/*
+ * relu(V)
+ */
+__kernel void relu_v(ulong size, __global const cg_float *b, __global cg_float * c) {
+    uint gid = get_global_id(0);
+
+    if(gid >= size){
+        return;
+    }
+
+    c[gid] = relu_activ(b[gid]);
+}
+
+
+
+/*
+ * softplus(V)
+ */
+__kernel void softplus_v(ulong size, __global const cg_float *b, __global cg_float * c) {
+    uint gid = get_global_id(0);
+
+    if(gid >= size){
+        return;
+    }
+
+    c[gid] = softplus_activ(b[gid]);
+}
+
+
+/*
+ * sumMatrixRows(M)
+ * @param size: total matrix elements
+ * @param cols: matrix cols which is also size of vector c.
+ */
+__kernel void sum_matrix_rows(ulong size, ulong cols, __global const cg_float *M, __global cg_float * Y) {
+    uint gid = get_global_id(0);
+
+    if(gid >= size){
+        return;
+    }
+
+    printf("%lu, idx: %lu\n", gid, gid%cols);
+
+    Y[gid%cols] += M[gid];
+}
+
+/*
+ * sumMatrixCols(M)
+ * @param size: total matrix elements
+ * @param cols: matrix cols which is also size of vector c.
+ */
+__kernel void sum_matrix_cols(ulong size, ulong cols, __global const cg_float *b, __global cg_float * c) {
+    uint gid = get_global_id(0);
+
+    if(gid >= size){
+        return;
+    }
+
+    c[gid/cols] += b[gid];
 }
