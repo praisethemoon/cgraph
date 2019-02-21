@@ -24,4 +24,15 @@ typedef struct CGNNDense {
 
 };
 
+typedef struct RBMLayer {
+    uint64_t v;
+    uint64_t h;
+
+    cg_float* W;
+    cg_float* vbias;
+    cg_float* hbias;
+}RBMLayer;
+
+void trainRBM(RBMLayer* rbm, CGMatrix* data, uint8_t batch_size);
+
 #endif //CGRAPH_PROJEKT_CG_NET_H

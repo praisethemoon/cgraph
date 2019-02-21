@@ -13,6 +13,7 @@ set (PROJECT_INCLUDE_DIR
 
 set (PROJECT_SRCS
 	${PROJECT_SOURCE_DIR}/main.c
+	#${PROJECT_SOURCE_DIR}/RBM.c
 
 	# dependencies
 	${PROJECT_SOURCE_DIR}/vendor/progressbar/progressbar.c

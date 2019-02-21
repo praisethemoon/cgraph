@@ -651,6 +651,7 @@ CGResultNode* makeDeviceMatrixResultNode(uint64_t rows, uint64_t cols, CCLBuffer
 
 
 CGNode* resultNodeToConstantNodeCopy(CGResultNode* result){
+    copyDataToHost(result);
     switch(result->type){
         case CGVT_DOUBLE:
         {

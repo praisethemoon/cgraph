@@ -4,7 +4,7 @@ project(cgraph_projekt)
 
 
 option(CG_USE_LIBCPUID "Use CPUID to detect CPU Features" OFF)
-option(CG_USE_OPENCL "OpenCL acceleration" ON)
+option(CG_USE_OPENCL "OpenCL acceleration" OFF)
 
 if(CG_USE_OPENCL)
     add_compile_definitions(CG_USE_OPENCL)
@@ -37,7 +37,7 @@ add_subdirectory(libcgraph)
 add_subdirectory(c_api)
 add_subdirectory(unittest)
 add_subdirectory(lua_api)
-#add_subdirectory(clgraph)
+add_subdirectory(cv)
 #add_subdirectory(cldevices)
 add_subdirectory(nn)
 

@@ -932,37 +932,38 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 		 */
 		case CGNT_AXIS_BOUND_OPERATION:
 		{
+            //CGResultNode* res = computeCGNode(graph, node->axop->uhs);
+
 			switch(node->axop->type){
 				case CGABOT_SUM:{
 					CGResultNode* newres = computeCGNode(graph, node->axop->uhs);
 					CHECK_RESULT(newres)
-					node->axop->uhs->result = newres;
-					
+
 					if(newres->type == CGVT_DOUBLE){
 						result = sumD((CGDouble*)newres->value, graph, node);
 					}
-					
+
 					if(newres->type == CGVT_VECTOR){
 						result = sumV((CGVector*)newres->value, graph, node);
 					}
-					
+
 					if(newres->type == CGVT_MATRIX){
 						result = sumM((CGMatrix*)newres->value, graph, node, node->axop->axis);
 					}
-				
+
 					break;
 				}
-				
+
 				case CGABOT_MAX:{
 					result = max(node, graph);
 					break;
 				}
-				
+
 				case CGABOT_MIN:{
 					result = min(node, graph);
 					break;
 				}
-				
+
 				case CGABOT_MEAN:{
 					result = mean(node, graph);
 					break;
@@ -989,7 +990,7 @@ CGResultNode* computeCGNode(CGraph* graph, CGNode* node){
 				default:
 				    break;
 			}
-			
+
 			break;
 		}
 		case CGNT_GRAPH:{
