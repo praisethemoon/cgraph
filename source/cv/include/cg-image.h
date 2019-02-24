@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "cg-color.h"
 
@@ -17,8 +18,8 @@
  */
 
 typedef struct CGImage {
-  int width, height, cpp;
-  unsigned char *data;
+  uint32_t width, height, cpp;
+  uint8_t *data;
 }CGImage;
 
 /* 
@@ -39,7 +40,7 @@ CGImage* Image_new();
   * @param height image height
   * @param cpp Channels
   */
- CGImage* Image_randomImage(int width, int height, int cpp);
+ CGImage* Image_randomImage(int32_t width, int32_t height, int32_t cpp);
  
 /*
  * Destructor
@@ -71,7 +72,7 @@ void Image_debug(CGImage* img);
  * @param y [in] pixel y column
  * @param c [out] color, must be same size as image's CPP
  */
-void Image_pixelAt(CGImage* source, int x, int y, unsigned char *c);
+void Image_pixelAt(CGImage* source, uint32_t x, uint32_t y, unsigned char *c);
 
 /*
  * Transforms a 3/4 color Space to Grayscale image
@@ -114,7 +115,7 @@ void Image_histogram(CGImage* source, unsigned long* hist);
  * @param color [in] pixel color
  * @param wd [in] pixel width
  */
-void Image_drawPixel(CGImage* source, int x, int y, unsigned char * color,  int wd);
+void Image_drawPixel(CGImage* source, uint32_t x, uint32_t y, uint8_t * color,  int wd);
 
 /*
  * Draws a line on an image using Bresenham's algorithm.
@@ -127,7 +128,7 @@ void Image_drawPixel(CGImage* source, int x, int y, unsigned char * color,  int 
  * @param color [in] pixel color
  * @param wd [in] pixel width
  */
-void Image_drawLine(CGImage* source, int x0, int y0, int x1, int y1, unsigned char * color, int wd);
+void Image_drawLine(CGImage* source, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint8_t * color, int wd);
 
 /*
  * Draws a circle on an image using Bresenham's algorithm.
@@ -140,7 +141,7 @@ void Image_drawLine(CGImage* source, int x0, int y0, int x1, int y1, unsigned ch
  * @param color [in] pixel color
  * @param wd [in] pixel width
  */
-void Image_drawCircle(CGImage* source, int xm, int ym, int r,  unsigned char * color, int wd);
+void Image_drawCircle(CGImage* source, uint32_t xm, uint32_t ym, uint32_t r,  uint8_t * color, int wd);
 
 /*
  * Extracts entire color-image from an image
@@ -148,7 +149,7 @@ void Image_drawCircle(CGImage* source, int xm, int ym, int r,  unsigned char * c
  * @param c channel
  * returns an RGB Image.
  */
-CGImage* Image_extractColorFromRGB(CGImage* source, int c);
+CGImage* Image_extractColorFromRGB(CGImage* source, uint8_t c);
 
 /*
  * Extracts all color-image from an image

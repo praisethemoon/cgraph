@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_BUILD_TYPE Debug)
 project(cgraph_projekt)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(CG_USE_LIBCPUID "Use CPUID to detect CPU Features" OFF)
 option(CG_USE_OPENCL "OpenCL acceleration" OFF)
@@ -38,6 +39,7 @@ add_subdirectory(c_api)
 add_subdirectory(unittest)
 add_subdirectory(lua_api)
 add_subdirectory(cv)
+add_subdirectory(ui)
 #add_subdirectory(cldevices)
 add_subdirectory(nn)
 
