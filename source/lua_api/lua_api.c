@@ -12,6 +12,7 @@
 #include "cg_variables.h"
 #include "cg_diff.h"
 #include "cg_enums.h"
+#include "cg_plot.h"
 
 #include "progressbar.h"
 
@@ -19,8 +20,10 @@
 
 #if cg_float == float
 	#define LUA_C_TYPE ARRAY_TFLOAT
+	#define lua_float floats
 #else
 	#define LUA_C_TYPE ARRAY_TDOUBLE
+	#define lua_float doubles
 #endif
 
 
@@ -226,7 +229,7 @@ static int lua_createVectorConstant(lua_State* L){
 	}
 	*/
 	cg_float* data = calloc(len, sizeof(cg_float));
-	memcpy(data, values->values.doubles, len*sizeof(cg_float));
+	memcpy(data, values->values.lua_float, len*sizeof(cg_float));
 	
 	CGNode* node = makeVectorConstantNode(len, data);
 	
@@ -249,20 +252,20 @@ static int lua_createMatrixConstant(lua_State* L){
 	array_Array* values = array_checkarray(L, 3);
 	
 	/*
+	
 	printf("Creating matrix array with length %dx%d\n", rows, cols);
 	uint64_t i = 0;
 	uint64_t j = 0;
-	
 	for(;i<rows;i++){
 		for(j = 0;j<cols;j++){
-			printf("\t%lf", values->values.doubles[i*cols +j]);
+			printf("\t%lf", values->values.lua_float[i*cols +j]);
 		}
 		printf("\n");
 	}
 	*/
 	
 	cg_float* data = calloc( rows*cols, sizeof(cg_float));
-	memcpy(data, values->values.doubles, rows*cols*sizeof(cg_float));
+	memcpy(data, values->values.lua_float, rows*cols*sizeof(cg_float));
 	CGNode* node = makeMatrixConstantNode(rows, cols, data);
 	
 	pushNode(L, node);
@@ -748,6 +751,30 @@ static int lua_stopProgress(lua_State* L){
     return 1;
 }
 
+static int lua_plotLines(lua_State* L){
+	array_Array* xvalues = array_checkarray(L, 1);
+	int size = xvalues->size[0];
+	cg_float* xdata = calloc(xvalues->size, sizeof(cg_float));
+	memcpy(xdata, xvalues->values.lua_float, size*sizeof(cg_float));
+
+	array_Array* yvalues = array_checkarray(L, 2);
+	cg_float* ydata = calloc(yvalues->size[0], sizeof(cg_float));
+	memcpy(ydata, yvalues->values.lua_float, yvalues->size[0]*sizeof(cg_float));
+
+	if(yvalues->size != xvalues->size){
+		fprintf(stderr, "cannot plot x-y arrays with size %d, %d\n", xvalues->size[0], yvalues->size[0]);
+		exit(-1);
+	}
+
+	const char* name = lua_tostring(L, 3);
+
+	cg_plot(size, xdata, ydata, NULL, name);
+
+	lua_pushnil(L);
+
+	return 1;
+}
+
 int luaopen_libcgraph(lua_State *L)
 {
 	struct luaL_Reg driver[] =
@@ -782,6 +809,7 @@ int luaopen_libcgraph(lua_State *L)
         {"startProgress", lua_startProgress},
         {"updateProgress", lua_updateProgress},
         {"endProgress", lua_stopProgress},
+		{"plotLines", lua_plotLines},
 		{NULL, NULL}
 	};
 

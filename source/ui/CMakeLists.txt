@@ -6,7 +6,8 @@ project(cgraphui)
 #        )
 
 set (PROJECT_SRCS
-        ${PROJECT_SOURCE_DIR}/source/app.c
+        #${PROJECT_SOURCE_DIR}/source/app.c
+        ${PROJECT_SOURCE_DIR}/source/cg_plot.c
 )
 
 
@@ -16,6 +17,9 @@ set( PROJECT_INCLUDE_DIR
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/vendor/kplot
         ${PROJECT_SOURCE_DIR}/vendor/nuklear
+	${PROJECT_SOURCE_DIR}/../libcgraph/include/
+	${PROJECT_SOURCE_DIR}/../libcgraph/include/c_api
+	${PROJECT_SOURCE_DIR}/../libcgraph/vendor/container
         )
 
 set(EXTERNAL_DEPS
@@ -48,13 +52,14 @@ find_package(GLEW)
 
 include_directories(${CAIRO_INCLUDE_DIRS} ${GLFW_INCLUDE_DIR} ${GLEW_INCLUDE_DIR})
 
-add_executable(cgraphui
+add_library(cgraphui
         ${EXTERNAL_DEPS}
         ${PROJECT_SRCS}
 )
 
 
 target_link_libraries(cgraphui
+        cgraph
         ${CAIRO_LIBRARIES}
         ${GLFW_LIBRARIES}
         ${GLEW_LIBRARY}

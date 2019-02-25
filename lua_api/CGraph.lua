@@ -200,6 +200,7 @@ local mt = {
 --- Here comes the good stuff
 local array = cgraph.doubles
 local dumpMem = cgraph.dumpMem
+local plotLines = plotLines
 
 local double = function (value)
 	local self = {type='value', tensorType=TensorType.DOUBLE, value=value, node=cgraph.double(value)}
@@ -209,14 +210,23 @@ local double = function (value)
 end
 
 local vector = function(len, value)
-	local self = {type='value', tensorType=TensorType.VECTOR, value=value,len=len, node=cgraph.vector(len, value)}
+	local new_val = value
+	if type(value) == "table" then
+		new_val = array(new_val)
+	end
+
+	local self = {type='value', tensorType=TensorType.VECTOR, value=value,len=len, node=cgraph.vector(len, new_val)}
 	setmetatable(self, mt)
 	
 	return self
 end
 
 local matrix = function(rows, cols, value)
-	local self = {type='value', tensorType=TensorType.MATRIX, value=value,rows=rows, cols=cols, node=cgraph.matrix(rows, cols, value)}
+	local new_val = value
+	if type(value) == "table" then
+		new_val = array(new_val)
+	end
+	local self = {type='value', tensorType=TensorType.MATRIX, value=value,rows=rows, cols=cols, node=cgraph.matrix(rows, cols, new_val)}
 	setmetatable(self, mt)
 	
 	return self
@@ -669,7 +679,7 @@ local CGraph = {
 	log=log,
 	exp=exp,
 	graph=graph,
-
+	plotLines = plotLines,
 
 	-- Helper
 	Progress=Progress

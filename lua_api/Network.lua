@@ -82,6 +82,7 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
             end
         end
         table.insert(loss, {k, err/#X})
+        table.insert(points, k)
         progress:inc()
     end
     progress:stop()
@@ -89,6 +90,8 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
       legend = { position = "se" },
     }
     p:add_series("Avg. Loss", loss)
+
+    cg.plotLines(points, loss, name..".png")
   
     flot.render(p)
     print("training complete, Testting")

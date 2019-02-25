@@ -5,10 +5,13 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}/
 	${PROJECT_SOURCE_DIR}/include/
 	${PROJECT_SOURCE_DIR}/../c_api/
+	${PROJECT_SOURCE_DIR}/../libcgraph/include/
 	${PROJECT_SOURCE_DIR}/../libcgraph/include/c_api
+	${PROJECT_SOURCE_DIR}/../libcgraph/vendor/container
 	${PROJECT_SOURCE_DIR}/vendor/progressbar
 	${PROJECT_SOURCE_DIR}/vendor/csv
 	${PROJECT_SOURCE_DIR}/vendor/profiler
+	${PROJECT_SOURCE_DIR}/../ui/include/
 )
 
 set (PROJECT_SRCS
@@ -47,6 +50,7 @@ include_directories(${CURSES_INCLUDE_DIRS})
 
 target_link_libraries(nn 
 	cgraphapi
+	cgraphui
 	ncurses
 )
 

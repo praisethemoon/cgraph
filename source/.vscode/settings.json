@@ -1,6 +1,11 @@
 {
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
     "files.associations": {
-        "cg-image.h": "c"
+        "cg-image.h": "c",
+        "kplot.h": "c",
+        "cairo.h": "c",
+        "limits": "cpp",
+        "type_traits": "cpp",
+        "cgraph.h": "c"
     }
 }
