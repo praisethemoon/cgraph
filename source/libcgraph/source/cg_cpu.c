@@ -1,15 +1,20 @@
-#ifdef CG_USE_LIBCPUID
 
 #include <inttypes.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 #include <string.h>
-#include <libcpuid/libcpuid.h>
+
+#ifdef CG_USE_LIBCPUID
+#include <libcpuid.h>
+#endif
+
 #include "c_api/cg_enums.h"
 #include "cg_cpu.h"
 
 CGCPUInfo* getCPUInformation(){
-	CGCPUInfo* cpuInfo = calloc(1, sizeof(CGCPUInfo));
+    #ifdef CG_USE_LIBCPUID
+
+    CGCPUInfo* cpuInfo = (CGCPUInfo*)calloc(1, sizeof(CGCPUInfo));
 	
 	if(!cpuid_present()){
 		cpuInfo->infoAvailable = CGCPUINFO_NOT_AVAILABLE;
@@ -56,9 +61,15 @@ CGCPUInfo* getCPUInformation(){
 	cpuInfo->flags[CGCPUF_SSE4_2] = data.flags[CPU_FEATURE_SSE4_2];
 	
 	return cpuInfo;
+    #else
+	return NULL;
+    #endif
+
 }
 
 void printCPUInfo(CGCPUInfo* cpuInfo){
+
+	#ifdef CG_USE_LIBCPUID
 	if(cpuInfo->infoAvailable == CGCPUINFO_NOT_AVAILABLE){
 		printf("Could not detect CPU Infos.\n");
 		return;
@@ -88,7 +99,9 @@ void printCPUInfo(CGCPUInfo* cpuInfo){
 	printf("SSSE3  : %s\n", cpuInfo->flags[CGCPUF_SSSE3]?"OK":"X");
 	printf("SSE4.1 : %s\n", cpuInfo->flags[CGCPUF_SSE4_1]?"OK":"X");
 	printf("SSE4.2 : %s\n", cpuInfo->flags[CGCPUF_SSE4_2]?"OK":"X");
+
+    #else
+	printf("This project was not compiled with libcpuid\n");
+    #endif
 	
 }
-
-#endif

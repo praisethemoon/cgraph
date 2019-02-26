@@ -1,6 +1,12 @@
 language: c
 os: linux
 before_install:
+
+before_install:
+        # Install a supported cmake version (>= 3.13.3)
+        - wget -O cmake.sh https://cmake.org/files/v3.13/cmake-3.13.3-Linux-x86_64.sh
+        - sudo sh cmake.sh --skip-license --exclude-subdir --prefix=/usr/local
+        - /usr/local/cmake --version
         - sudo apt-get -qq update
         - sudo apt-get install libblas-dev liblapack-dev
         - sudo apt-get install lua5.1
@@ -14,6 +20,6 @@ script:
         - cd source
         - mkdir build
         - cd build
-        - cmake ..
+        - /usr/local/cmake ..
         - make
         - ./unittest/cg_unittest 

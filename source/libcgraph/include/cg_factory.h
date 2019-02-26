@@ -10,14 +10,14 @@
 
 
 // utilities
-double* vcopy(uint64_t len, const double* data);
+cg_float* vcopy(uint64_t len, const cg_float* data);
 
 CGNode* makeVarNode(char* name);
-CGNode* makeDoubleConstantNode(double value);
-CGNode* makeVectorConstantNode(uint64_t  len, double* value);
-CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, double* value);
-CGNode* makeVectorConstantNodeCopy(uint64_t  len, double* value);
-CGNode* makeMatrixConstantNodeCopy(uint64_t  rows, uint64_t cols, double* value);
+CGNode* makeDoubleConstantNode(cg_float value);
+CGNode* makeVectorConstantNode(uint64_t  len, cg_float* value);
+CGNode* makeMatrixConstantNode(uint64_t  rows, uint64_t cols, cg_float* value);
+CGNode* makeVectorConstantNodeCopy(uint64_t  len, cg_float* value);
+CGNode* makeMatrixConstantNodeCopy(uint64_t  rows, uint64_t cols, cg_float* value);
 CGNode* makeZeroDoubleConstantNode();
 CGNode* makeZeroVectorConstantNode(uint64_t  len);
 CGNode* makeZeroMatrixConstantNode(uint64_t  rows, uint64_t cols);
@@ -41,11 +41,11 @@ CGResultNode* constantNodeToResultNode(CGNode* node);
 CGResultNode* constantNodeToResultNodeCopy(CGNode* node);
 CGNode* resultNodeToConstantNodeCopy(CGResultNode* result);
 
-CGResultNode* makeDoubleResultNode(double val);
-CGResultNode* makeVectorResultNode(uint64_t len, double* val);
-CGResultNode* makeMatrixResultNode(uint64_t rows, uint64_t cols, double* val);
+CGResultNode* makeDoubleResultNode(cg_float val);
+CGResultNode* makeVectorResultNode(uint64_t len, cg_float* val);
+CGResultNode* makeMatrixResultNode(uint64_t rows, uint64_t cols, cg_float* val);
 
-double* cg_raw_copy(double* src, uint64_t len);
+cg_float* cg_raw_copy(cg_float* src, uint64_t len);
 
 CGraph* makeGraph(char* name);
 void graphSetVar(CGraph* graph, const char* name, CGNode* value);

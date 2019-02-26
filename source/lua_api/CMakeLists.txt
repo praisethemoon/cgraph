@@ -9,6 +9,7 @@ set (PROJECT_INCLUDE_DIR
 	${PROJECT_SOURCE_DIR}/../libcgraph/include/c_api
 	${PROJECT_SOURCE_DIR}/../libcgraph/vendor/container
 	${PROJECT_SOURCE_DIR}/vendor/progressbar
+	${PROJECT_SOURCE_DIR}/../ui/include/
 	/usr/local/include/luajit-2.0
 )
 
@@ -32,14 +33,15 @@ add_library(luacgraph SHARED
 	${PROJECT_SRCS}
 )
 
+FIND_PACKAGE(Lua 5.1 EXACT)
 
 set(CURSES_NEED_NCURSES TRUE)
 find_package(Curses)
 include_directories(${CURSES_INCLUDE_DIRS})
 
-
 target_link_libraries(luacgraph 
 	cgraphapi
+	cgraphui
 	lua5.1
 	ncurses
 )

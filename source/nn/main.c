@@ -10,6 +10,7 @@
 #include "cg_api.h"
 #include "cg_enums.h"
 #include "cg_types.h"
+#include "cg_plot.h"
 
 #define PROFILER_DEFINE
 #include "profiler.h"
@@ -39,10 +40,19 @@ void updateWeight(struct CGraph* graph, char* var, struct CGNode* alpha){
 }
 
 int main(int argc, char* argv[]){
+    struct CGCPUInfo* info = cg_getCPUInformation();
+    if(info == NULL){
+        printf("whoupsi\n");
+    }
+    else
+        cg_printCPUInfo(info);
+
+    cg_selectContext();
+
     profiler_initialize();
     PROFILER_START(nn);
 
-    double y_val[] = {1};
+    cg_float y_val[] = {1};
 
     struct CGNode* x = cg_newVariable("x");
     struct CGNode* y = cg_newVariable("y");
@@ -73,11 +83,11 @@ int main(int argc, char* argv[]){
 
     int max_len_size = 1024;
     int i=0;
-    double X[100][4] = {0};
-    double Y[100][1] = {0};
+    cg_float X[100][4] = {0};
+    cg_float Y[100][1] = {0};
 
-    double X_test[50][4] = {0};
-    double Y_test[50][1] = {0};
+    cg_float X_test[50][4] = {0};
+    cg_float Y_test[50][1] = {0};
 
     struct csv file;
     char** fields;
@@ -121,18 +131,21 @@ int main(int argc, char* argv[]){
         csv_close(&file);
         return EXIT_FAILURE;
     }
-    progressbar *progress = progressbar_new("Loading",1000);
-    for(; i < 1000; i++)
+    progressbar *progress = progressbar_new("Loading", 1000);
+    cg_float loss[1000];
+    for(i=0; i < 1000; i++)
     {
         int j = 0;
-        for (j=0;j <100;j++){
+        struct CGResultNode* res = cg_evalGraph(graph);
+        loss[i] = cg_getResultDoubleVal(res)->value;
+        for (j=0;j<100;j++){
 
             cg_setVar(graph, "x", cg_newMatrixNode(1, 4, X[j]));
             cg_setVar(graph, "y", cg_newVectorNode(1, Y[j]));
 
 
             struct CGResultNode* res = cg_evalGraph(graph);
-
+            //printf("loss = %f\n", loss[i]);
             cg_autoDiffGraph(graph);
 
             struct CGNode* alpha = cg_newDoubleNode(.03);
@@ -204,9 +217,17 @@ int main(int argc, char* argv[]){
         confusionMat[y_hat][y]++;
     }
 
+    cg_float x_axis[1000] = {0};
+
+    for(i=0;i<1000; i++)
+        x_axis[i] = i;
+
+    cg_plot(1000, x_axis, loss, NULL, "sample.png");
 
     for(i = 0; i < 3; i++)
         printf("%d\t%d\t%d\n", confusionMat[i][0], confusionMat[i][1], confusionMat[i][2]);
+
+
 
     cg_freeGraph(graph);
     free(graph);

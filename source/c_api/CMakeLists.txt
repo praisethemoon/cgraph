@@ -32,8 +32,11 @@ if (UNIX AND NOT APPLE)
 endif ()
 
 
+
+
 target_link_libraries(cgraphapi 
 	cgraph
+	cgraphcv
 )
 
 install(TARGETS cgraphapi

@@ -68,7 +68,7 @@ CGRAPH_API void cg_freeNode(struct CGraph* graph, struct CGNode* node);
  * \param[in] v value to be bound with the scalar node
  * \return Graph node
  */
-CGRAPH_API struct CGNode* cg_newDoubleNode(double v);
+CGRAPH_API struct CGNode* cg_newDoubleNode(cg_float v);
 
 /**
  * \brief Creates a 0 initialized scalar value
@@ -96,7 +96,7 @@ CGRAPH_API struct CGNode* cg_newDoubleRandNode();
  * \param[in] v value to be copied into the vector (deep copy), must be exactly of len-elements
  * \return Graph node
  */
-CGRAPH_API struct CGNode* cg_newVectorNode(uint64_t len, double* v);
+CGRAPH_API struct CGNode* cg_newVectorNode(uint64_t len, cg_float* v);
 
 /**
  * \brief Creates a 0 initialized vector node
@@ -127,7 +127,7 @@ CGRAPH_API struct CGNode* cg_newVectorRandNode(uint64_t len);
  * \param[in] v value to be copied into the vector (deep copy), must be exactly of rows*cols-elements
  * \return Graph node
  */
-CGRAPH_API struct CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, double* v);
+CGRAPH_API struct CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, cg_float* v);
 
 
 /**
@@ -365,9 +365,14 @@ CGRAPH_API struct CGNode* cg_resultToConstantNode(struct CGResultNode* result);
 CGRAPH_API struct CGResultNode* cg_constantToResult(struct CGNode* node);
 
 
-#ifdef CG_USE_LIBCPUID
+/**
+ * TODO: Document these
+ * @return
+ */
+
 struct CGCPUInfo* cg_getCPUInformation();
 void cg_printCPUInfo(struct CGCPUInfo* cpuInfo);
-#endif
+
+void cg_selectContext();
 
 #endif

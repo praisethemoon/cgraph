@@ -15,17 +15,20 @@
 #include "cg_enums.h"
 #include "cg_factory.h"
 
-CGNode* sigmoid(CGNode* x);
-CGNode* softmax(CGNode* x, uint8_t axis);
+void __cg_map_array(cg_float* src, cg_float* dest, uint64_t len, cg_float(*f)(cg_float));
+
+cg_float __cg_relu(cg_float x);
+
+cg_float __cg_dx_relu(cg_float x);
+
+cg_float __cg_sigmoid(cg_float x);
+
+cg_float __cg_softplus(cg_float x);
+
+cg_float __cg_dx_softplus(cg_float x);
 
 
-// log(1+ e^x)
-CGNode* smoothRelu(CGNode* x);
-CGNode* variance(CGNode* X, uint8_t axis);
-
-CGResultNode* relu(CGResultNode* x);
 CGNode* dx_relu(CGResultNode* x);
-
 CGResultNode* softplus(CGResultNode* x);
 CGNode* dx_softplus(CGResultNode* x);
 

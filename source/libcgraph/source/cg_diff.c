@@ -21,14 +21,14 @@ uint8_t nodeValueIsZero(CGNode* node){
 
 	switch(node->constant->type){
 		case CGVT_DOUBLE: {
-			double value = ((CGDouble*)node->constant->value)->value;
+			cg_float value = ((CGDouble*)node->constant->value)->value;
 
 			return value == 0.0;
 		}
 
 		case CGVT_VECTOR: {
 			uint64_t len = ((CGVector*)node->constant->value)->len;
-			double* values = ((CGVector*)node->constant->value)->data;
+			cg_float* values = ((CGVector*)node->constant->value)->data;
 
 			uint64_t i = 0;
 			for(; i < len; i++)
@@ -41,7 +41,7 @@ uint8_t nodeValueIsZero(CGNode* node){
 		case CGVT_MATRIX: {
 			CGMatrix* M = node->constant->value;
 			uint64_t len = M->rows * M->cols;
-			double* values = M->data;
+			cg_float* values = M->data;
 
 			uint64_t i = 0;
 			for(; i < len; i++)
@@ -355,7 +355,8 @@ void autoDifferenciateNode(CGraph* graph, CGNode* node){
 
 				case CGBOT_POW:
 				{
-					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, copyNode(node->bop->lhs->diff), makeBinaryOpNode(CGBOT_MULT, copyNode(node->diff), makeBinaryOpNode(CGBOT_MULT, resultNodeToConstantNodeCopy(node->bop->rhs->result), makeBinaryOpNode(CGBOT_POW, resultNodeToConstantNodeCopy(node->bop->lhs->result), makeBinaryOpNode(CGBOT_SUB, resultNodeToConstantNodeCopy(node->bop->rhs->result), makeDoubleConstantNode(1.0))))));
+				    CGNode* LHS = resultNodeToConstantNodeCopy(node->bop->lhs->result);
+					CGNode* mult1 = makeBinaryOpNode(CGBOT_ADD, copyNode(node->bop->lhs->diff), makeBinaryOpNode(CGBOT_MULT, copyNode(node->diff), makeBinaryOpNode(CGBOT_MULT, resultNodeToConstantNodeCopy(node->bop->rhs->result), makeBinaryOpNode(CGBOT_POW, LHS, makeBinaryOpNode(CGBOT_SUB, resultNodeToConstantNodeCopy(node->bop->rhs->result), makeDoubleConstantNode(1.0))))));
 					CGResultNode* res1 = computeRawNode(mult1);
 					freeNodeDiff(node->bop->lhs);
 					(node->bop->lhs->diff) = resultNodeToConstantNodeCopy(res1);

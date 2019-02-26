@@ -13,6 +13,7 @@
 #include "cg_constants.h"
 #include "cg_diff.h"
 #include "cg_enums.h"
+#include "cg_cpu.h"
 
 CGraph* cg_newGraph(char* name, CGNode* root){
 	CGraph* graph = makeGraph(name);
@@ -35,7 +36,7 @@ void cg_freeResultNode(struct CGResultNode* result){
 	freeResultNode(result);
 }
 
-CGNode* cg_newDoubleNode(double v){
+CGNode* cg_newDoubleNode(cg_float v){
 	return makeDoubleConstantNode(v);
 }
 
@@ -51,7 +52,7 @@ CGNode* cg_newDoubleRandNode(){
 	return makeRandomDoubleConstantNode();
 }
 
-CGNode* cg_newVectorNode(uint64_t len, double* v){
+CGNode* cg_newVectorNode(uint64_t len, cg_float* v){
 	return makeVectorConstantNodeCopy(len, v);
 }
 
@@ -67,7 +68,7 @@ CGNode* cg_newVectorRandNode(uint64_t len){
 	return makeRandomVectorConstantNode(len);
 }
 
-CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, double* v){
+CGNode* cg_newMatrixNode(uint64_t rows, uint64_t cols, cg_float* v){
 	return makeMatrixConstantNodeCopy(rows, cols, v);
 }
 
@@ -167,7 +168,7 @@ CGVector* cg_getResultVectorVal(CGResultNode* result){
 }
 
 CGMatrix* cg_getResultMatrixVal(CGResultNode* result){
-	return result->value;
+	return (CGMatrix*)result->value;
 }
 
 void cg_autoDiffGraph(CGraph* graph){
@@ -191,11 +192,13 @@ CGResultNode* cg_constantToResult(CGNode* node){
 }
 
 
-#ifdef CG_USE_LIBCPUID
 struct CGCPUInfo* cg_getCPUInformation(){
     return getCPUInformation();
 }
 void cg_printCPUInfo(struct CGCPUInfo* cpuInfo){
     printCPUInfo(cpuInfo);
 }
-#endif
+
+void cg_selectContext(){
+    selectContext();
+}

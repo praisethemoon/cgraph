@@ -12,8 +12,20 @@
 #include "cg_variables.h"
 #include "cg_diff.h"
 #include "cg_enums.h"
+#include "cg_plot.h"
 
 #include "progressbar.h"
+
+
+
+#if cg_float == float
+	#define LUA_C_TYPE ARRAY_TFLOAT
+	#define lua_float floats
+#else
+	#define LUA_C_TYPE ARRAY_TDOUBLE
+	#define lua_float doubles
+#endif
+
 
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502
 /* Compatibility for Lua 5.1.
@@ -127,6 +139,14 @@ static void pushGraph(lua_State* L, CGraph* graph){
 	lua_setmetatable(L, -2);
 }
 
+static int lua_init(lua_State* L){
+
+    selectContext();
+
+    lua_pushnil(L);
+    return 1;
+}
+
 static int lua_getBinaryOperationTypeString(lua_State* L){
 	uint64_t i = lua_tointeger(L, 1);
 	
@@ -188,7 +208,7 @@ static int lua_createVariable(lua_State* L){
 }
 
 static int lua_createDoubleConstant(lua_State* L){
-	double value = lua_tonumber(L, 1);
+	cg_float value = lua_tonumber(L, 1);
 	//printf("Creating constant with value %f\n", value);
 	CGNode* node = makeDoubleConstantNode(value);
 	
@@ -208,8 +228,8 @@ static int lua_createVectorConstant(lua_State* L){
 		printf("\t%f\n", values->values.doubles[i]);
 	}
 	*/
-	double* data = calloc(len, sizeof(double));
-	memcpy(data, values->values.doubles, len*sizeof(double));
+	cg_float* data = calloc(len, sizeof(cg_float));
+	memcpy(data, values->values.lua_float, len*sizeof(cg_float));
 	
 	CGNode* node = makeVectorConstantNode(len, data);
 	
@@ -232,20 +252,20 @@ static int lua_createMatrixConstant(lua_State* L){
 	array_Array* values = array_checkarray(L, 3);
 	
 	/*
+	
 	printf("Creating matrix array with length %dx%d\n", rows, cols);
 	uint64_t i = 0;
 	uint64_t j = 0;
-	
 	for(;i<rows;i++){
 		for(j = 0;j<cols;j++){
-			printf("\t%lf", values->values.doubles[i*cols +j]);
+			printf("\t%lf", values->values.lua_float[i*cols +j]);
 		}
 		printf("\n");
 	}
 	*/
 	
-	double* data = calloc( rows*cols, sizeof(double));
-	memcpy(data, values->values.doubles, rows*cols*sizeof(double));
+	cg_float* data = calloc( rows*cols, sizeof(cg_float));
+	memcpy(data, values->values.lua_float, rows*cols*sizeof(cg_float));
 	CGNode* node = makeMatrixConstantNode(rows, cols, data);
 	
 	pushNode(L, node);
@@ -450,7 +470,7 @@ void pushResultNode(lua_State*L, CGResultNode* res){
 			size[0] = value->len;
 			
 			lua_pushstring(L, "value");
-			array_createarrayv (L, ARRAY_TDOUBLE, value->data, 1, size);
+			array_createarrayv (L, LUA_C_TYPE, value->data, 1, size);
 			lua_settable(L, -3);
 			break;
 		}
@@ -481,7 +501,7 @@ void pushResultNode(lua_State*L, CGResultNode* res){
 			size[0] = value->rows*value->cols;
 			
 			lua_pushstring(L, "value");
-			array_createarrayv (L, ARRAY_TDOUBLE, value->data, 1, size);
+			array_createarrayv (L, LUA_C_TYPE, value->data, 1, size);
 			lua_settable(L, -3);
 			break;
 		}
@@ -614,7 +634,7 @@ void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 					size[0] = value->len;
 					
 					lua_pushstring(L, "value");
-					array_createarrayv (L, ARRAY_TDOUBLE, value->data, 1, size);
+					array_createarrayv (L, LUA_C_TYPE, value->data, 1, size);
 					lua_settable(L, -3);
 					break;
 				}
@@ -645,7 +665,7 @@ void nodeToLuaTable(CGNode* node, lua_State* L, CGraph* graph){
 					size[0] = value->rows*value->cols;
 					
 					lua_pushstring(L, "value");
-					array_createarrayv (L, ARRAY_TDOUBLE, value->data, 1, size);
+					array_createarrayv (L, LUA_C_TYPE, value->data, 1, size);
 					lua_settable(L, -3);
 					break;
 				}
@@ -731,10 +751,37 @@ static int lua_stopProgress(lua_State* L){
     return 1;
 }
 
+static int lua_plotLines(lua_State* L){
+	array_Array* xvalues = array_checkarray(L, 1);
+	int size = xvalues->size[0];
+	cg_float* xdata = calloc(xvalues->size[0], sizeof(cg_float));
+	memcpy(xdata, xvalues->values.lua_float, size*sizeof(cg_float));
+
+	array_Array* yvalues = array_checkarray(L, 2);
+	cg_float* ydata = calloc(yvalues->size[0], sizeof(cg_float));
+	memcpy(ydata, yvalues->values.lua_float, yvalues->size[0]*sizeof(cg_float));
+
+	if(yvalues->size[0] != xvalues->size[0]){
+		fprintf(stderr, "cannot plot x-y arrays with size %d, %d\n", xvalues->size[0], yvalues->size[0]);
+		exit(-1);
+	}
+
+	const char* name = lua_tostring(L, 3);
+
+	printf("plotting %d %f %f \n", size, xdata[0], ydata[0]);
+
+	cg_plot(size, xdata, ydata, NULL, name);
+
+	lua_pushnil(L);
+
+	return 1;
+}
+
 int luaopen_libcgraph(lua_State *L)
 {
 	struct luaL_Reg driver[] =
 	{
+        {"init", lua_init},
 		{"bopToString", lua_getBinaryOperationTypeString},
 		{"uopToString", lua_getUnaryOperationTypeString},
 		{"nodeTypeToString", lua_getNodeTypeString},
@@ -764,12 +811,13 @@ int luaopen_libcgraph(lua_State *L)
         {"startProgress", lua_startProgress},
         {"updateProgress", lua_updateProgress},
         {"endProgress", lua_stopProgress},
+		{"plotLines", lua_plotLines},
 		{NULL, NULL}
 	};
 
 	luaL_openlib(L, "libcgraph", driver, 0);
 	
-	lua_pushinteger (L, ARRAY_TDOUBLE);
+	lua_pushinteger (L, LUA_C_TYPE);
 	lua_pushcclosure (L, create, 1);
 	lua_setfield (L, -2, "doubles");
 	
@@ -790,3 +838,5 @@ int luaopen_libcgraph(lua_State *L)
 	luaL_setfuncs(L, CGRAPH_meta, 0);
 	return 1;
 }
+
+#undef LUA_C_TYPE

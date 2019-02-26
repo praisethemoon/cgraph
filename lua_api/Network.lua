@@ -59,6 +59,7 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
 
     local points = {}
     local loss = {}
+    local loss2 = {}
     local progress = cg.Progress:create("Training..", 1000)
     for k=1,1000 do
         local err = 0
@@ -82,6 +83,8 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
             end
         end
         table.insert(loss, {k, err/#X})
+        table.insert(loss2, err/#X)
+        table.insert(points, k)
         progress:inc()
     end
     progress:stop()
@@ -89,6 +92,8 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
       legend = { position = "se" },
     }
     p:add_series("Avg. Loss", loss)
+
+    cg.plotLines(cg.array(points), cg.array(loss2), name..".png")
   
     flot.render(p)
     print("training complete, Testting")

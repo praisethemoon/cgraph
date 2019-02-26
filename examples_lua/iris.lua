@@ -113,7 +113,7 @@ local A2 = relu(CGraph.dot(X, theta1) + b1)
 local A3 = relu(CGraph.dot(A2, theta2) + b2)
 local final = relu(CGraph.dot(A3, theta3) + b3)
 
-local eval = CGraph.argmax(softmax(final), 1)
+local eval = softmax(final)
 
 local g = CGraph.graph("nn", crossEntroy((final), y, 3))
 
@@ -200,11 +200,12 @@ function train(X, y, X_test, Y_test)
     g:setVar('X', CGraph.matrix(1, 4, _.flatten({X_test[i]})))
     g:setVar('y', CGraph.vector(1, _.flatten({Y_test[i]})))
     
-    local idx = g:evalNode(eval).value
+    local idx = g:evalNode(eval)
+    print(idx)
 
 
     --local max, idx = argmax(output.value)
-    confMat[idx+1][Y_test[i]+1] = confMat[idx+1][Y_test[i]+1] + 1
+    --confMat[idx+1][Y_test[i]+1] = confMat[idx+1][Y_test[i]+1] + 1
   end
 
   for i=1,3 do

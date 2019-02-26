@@ -8,10 +8,13 @@ CGraph
 ### Build Status:
 [![Build Status](https://travis-ci.org/praisethemoon/cgraph.svg?branch=v1.0.a)](https://travis-ci.org/praisethemoon/cgraph)
 
+- OpenCL API is still WIP, still learning it .. Turn off CG_USE_OPENCL `option(CG_USE_OPENCL "OpenCL acceleration" OFF)` in the root `CMakeLists.txt`  file.
+
+- Development being done on Mac OS, with few tests on Ubuntu 18 LTS.
+
 ### About
 
-CGraph, short for C Computation Graph is a C library for building Tensor graphs.
-It will support a Lua API in the future.
+CGraph, short for C Computation Graph is a C library for building Tensor graphs and automatic differenciation.
 
 ### Optimizations
 Uses BLAS for complex operations.
@@ -26,7 +29,14 @@ optimizations will come once the library becomes stable.
 - LAPACK: `sudo apt-get install libblas-dev liblapack-dev`
 - cmake `sudo apt-get install cmake`
 - probably `build-essentials` as well.
-- lua (5.2) for the Lua API (I'm sure you want it but we will switch to Lua JIT soon)
+- lua5.1 at least. LuaJIT is not support due to its 1~2Gb memory limitation.
+- cairo for kplot
+
+### OpenCL dependencies
+- OpenCL driver
+- cf4ocl [https://github.com/fakenmc/cf4ocl](https://github.com/fakenmc/cf4ocl)
+- CLBlast [https://github.com/CNugteren/CLBlast/](https://github.com/CNugteren/CLBlast/)
+
 
 ###### Notes
 
@@ -132,8 +142,28 @@ And from there you have access to the C API from gdb.
 - minunit [https://github.com/siu/minunit](https://github.com/siu/minunit)
 - Remotery [https://github.com/Celtoys/Remotery](https://github.com/Celtoys/Remotery)
 - Underscore [https://github.com/jtarchie/underscore-lua](https://github.com/jtarchie/underscore-lua)
-- Lua Flot [http://stevedonovan.github.io/lua-flot/flot-lua.html](http://stevedonovan.github.io/lua-flot/flot-lua.html)
+- KPlot [https://github.com/kristapsdz/kplot](https://github.com/kristapsdz/kplot)
+- STB Image and Image Write [https://github.com/nothings/stb](https://github.com/nothings/stb)
+- nuklear ui [https://github.com/vurtun/nuklear](https://github.com/vurtun/nuklear)
+- Mersenne Twister random number generator: [http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html)
+- progressbar [https://github.com/doches/progressbar](https://github.com/doches/progressbar)
+- minicsv parser (https://github.com/jedisct1/minicsv)[https://github.com/jedisct1/minicsv]
 
-### Help Wanted
+### Contributions
+
 If you would like to contribute, feel free to fork this stuff.
 A wonderful start would be to include a unit test file to check all the functionalities of either API.
+
+Here is a list of the things I want to add:
+
+- Better plotting tools
+- Image filters
+- `io` subject, csv, json, xml, tar, etc
+- Dataset loaders i.e mnist
+- Propose anything you want.
+
+##### What I really insist on:
+- Pure C API (might even remove CLBlast if I can get to write my own kernels)
+- No global variables & Thread Safety
+- Memory profiling
+- Seperation of intel libraries and public API (CAPI project)
