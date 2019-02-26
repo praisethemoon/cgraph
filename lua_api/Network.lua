@@ -1,6 +1,5 @@
 local cg = require 'CGraph'
 local rand = require 'RandomWeight'
-local flot = require 'flot'
 local Dense = require 'Dense'
 local _ = require 'underscore'
 
@@ -88,14 +87,9 @@ function fit(name, NN, X_train, Y_train, X_test, Y_test, num_classes, alpha)
         progress:inc()
     end
     progress:stop()
-    local p = flot.Plot { -- legend at 'south east' corner
-      legend = { position = "se" },
-    }
-    p:add_series("Avg. Loss", loss)
 
     cg.plotLines(cg.array(points), cg.array(loss2), name..".png")
   
-    flot.render(p)
     print("training complete, Testting")
 
     local confMat = buildConfusionMatrix(num_classes)
