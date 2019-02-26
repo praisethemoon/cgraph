@@ -754,19 +754,21 @@ static int lua_stopProgress(lua_State* L){
 static int lua_plotLines(lua_State* L){
 	array_Array* xvalues = array_checkarray(L, 1);
 	int size = xvalues->size[0];
-	cg_float* xdata = calloc(xvalues->size, sizeof(cg_float));
+	cg_float* xdata = calloc(xvalues->size[0], sizeof(cg_float));
 	memcpy(xdata, xvalues->values.lua_float, size*sizeof(cg_float));
 
 	array_Array* yvalues = array_checkarray(L, 2);
 	cg_float* ydata = calloc(yvalues->size[0], sizeof(cg_float));
 	memcpy(ydata, yvalues->values.lua_float, yvalues->size[0]*sizeof(cg_float));
 
-	if(yvalues->size != xvalues->size){
+	if(yvalues->size[0] != xvalues->size[0]){
 		fprintf(stderr, "cannot plot x-y arrays with size %d, %d\n", xvalues->size[0], yvalues->size[0]);
 		exit(-1);
 	}
 
 	const char* name = lua_tostring(L, 3);
+
+	printf("plotting %d %f %f \n", size, xdata[0], ydata[0]);
 
 	cg_plot(size, xdata, ydata, NULL, name);
 

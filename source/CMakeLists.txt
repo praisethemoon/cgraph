@@ -5,7 +5,7 @@ project(cgraph_projekt)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(CG_USE_LIBCPUID "Use CPUID to detect CPU Features" OFF)
-option(CG_USE_OPENCL "OpenCL acceleration" OFF)
+option(CG_USE_OPENCL "OpenCL acceleration" ON)
 
 if(CG_USE_OPENCL)
     add_compile_definitions(CG_USE_OPENCL)

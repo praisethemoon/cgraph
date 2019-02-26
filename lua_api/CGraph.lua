@@ -200,7 +200,7 @@ local mt = {
 --- Here comes the good stuff
 local array = cgraph.doubles
 local dumpMem = cgraph.dumpMem
-local plotLines = plotLines
+local plotLines = cgraph.plotLines
 
 local double = function (value)
 	local self = {type='value', tensorType=TensorType.DOUBLE, value=value, node=cgraph.double(value)}
